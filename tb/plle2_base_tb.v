@@ -396,6 +396,8 @@ module PLLE2_BASE_tb();
 			fail_count = fail_count + 1;
 		end
 
+
+		/*------- FREQUENCY ---------*/
 		if ((frequency_0 / 1000.0)  == (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * `CLKOUT0_DIVIDE * 1.0) / `CLKFBOUT_MULT))) begin
 			$display("PASSED: CLKOUT0 frequency");
 			pass_count = pass_count + 1;
@@ -453,6 +455,7 @@ module PLLE2_BASE_tb();
 		end
 
 
+		/*------- DUTY CYCLE ---------*/
 		if (dcc_fail_0 !== 1'b1) begin
 			$display("PASSED: CLKOUT0 duty cycle");
 			pass_count = pass_count + 1;
@@ -502,6 +505,7 @@ module PLLE2_BASE_tb();
 		end
 
 
+		/*------- PHASE SHIFT ---------*/
 		if (psc_fail_0 !== 1'b1) begin
 			$display("PASSED: CLKOUT0 phase shift");
 			pass_count = pass_count + 1;
