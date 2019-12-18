@@ -1,5 +1,5 @@
 /*
- * high_counter.v: counts all highs in the input signal since the last release of the rst signal
+ * high_counter.v: Counts all highs in the input signal since the last release of the rst signal.
  * author: Till Mahlburg
  * year: 2019
  * organization: Universität Leipzig

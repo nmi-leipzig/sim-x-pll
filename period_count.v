@@ -1,5 +1,5 @@
 /*
- * period_count.v: Measures the length of the period of the input signal
+ * period_count.v: Measures the length of the period of the input signal.
  * author: Till Mahlburg
  * year: 2019
  * organization: Universität Leipzig
@@ -19,7 +19,7 @@ module period_count #(
 
 	integer period_counter;
 
-	/* count up continuosly with the given resolution */
+	/* count up continuously with the given resolution */
 	always begin
 		period_counter <= period_counter + 1;
 		#RESOLUTION;

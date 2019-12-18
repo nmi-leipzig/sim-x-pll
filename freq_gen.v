@@ -1,7 +1,7 @@
 /*
  * freq_gen.v: Generates the frequency depending on the given period length while allowing manipulation using
  * 	the parameters provided. Starts frequency generation on the first rising
- *	edge of the input clk after the lock input is 1.
+ *	edge of the input clk after the period_stable input is 1.
  * author: Till Mahlburg
  * year: 2019
  * organization: Universität Leipzig
@@ -30,6 +30,7 @@ module freq_gen #(
 	/* period length is multiplied by 1000 for higher precision */
 	output reg [31:0] out_period_length_1000);
 
+	/* tracks when to start the frequency generation */
 	reg start;
 
 	/* generate the wanted frequency */
@@ -43,10 +44,11 @@ module freq_gen #(
 			start <= 1'b0;
 			#1;
 		end else if (ref_period > 0 && start) begin
-			/* the formula used is based on Equation 3-2 on page 72 of Xilinx UG472,
+			/* The formula used is based on Equation 3-2 on page 72 of Xilinx UG472,
 			 * but adjusted to calculate the period length not the frequency.
-			 * Multiplying by 1.0 leads verilog to calculate with floating
-			 * point number.
+			 * Multiplying by 1.0 forces verilog to calculate with floating
+			 * point number. Multiplying the out_period_length_1000 by 1000 is an
+			 * easy solution to returning floating point numbers.
 			 */
 			out_period_length_1000 <= (ref_period * ((D * O * 1.0) / M) * 1000);
 			out <= ~out;

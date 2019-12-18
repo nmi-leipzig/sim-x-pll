@@ -16,6 +16,7 @@ module period_check (
 	input [31:0] period_length,
 	output reg period_stable);
 
+	/* tracks the last period length measured */
 	integer period_length_last;
 
 	/* checks if the measured period length didn't change since the last rising edge of the clk */
