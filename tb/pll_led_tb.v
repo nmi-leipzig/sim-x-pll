@@ -31,7 +31,7 @@ module pll_led_tb ();
 		rst = 1;
 		#10;
 		rst = 0;
-		#1000000;
+		#100000;
 		$finish;
 	end
 

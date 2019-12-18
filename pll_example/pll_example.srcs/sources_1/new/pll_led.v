@@ -21,15 +21,15 @@ module pll_led (
   	genvar i;
 
   	generate
-    	for (i = 3; i < 7; i = i + 1) begin : generate_div
+    	for (i = 1; i < 7; i = i + 1) begin : generate_div
 			divider_synth #(
-				.FF_NUM(25)) div (
+				.FF_NUM(2)) div (
 				.clk_in(pll_out[i]),
 				.RST(RST),
 				.clk_out(led[i]));
-    	end 
+    	end
   	endgenerate
-  	
+
 
 
 	wire CLKFB;
@@ -62,12 +62,12 @@ module pll_led (
 
 		.DIVCLK_DIVIDE(1))
  	pll (
-		.CLKOUT0(pll_out[3]),
-		.CLKOUT1(pll_out[4]),
-		.CLKOUT2(pll_out[5]),
-		.CLKOUT3(pll_out[6]),
-		.CLKOUT4(led[8]),
-		.CLKOUT5(led[9]),
+		.CLKOUT0(pll_out[1]),
+		.CLKOUT1(pll_out[2]),
+		.CLKOUT2(pll_out[3]),
+		.CLKOUT3(pll_out[4]),
+		.CLKOUT4(led[5]),
+		.CLKOUT5(led[6]),
 
 		.CLKFBOUT(CLKFB),
 		.LOCKED(led[0]),
