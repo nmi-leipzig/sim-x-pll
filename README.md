@@ -36,7 +36,7 @@ You can test this project automatically using avocado or make.
 ## Usage and example project
 
 To use this module, you need to have the following files in your project:
-- ```plle_base.v```
+- ```plle2_base.v```
 - ```period_count.v```
 - ```period_check.v```
 - ```freq_gen.v```
