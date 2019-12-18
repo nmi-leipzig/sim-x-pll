@@ -53,7 +53,7 @@ To learn more about the instantiation of the module, you should read Xilinx UG95
 
 This diagram roughly outlines the basic architecture of the project.
 
-![architecture diagram](https://raw.githubusercontent.com/ti-leipzig/sim-x-pll/master/arch.svg)
+![architecture diagram](https://raw.githubusercontent.com/ti-leipzig/sim-x-pll/master/arch.svg?=true)
 
 ## License
 
