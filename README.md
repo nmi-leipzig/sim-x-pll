@@ -36,7 +36,7 @@ You can test this project automatically using avocado or make.
 ## Usage and example project
 
 To use this module, you need to have the following files in your project:
-- ```plle_base.v```
+- ```plle2_base.v```
 - ```period_count.v```
 - ```period_check.v```
 - ```freq_gen.v```
@@ -53,7 +53,7 @@ To learn more about the instantiation of the module, you should read Xilinx UG95
 
 This diagram roughly outlines the basic architecture of the project.
 
-![architecture diagram](https://raw.githubusercontent.com/ti-leipzig/sim-x-pll/master/arch.svg)
+![architecture diagram](https://raw.githubusercontent.com/ti-leipzig/sim-x-pll/master/arch.svg?sanitize=true)
 
 ## License
 
