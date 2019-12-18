@@ -12,7 +12,7 @@ To use this module, you need to have the following files in your project:
 - ```divider.v```
 - ```phase_shift.v```
 
-To build and simulate your project, you can use [http://iverilog.icarus.com/](icarus verilog and vvp) and view the results in [http://gtkwave.sourceforge.net/](GTKWave):
+To build and simulate your project, you can use [icarus verilog and vvp](http://iverilog.icarus.com/) and view the results in [GTKWave](http://gtkwave.sourceforge.net/):
 - ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v <your project files> -o <your project name>```
 - ```vvp <your project name>```
 - ```gtkwave dump.vcd```
@@ -30,7 +30,7 @@ To inspect the results you can use GTKWave like this:
 
 To run this on real hardware you might want to increase the FF_NUM parameter in ```pll_example/pll_example.srcs/sources_1/new/pll_led.v``` significantly, to better see resuls. The values chosen are adusted to be seen with the naked eye on real hardware.
 
-To learn more about the instantiation of the module, you should read [https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf](Xilinx UG953) page 509ff.
+To learn more about the instantiation of the module, you should read [Xilinx UG953](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) page 509ff.
 
 ## Project Status
 
@@ -55,7 +55,7 @@ You can test this project automatically using avocado or make.
 
 ### Avocado [recommended]
 
-- install avocado: [https://avocado-framework.readthedocs.io/en/latest/#how-to-install](Documentation)
+- install avocado: [Documentation](https://avocado-framework.readthedocs.io/en/latest/#how-to-install)
 - change into the ```tb/``` folder
 - run ```$ avocado run test_pll.py```
 
