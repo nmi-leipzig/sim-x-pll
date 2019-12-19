@@ -1,6 +1,6 @@
 # Xilinx 7 Series PLLE2_BASE Simulation
 
-This project aims to simulate the behavior of the PLLE2_BASE PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, using the Icarus Verilog simulation and synthesis tool.
+This project aims to simulate the behavior of the PLLE2_BASE PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff. This way you can just drop the files listed below into your project, instatiate the PLL like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
 
 ## Usage and example project
 
@@ -28,7 +28,7 @@ To inspect the results you can use GTKWave like this:
 - ```gtkwave pll_led_tb.vcd```
 
 
-To run this on real hardware you might want to increase the FF_NUM parameter in ```pll_example/pll_example.srcs/sources_1/new/pll_led.v``` significantly, to better see resuls. The values chosen are adusted to be seen with the naked eye on real hardware.
+To run this on real hardware you might want to increase the FF_NUM parameter in ```pll_example/pll_example.srcs/sources_1/new/pll_led.v``` significantly, to achieve better result. The values chosen are adusted to be seen with the naked eye on real hardware.
 
 To learn more about the instantiation of the module, you should read [Xilinx UG953](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) page 509ff.
 
