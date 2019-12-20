@@ -9,24 +9,25 @@
 
 `timescale 1 ns / 1 ps
 
-module pll_led (
+module pll_led #(
+	parameter FF_NUM = 25) (
 	input clk,
 	input RST,
 
-	output [15:0] led);
+	output [6:0] led);
 
 	/* divide the output signal, so one can see the results at the LEDs */
-	wire [6:0] pll_out;
+	wire [3:0] pll_out;
 
   	genvar i;
 
   	generate
-    	for (i = 1; i < 5; i = i + 1) begin : generate_div
+    	for (i = 0; i < 4; i = i + 1) begin : generate_div
 			divider_synth #(
-				.FF_NUM(2)) div (
+				.FF_NUM(FF_NUM)) div (
 				.clk_in(pll_out[i]),
 				.RST(RST),
-				.clk_out(led[i]));
+				.clk_out(led[i+1]));
     	end
   	endgenerate
 
@@ -62,10 +63,10 @@ module pll_led (
 
 		.DIVCLK_DIVIDE(1))
  	pll (
-		.CLKOUT0(pll_out[1]),
-		.CLKOUT1(pll_out[2]),
-		.CLKOUT2(pll_out[3]),
-		.CLKOUT3(pll_out[4]),
+		.CLKOUT0(pll_out[0]),
+		.CLKOUT1(pll_out[1]),
+		.CLKOUT2(pll_out[2]),
+		.CLKOUT3(pll_out[3]),
 		.CLKOUT4(led[5]),
 		.CLKOUT5(led[6]),
 

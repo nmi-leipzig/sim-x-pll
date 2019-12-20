@@ -7,6 +7,10 @@
  *
  */
 
+`ifndef FF_NUM
+	`define FF_NUM 25
+`endif
+
 `timescale 1 ns / 1 ps
 
 module pll_led_tb ();
@@ -14,7 +18,9 @@ module pll_led_tb ();
 	reg clk;
 	wire [6:0] led;
 
-	pll_led dut(
+	pll_led #(
+		.FF_NUM(`FF_NUM))
+	dut(
 		.clk(clk),
 		.RST(rst),
 		.led(led));
