@@ -7,7 +7,7 @@ build_all: period_check_build freq_gen_build freq_gen_build period_count_build h
 build_pll: plle2_base_build
 
 pll_led_build: ../pll_example/pll_example.srcs/sources_1/new/pll_led_tb.v ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v
-	- $(VC) ../pll_example/pll_example.srcs/sources_1/new/pll_led_tb.v ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v -o pll_led_tb
+	- $(VC) ../pll_example/pll_led_tb.v -DFF_NUM=2 ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v -o pll_led_tb
 
 pll_led_test: pll_led_build
 	- vvp pll_led_tb
