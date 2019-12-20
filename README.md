@@ -1,6 +1,6 @@
 # Xilinx 7 Series PLLE2_BASE Simulation
 
-This project aims to simulate the behavior of the PLLE2_BASE PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff. This way you can just drop the files listed below into your project, instantiate the PLL like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
+This project aims to simulate the behavior of the PLLE2_BASE PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff. This way you can just drop the files listed below into your project, instantiate the PLL like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
 
 ## Usage and example project
 
@@ -19,7 +19,7 @@ To build and simulate your project, you can use [icarus verilog and vvp](http://
 
 If you specified the name of your output file using something like ```$dumpfile("<your_name.vcd>")```, you have to replace ```dump.vcd``` with your chosen name.
 
-An example project found under ```pll_example/pll_example.srcs/sources_1/new/```. It is a simple program to show the usage of the module. It can be simulated from the ```tb/``` directory using
+An example project found under ```pll_example/pll_example.srcs/sources_1/new/```. It is a simple program to show the usage of the module. It can be simulated from the ```tb/``` or the ```pll_example``` directory using
 - ```make pll_led_test```
 
 This runs iverilog and vvp to simulate the module.
@@ -27,8 +27,7 @@ To inspect the results you can use GTKWave like this:
 
 - ```gtkwave pll_led_tb.vcd```
 
-
-To run this on real hardware you might want to increase the FF_NUM parameter in ```pll_example/pll_example.srcs/sources_1/new/pll_led.v``` significantly, to achieve better result. The values chosen are adusted to be seen with the naked eye on real hardware.
+The default values chosen are meant to be seen with the naked eye on real hardware. If you run the simulation using ```make``` the values are adjusted to be easy to see in GTKWave.
 
 To learn more about the instantiation of the module, you should read [Xilinx UG953](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) page 509ff.
 
