@@ -50,7 +50,7 @@ To learn more about the instantiation of the module, you should read [Xilinx UG9
 
 ## Test
 
-You can test this project automatically using avocado or make.
+You can test this project automatically using avocado or make. The testbenches themselves are written in pure verilog.
 
 ### Avocado [recommended]
 
