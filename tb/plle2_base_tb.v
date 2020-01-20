@@ -29,7 +29,7 @@
 `endif
 /* This deviates from the default values, because it is required to be set */
 `ifndef CLKIN1_PERIOD
-	`define CLKIN1_PERIOD 10.000
+	`define CLKIN1_PERIOD 5.000
 `endif
 
 `ifndef CLKOUT0_DIVIDE
