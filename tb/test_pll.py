@@ -132,12 +132,12 @@ class PLLTest(Test):
 
 	def generic_plle2_base_test(self,
             wait_interval=1000,
-            bandwidth="OPTIMIZED",
+            bandwidth=r'\"OPTIMIZED\"',
 
-            clkfbout_mult=1,
+            clkfbout_mult=5,
             clkfbout_phase=0.000,
 
-            clkin1_period=10.000,
+            clkin1_period=5.000,
 
             clkout0_divide=1,
             clkout1_divide=1,
@@ -163,7 +163,7 @@ class PLLTest(Test):
             divclk_divide=1,
 
             ref_jitter1=0.010,
-            startup_wait="FALSE"):
+            startup_wait=r'\"FALSE\"'):
 
 		"""test plle2 base"""
 
@@ -266,7 +266,7 @@ class PLLTest(Test):
 		:avocado: tags:quick,verilog
 		"""
 
-		self.generic_plle2_base_test(clkfbout_mult=2, clkin1_period=20.000, divclk_divide=4)
+		self.generic_plle2_base_test(clkfbout_mult=64, clkin1_period=20.000, divclk_divide=4)
 
 	def test_plle2_base_clkout0(self):
 		"""
@@ -287,7 +287,7 @@ class PLLTest(Test):
 	 	:avocado: tags:quick,verilog
 	 	"""
 
-	 	self.generic_plle2_base_test(clkout1_divide=3, clkout1_duty_cycle=0.450, clkout2_divide=8, clkout2_duty_cycle=0.333, divclk_divide=2, clkfbout_mult=2)
+	 	self.generic_plle2_base_test(clkout1_divide=3, clkout1_duty_cycle=0.450, clkout2_divide=8, clkout2_duty_cycle=0.333, divclk_divide=2, clkfbout_mult=8)
 
 	def test_plle2_base_phase(self):
 		"""

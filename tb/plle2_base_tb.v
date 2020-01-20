@@ -19,17 +19,17 @@
 
 /* not implemented */
 `ifndef BANDWIDTH
-	`define BANDWIDTH OPTIMIZED
+	`define BANDWIDTH "OPTIMIZED"
 `endif
 `ifndef CLKFBOUT_MULT
-	`define CLKFBOUT_MULT 1
+	`define CLKFBOUT_MULT 5
 `endif
 `ifndef CLKFBOUT_PHASE
 	`define CLKFBOUT_PHASE 0.000
 `endif
 /* This deviates from the default values, because it is required to be set */
 `ifndef CLKIN1_PERIOD
-	`define CLKIN1_PERIOD 10.000
+	`define CLKIN1_PERIOD 5.000
 `endif
 
 `ifndef CLKOUT0_DIVIDE
@@ -102,7 +102,7 @@
 
 /* not implemented */
 `ifndef STARTUP_WAIT
-	`define STARTUP_WAIT FALSE
+	`define STARTUP_WAIT "FALSE"
 `endif
 
 module PLLE2_BASE_tb();
@@ -154,7 +154,7 @@ module PLLE2_BASE_tb();
 
 	/* instantiate PLLE2_BASE with default values for all the attributes */
 	PLLE2_BASE #(
- 		.BANDWIDTH("`BANDWIDTH"),
+ 		.BANDWIDTH(`BANDWIDTH),
  		.CLKFBOUT_MULT(`CLKFBOUT_MULT),
 		.CLKFBOUT_PHASE(`CLKFBOUT_PHASE),
 		.CLKIN1_PERIOD(`CLKIN1_PERIOD),
@@ -182,7 +182,7 @@ module PLLE2_BASE_tb();
 
 		.DIVCLK_DIVIDE(`DIVCLK_DIVIDE),
 		.REF_JITTER1(`REF_JITTER1),
-		.STARTUP_WAIT("`STARTUP_WAIT"))
+		.STARTUP_WAIT(`STARTUP_WAIT))
 	dut (
 		.CLKOUT0(CLKOUT0),
 		.CLKOUT1(CLKOUT1),
