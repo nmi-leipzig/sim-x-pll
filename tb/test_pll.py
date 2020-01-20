@@ -134,7 +134,7 @@ class PLLTest(Test):
             wait_interval=1000,
             bandwidth=r'\"OPTIMIZED\"',
 
-            clkfbout_mult=1,
+            clkfbout_mult=5,
             clkfbout_phase=0.000,
 
             clkin1_period=10.000,

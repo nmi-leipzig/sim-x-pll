@@ -22,7 +22,7 @@
 	`define BANDWIDTH "OPTIMIZED"
 `endif
 `ifndef CLKFBOUT_MULT
-	`define CLKFBOUT_MULT 1
+	`define CLKFBOUT_MULT 5
 `endif
 `ifndef CLKFBOUT_PHASE
 	`define CLKFBOUT_PHASE 0.000
