@@ -285,4 +285,60 @@ module PLLE2_BASE #(
 	/* lock detection using the lock information given by the phase shift modules */
 	assign LOCKED = lock0 & lock1 & lock2 & lock3 & lock4 & lock5 & fb_lock;
 
+	reg invalid = 1'b0;
+	/* check if the given values are valid */
+	initial begin
+		if (!(BANDWIDTH == "OPTIMIZED" || BANDWIDTH == "HIGH" || BANDWIDTH == "LOW")) begin
+			$display("BANDWIDTH doesn't match it's allowed inputs.");
+			invalid = 1'b1;
+		end else if (CLKFBOUT_MULT < 2 || CLKFBOUT > 64) begin
+			$display("CLKFBOUT_MULT is not in the allowed range (2-64).");
+			invalid = 1'b1;
+		end else if (CLKFBOUT_PHASE < -360.00 || CLKFBOUT_PHASE > 360.000) begin
+			$display("CLKFBOUT_PHASE is not in the allowed range (-360-360).");
+			invalid = 1'b1;
+		end else if (CLKIN1_PERIOD < 0.000 || CLKIN1_PERIOD > 52.631) begin
+			$display("CLKIN1_PERIOD is not in the allowed range (0 - 52.631).");
+			invalid = 1'b1;
+		end else if (CLKOUT0_DIVIDE < 1 || CLKOUT0_DIVIDE > 128 ||
+					 CLKOUT1_DIVIDE < 1 || CLKOUT1_DIVIDE > 128 ||
+					 CLKOUT2_DIVIDE < 1 || CLKOUT2_DIVIDE > 128 ||
+					 CLKOUT3_DIVIDE < 1 || CLKOUT3_DIVIDE > 128 ||
+					 CLKOUT4_DIVIDE < 1 || CLKOUT4_DIVIDE > 128 ||
+					 CLKOUT5_DIVIDE < 1 || CLKOUT5_DIVIDE > 128) begin
+			$display("One of the CLKOUTn_DIVIDE parameters is not in the allowed range (1-128).");
+			invalid = 1'b1;
+		end else if (CLKOUT0_DUTY_CYCLE < 0.001 || CLKOUT0_DUTY_CYCLE > 0.999 ||
+					 CLKOUT1_DUTY_CYCLE < 0.001 || CLKOUT1_DUTY_CYCLE > 0.999 ||
+					 CLKOUT2_DUTY_CYCLE < 0.001 || CLKOUT2_DUTY_CYCLE > 0.999 ||
+					 CLKOUT3_DUTY_CYCLE < 0.001 || CLKOUT3_DUTY_CYCLE > 0.999 ||
+					 CLKOUT4_DUTY_CYCLE < 0.001 || CLKOUT4_DUTY_CYCLE > 0.999 ||
+					 CLKOUT5_DUTY_CYCLE < 0.001 || CLKOUT5_DUTY_CYCLE > 0.999) begin
+			$display("One of the CLKOUTn_DUTY_CYCLE parameters is not in the allowed range (0.001-0.999).");
+			invalid = 1'b1;
+		end else if (CLKOUT0_PHASE < -360.000 || CLKOUT0_PHASE > 360.000 ||
+					 CLKOUT1_PHASE < -360.000 || CLKOUT1_PHASE > 360.000 ||
+					 CLKOUT2_PHASE < -360.000 || CLKOUT2_PHASE > 360.000 ||
+					 CLKOUT3_PHASE < -360.000 || CLKOUT3_PHASE > 360.000 ||
+					 CLKOUT4_PHASE < -360.000 || CLKOUT4_PHASE > 360.000 ||
+					 CLKOUT5_PHASE < -360.000 || CLKOUT5_PHASE > 360.000) begin
+			$display("One of the CLKOUTn_PHASE parameters is not in the allowed range (-360.00-360.00).");
+			invalid = 1'b1;
+		end else if (DIVCLK_DIVIDE < 1 || DIVCLK_DIVIDE > 56) begin
+			$display("DIVCLK_DIVIDE is not in the allowed range (1-56).");
+			invalid = 1'b1;
+		end else if (REF_JITTER1 < 0.000 || REF_JITTER1 > 0.999) begin
+			$display("REF_JITTER1 is not in the allowed range (0.000 - 0.999).");
+			invalid = 1'b1;
+		end else if (!(STARTUP_WAIT == "FALSE" || STARTUP_WAIT == "TRUE")) begin
+			$display("STARTUP_WAIT doesn't match it's allowed inputs");
+			invalid = 1'b1;
+		end
+
+		/* delete this to simulate even if there are invalid values */
+		if (invalid) begin
+			$display("Exiting simulation...");
+			$finish;
+		end
+	end
 endmodule
