@@ -132,7 +132,7 @@ class PLLTest(Test):
 
 	def generic_plle2_base_test(self,
             wait_interval=1000,
-            bandwidth="OPTIMIZED",
+            bandwidth=r'\"OPTIMIZED\"',
 
             clkfbout_mult=1,
             clkfbout_phase=0.000,
@@ -163,7 +163,7 @@ class PLLTest(Test):
             divclk_divide=1,
 
             ref_jitter1=0.010,
-            startup_wait="FALSE"):
+            startup_wait=r'\"FALSE\"'):
 
 		"""test plle2 base"""
 
