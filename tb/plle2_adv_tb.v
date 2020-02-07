@@ -1,5 +1,5 @@
 /*
- * plle2_base_tb.v: Testbench for plle2_base.v
+ * plle2_adv_tb.v: Testbench for plle2_adv.v
  * author: Till Mahlburg
  * year: 2019
  * organization: Universität Leipzig
