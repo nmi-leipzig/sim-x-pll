@@ -1,5 +1,5 @@
 /*
- * plle2_base.v: Simulates the PLLE2_BASE pll of the xilinx 7 series
+ * plle2_adv.v: Simulates the PLLE2_ADV pll of the xilinx 7 series
  * author: Till Mahlburg
  * year: 2019
  * organization: Universität Leipzig
@@ -9,8 +9,8 @@
 
 `timescale 1 ns / 1 ps
 
-/* A reference for the interface can be found in Xilinx UG953 page 509ff */
-module PLLE2_BASE #(
+/* A reference for the interface can be found in Xilinx UG953 page 503ff */
+module PLLE2_ADV #(
 	/* not implemented */
 	parameter BANDWIDTH 			= "OPTIMIZED",
 
