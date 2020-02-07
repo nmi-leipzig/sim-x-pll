@@ -2,7 +2,7 @@
 
 This project aims to simulate the behavior of the PLLE2_BASE PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff. This way you can just drop the files listed below into your project, instantiate the PLL like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
 
-## Usage and example project
+## Quickstart
 
 To use this module, you need to have the following files in your project:
 - ```plle2_base.v```
@@ -18,6 +18,65 @@ To build and simulate your project, you can use [icarus verilog and vvp](http://
 - ```gtkwave dump.vcd```
 
 If you specified the name of your output file using something like ```$dumpfile("<your_name.vcd>")```, you have to replace ```dump.vcd``` with your chosen name.
+
+The module works by supplying an input clock, which will be transformed to an, or rather 6, output clocks. This output clock depends on the input clock and multiple parameters. You can set the wanted output frequency, phase shift and duty cycle. The output frequency is calculated like this: ```output frequency = input frequency * (multiplier / (divider * output divider))```, while the output phase can be calculated (in relation to the input phase) by using this formula: ```output phase = feedback phase + output phase```. The parts of these formulas with "output" in their name are specific to one specific output, while the others are global. There are certain limits to the values. If you hit them, the module is going to stop simulation and inform you about it.
+
+An typical instatiation of the module might look like this:
+
+	PLLE2_BASE #(
+		.CLKFBOUT_MULT(8), 			// This multiplies your output clock by 8
+		.CLKFBOUT_PHASE(90.0),		// This shifts the output clock by 90 degrees
+		.CLKIN1_PERIOD(10.0),		// This specifies the period length of your input clock. This information is mandatory.
+
+		// The following lines set up different dividers for every output
+		.CLKOUT0_DIVIDE(128),
+		.CLKOUT1_DIVIDE(64),
+		.CLKOUT2_DIVIDE(32),
+		.CLKOUT3_DIVIDE(16),
+		.CLKOUT4_DIVIDE(128),
+		.CLKOUT5_DIVIDE(128),
+
+		// Similiarly you can set the duty cycle for every output
+		.CLKOUT0_DUTY_CYCLE(0.5),
+		.CLKOUT1_DUTY_CYCLE(0.5),
+		.CLKOUT2_DUTY_CYCLE(0.5),
+		.CLKOUT3_DUTY_CYCLE(0.5),
+		.CLKOUT4_DUTY_CYCLE(0.9),
+		.CLKOUT5_DUTY_CYCLE(0.1),
+
+		// And the phase shift
+		.CLKOUT0_PHASE(0.0),
+		.CLKOUT1_PHASE(45.0),
+		.CLKOUT2_PHASE(22.5),
+		.CLKOUT3_PHASE(0.0),
+		.CLKOUT4_PHASE(0.0),
+		.CLKOUT5_PHASE(0.0),
+
+		// You can also set up a divider for your input clock. This can be useful, if you have a very fast clock, which exceeds the limits of the PLL.
+		.DIVCLK_DIVIDE(1))
+ 	pll (
+ 		// Bind the outputs of the PLL, for example like this.
+		.CLKOUT0(output[0]),
+		.CLKOUT1(output[1]),
+		.CLKOUT2(output[2]),
+		.CLKOUT3(output[3]),
+		.CLKOUT4(output[5]),
+		.CLKOUT5(output[6]),
+
+		// These should always be set to the same wire.
+		.CLKFBOUT(CLKFB),
+		.CLKFBIN(CLKFB),
+
+		// This informs you, if the output frequency is usable.
+		.LOCKED(locked),
+		// Bind your input clock.
+		.CLKIN1(clk),
+
+		// Allows you to power down or reset the PLL.
+		.PWRDWN(pwrdwn),
+		.RST(rst));
+
+## Example project
 
 An example project found under ```pll_example/pll_example.srcs/sources_1/new/```. It is a simple program to show the usage of the module. It can be simulated from the ```tb/``` or the ```pll_example``` directory using
 - ```make pll_led_test```
