@@ -81,8 +81,10 @@ module PLLE2_BASE #(
 	output	[15:0] DO,
 	output	DRDY);
 
+	/* gets assigned to the chosen CLKIN */
+	reg clkin;
 
-	wire [31:0] clkin1_period_length;
+	wire [31:0] clkin_period_length;
 
 	/* Used to determine the period length of the divided CLK */
 	period_count #(
@@ -90,8 +92,8 @@ module PLLE2_BASE #(
 	period_count (
 		.RST(RST),
 		.PWRDWN(PWRDWN),
-		.clk(CLKIN1),
-		.period_length(clkin1_period_length));
+		.clk(clkin),
+		.period_length(clkin_period_length));
 
 	wire period_stable;
 
@@ -99,8 +101,8 @@ module PLLE2_BASE #(
 	period_check period_check (
 		.RST(RST),
 		.PWRDWN(PWRDWN),
-		.clk(CLKIN1),
-		.period_length(clkin1_period_length),
+		.clk(clkin),
+		.period_length(clkin_period_length),
 		.period_stable(period_stable));
 
 	wire out0;
@@ -116,8 +118,8 @@ module PLLE2_BASE #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period(clkin1_period_length),
-		.clk(CLKIN1),
+		.ref_period(clkin_period_length),
+		.clk(clkin),
 		.out(out0),
 		.out_period_length_1000(out0_period_length));
 
@@ -144,8 +146,8 @@ module PLLE2_BASE #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period(clkin1_period_length),
-		.clk(CLKIN1),
+		.ref_period(clkin_period_length),
+		.clk(clkin),
 		.out(out1),
 		.out_period_length_1000(out1_period_length));
 
@@ -172,8 +174,8 @@ module PLLE2_BASE #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period(clkin1_period_length),
-		.clk(CLKIN1),
+		.ref_period(clkin_period_length),
+		.clk(clkin),
 		.out(out2),
 		.out_period_length_1000(out2_period_length));
 
@@ -200,8 +202,8 @@ module PLLE2_BASE #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period(clkin1_period_length),
-		.clk(CLKIN1),
+		.ref_period(clkin_period_length),
+		.clk(clkin),
 		.out(out3),
 		.out_period_length_1000(out3_period_length));
 
@@ -228,8 +230,8 @@ module PLLE2_BASE #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period(clkin1_period_length),
-		.clk(CLKIN1),
+		.ref_period(clkin_period_length),
+		.clk(clkin),
 		.out(out4),
 		.out_period_length_1000(out4_period_length));
 
@@ -256,8 +258,8 @@ module PLLE2_BASE #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period(clkin1_period_length),
-		.clk(CLKIN1),
+		.ref_period(clkin_period_length),
+		.clk(clkin),
 		.out(out5),
 		.out_period_length_1000(out5_period_length));
 
@@ -284,8 +286,8 @@ module PLLE2_BASE #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period(clkin1_period_length),
-		.clk(CLKIN1),
+		.ref_period(clkin_period_length),
+		.clk(clkin),
 		.out(fb_out),
 		.out_period_length_1000(fb_out_period_length_1000));
 
@@ -301,6 +303,14 @@ module PLLE2_BASE #(
 
 	/* lock detection using the lock information given by the phase shift modules */
 	assign LOCKED = lock0 & lock1 & lock2 & lock3 & lock4 & lock5 & fb_lock;
+	/* set clkin to the correct CLKIN */
+	always @* begin
+		if (CLKINSEL === 1'b1) begin
+			clkin = CLKIN1;
+		end else if (CLKINSEL === 1'b0) begin
+			clkin = CLKIN2;
+		end
+	end
 
 	reg invalid = 1'b0;
 	/* check if the given values are valid */
@@ -363,6 +373,11 @@ module PLLE2_BASE #(
 			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT, CLKIN1_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
 			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLKDIVIDE).");
 			$display("Currently the value is %0f.", ((CLKFBOUT_MULT * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)));
+			invalid = 1'b1;
+		end else if (((CLKFBOUT_MULT * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0) begin
+			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT, CLKIN2_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
+			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT * 1000) / (CLKIN2_PERIOD * DIVCLKDIVIDE).");
+			$display("Currently the value is %0f.", ((CLKFBOUT_MULT * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)));
 			invalid = 1'b1;
 		end
 		/* delete this to simulate even if there are invalid values */
