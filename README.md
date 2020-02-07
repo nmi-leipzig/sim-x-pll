@@ -19,7 +19,7 @@ To build and simulate your project, you can use [icarus verilog and vvp](http://
 
 If you specified the name of your output file using something like ```$dumpfile("<your_name.vcd>")```, you have to replace ```dump.vcd``` with your chosen name.
 
-The module works by supplying an input clock, which will be transformed to an, or rather 6, output clocks. This output clock depends on the input clock and multiple parameters. You can set the wanted output frequency, phase shift and duty cycle. The output frequency is calculated like this: ```output frequency = input frequency * (multiplier / (divider * output divider))```, while the output phase can be calculated (in relation to the input phase) by using this formula: ```output phase = feedback phase + output phase```. The parts of these formulas with "output" in their name are specific to one specific output, while the others are global. There are certain limits to the values. If you hit them, the module is going to stop simulation and inform you about it.
+The module works by supplying an input clock, which will be transformed to an, or rather 6, output clocks. This output clock depends on the input clock and multiple parameters. You can set the wanted output frequency, phase shift and duty cycle. The output frequency is calculated like this: ```output frequency = input frequency * (multiplier / (divider * output divider))```, while the output phase can be calculated (in relation to the input phase) by using this formula: ```output phase = feedback phase + output phase```. The parts of these formulas with "output" in their name are specific to one specific output, while the others are global. There are certain limits to the values. If you hit them, the module is going to stop simulation and inform you about it. Check out the FAQ section at the end to learn more about these limits.
 
 An typical instatiation of the module might look like this:
 
@@ -131,3 +131,22 @@ This diagram roughly outlines the basic architecture of the project.
 ## License
 
 This project is licensed under the ISC license.
+
+## FAQ
+
+### Which limits does the PLL have?
+Use this table for parameters:
+
+| parameter          | allowed values             |
+| ------------------ | -------------------------- |
+| BANDWIDTH          | "OPTIMIZED", "HIGH", "LOW" |
+| CLKFBOUT_MULT      | 2 - 64                     |
+| CLKFBOUT_PHASE     | -360.000 - 360.000         |
+| CLKIN1_PERIOD      | 0 - 52.631                 |
+| CLKOUTn_DIVIDE     | 1 - 128                    |
+| CLKOUTn_DUTY_CYCLE | -360.000 - 360.000         |
+| DIVCLK_DIVIDE      | 1 - 56                     |
+| REF_JITTER1        | 0.000 - 0.999              |
+| STARTUP_WAIT       | "FALSE", "TRUE"            |
+
+Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLKDIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
