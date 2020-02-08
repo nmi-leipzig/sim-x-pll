@@ -32,7 +32,7 @@
 	`define CLKIN1_PERIOD 5.000
 `endif
 `ifndef CLKIN2_PERIOD
-	`define CLKIN2_PERIOD 5.000
+	`define CLKIN2_PERIOD 4.000
 `endif
 
 `ifndef CLKOUT0_DIVIDE
@@ -147,7 +147,7 @@ module PLLE2_ADV_tb();
 	integer	pass_count;
 	integer	fail_count;
 	/* change according to the number of test cases */
-	localparam total = 23;
+	localparam total = 24;
 
 	reg 			reset;
 	wire [31:0] 	frequency_0;
@@ -395,14 +395,16 @@ module PLLE2_ADV_tb();
 /* ------------ BEGIN TEST CASES ------------- */
 
 	initial begin
-		$dumpfile("plle2_base_tb.vcd");
-		$dumpvars(0, PLLE2_BASE_tb);
+		$dumpfile("plle2_adv_tb.vcd");
+		$dumpvars(0, PLLE2_ADV_tb);
 
 		pass_count = 0;
 		fail_count = 0;
 		reset = 0;
 
+		CLKINSEL = 0;
 		CLKIN1 = 0;
+		CLKIN2 = 0;
 		RST = 0;
 		PWRDWN = 0;
 		#10;
@@ -431,6 +433,21 @@ module PLLE2_ADV_tb();
 			fail_count = fail_count + 1;
 		end
 
+		/*------ CLKIN SELECTION --- */
+		if ((frequency_fb / 1000.0) == (`CLKIN2_PERIOD * ((`DIVCLK_DIVIDE * 1.0) / `CLKFBOUT_MULT))) begin
+			$display("PASSED: CLKIN2 selection");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKIN2 selection");
+			fail_count = fail_count + 1;
+		end
+
+		/* switch clock back to 1 */
+		CLKINSEL = 1;
+		reset = 1;
+		#(`WAIT_INTERVAL / 10);
+		reset = 0;
+		#`WAIT_INTERVAL;
 
 		/*------- FREQUENCY ---------*/
 		if ((frequency_0 / 1000.0)  == (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * `CLKOUT0_DIVIDE * 1.0) / `CLKFBOUT_MULT))) begin
@@ -445,7 +462,6 @@ module PLLE2_ADV_tb();
 			$display("PASSED: CLKOUT1 frequency");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: CLKOUT1 frequency %0f, %0f", frequency_1, (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * `CLKOUT1_DIVIDE * 1.0) / `CLKFBOUT_MULT)));
 			fail_count = fail_count + 1;
 		end
 
@@ -627,6 +643,7 @@ module PLLE2_ADV_tb();
 	end
 
 	always #(`CLKIN1_PERIOD / 2) CLKIN1 = ~CLKIN1;
+	always #(`CLKIN2_PERIOD / 2) CLKIN2 = ~CLKIN2;
 endmodule
 
 
