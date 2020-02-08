@@ -6,8 +6,8 @@ build_all: period_check_build freq_gen_build freq_gen_build period_count_build h
 
 build_pll: plle2_base_build plle2_adv_build
 
-pll_led_build: ../pll_example/pll_example.srcs/sources_1/new/pll_led_tb.v ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v
-	- $(VC) ../pll_example/pll_led_tb.v -DFF_NUM=2 ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v -o pll_led_tb
+pll_led_build: ../pll_example/pll_example.srcs/sources_1/new/pll_led_tb.v ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v ../pll.v
+	- $(VC) ../pll_example/pll_led_tb.v -DFF_NUM=2 ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v ../pll.v -o pll_led_tb
 
 pll_led_test: pll_led_build
 	- vvp pll_led_tb
@@ -42,14 +42,14 @@ phase_shift_build: ../phase_shift.v phase_shift_tb.v
 phase_shift_test: phase_shift_build
 	- vvp phase_shift_tb
 
-plle2_base_build: ../plle2_base.v ../period_count.v ../period_check.v ../freq_gen.v ../phase_shift.v plle2_base_tb.v
-	- $(VC) ../plle2_base.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v plle2_base_tb.v -o plle2_base_tb
+plle2_base_build: ../plle2_base.v ../period_count.v ../period_check.v ../freq_gen.v ../phase_shift.v ../pll.v plle2_base_tb.v
+	- $(VC) ../plle2_base.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v ../pll.v plle2_base_tb.v -o plle2_base_tb
 
 plle2_base_test: plle2_base_build
 	- vvp plle2_base_tb
 
-plle2_adv_build: ../plle2_adv.v ../period_count.v ../period_check.v ../freq_gen.v ../phase_shift.v plle2_adv_tb.v
-	- $(VC) ../plle2_adv.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v plle2_adv_tb.v -o plle2_adv_tb
+plle2_adv_build: ../plle2_adv.v ../period_count.v ../period_check.v ../freq_gen.v ../phase_shift.v plle2_adv_tb.v ../pll.v
+	- $(VC) ../plle2_adv.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v plle2_adv_tb.v ../pll.v -o plle2_adv_tb
 
 plle2_adv_test: plle2_adv_build
 	- vvp plle2_adv_tb
