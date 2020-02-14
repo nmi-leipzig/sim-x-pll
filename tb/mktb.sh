@@ -28,7 +28,7 @@ cat << EOF
 /*
  * $1_tb.v: Test bench for $1.v
  * author: Till Mahlburg
- * year: 2019
+ * year: $(date +%Y)
  * organization: Universität Leipzig
  * license: ISC
  *
