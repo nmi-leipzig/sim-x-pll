@@ -73,69 +73,88 @@ module pll #(
 	input	RST,
 
 	/* Dynamic reconfiguration ports */
-	//TODO: port descriptions
+	/* register address to write to or read from */
 	input 	[6:0] DADDR,
+	/* reference clk */
 	input 	DCLK,
+	/* enable dynamic reconfiguration (read only) */
 	input 	DEN,
+	/* enable writing */
 	input 	DWE,
+	/* what to write */
 	input 	[15:0] DI,
 
+	/* read values */
 	output	[15:0] DO,
+	/* ready flag for next operation */
 	output	DRDY);
 
 	/* registers for dynamic reconfiguration */
-	/* ADDRESS: */
-	// 0x08
-	reg [15:0] ClkReg1_0;
-	// 0x0A
-	reg [15:0] ClkReg1_1;
-	// 0x0C
-	reg [15:0] ClkReg1_2;
-	// 0x0E
-	reg [15:0] ClkReg1_3;
-	// 0x10
-	reg [15:0] ClkReg1_4;
-	// 0x06
-	reg [15:0] ClkReg1_5;
-	// 0x12
-	reg [15:0] ClkReg1_6;
-	// 0x14
-	reg [15:0] ClkReg1_FB;
+	wire [15:0] ClkReg1_0;
+	wire [15:0] ClkReg1_1;
+	wire [15:0] ClkReg1_2;
+	wire [15:0] ClkReg1_3;
+	wire [15:0] ClkReg1_4;
+	wire [15:0] ClkReg1_5;
+	wire [15:0] ClkReg1_6;
+	wire [15:0] ClkReg1_FB;
+	wire [15:0] ClkReg2_0;
+	wire [15:0] ClkReg2_1;
+	wire [15:0] ClkReg2_2;
+	wire [15:0] ClkReg2_3;
+	wire [15:0] ClkReg2_4;
+	wire [15:0] ClkReg2_5;
+	wire [15:0] ClkReg2_6;
+	wire [15:0] ClkReg2_FB;
+	wire [15:0] DivReg;
+	wire [15:0] LockReg1;
+	wire [15:0] LockReg2;
+	wire [15:0] LockReg3;
+	wire [15:0] FiltReg1;
+	wire [15:0] FiltReg2;
+	wire [15:0] PowerReg;
 
-	// 0x09
-	reg [15:0] ClkReg2_0;
-	// 0x0B
-	reg [15:0] ClkReg2_1;
-	// 0x0D
-	reg [15:0] ClkReg2_2;
-	// 0x0F
-	reg [15:0] ClkReg2_3;
-	// 0x11
-	reg [15:0] ClkReg2_4;
-	// 0x07
-	reg [15:0] ClkReg2_5;
-	// 0x13
-	reg [15:0] ClkReg2_6;
-	// 0x15
-	reg [15:0] ClkReg2_FB;
+	/* reconfiguration */
+	dyn_reconf dyn_reconf (
+		.RST(RST),
+		.PWRDWN(PWRDWN),
 
-	// 0x16
-	reg [15:0] DivReg;
+		.DADDR(DADDR),
+		.DCLK(DCLK),
+		.DEN(DEN),
+		.DWE(DWE),
+		.DI(DI),
+		.DO(DO),
+		.DRDY(DRDY),
 
-	// 0x18
-	reg [15:0] LockReg1;
-	// 0x19
-	reg [15:0] LockReg2;
-	// 0x1A
-	reg [15:0] LockReg3;
+		.ClkReg1_0(ClkReg1_0),
+		.ClkReg1_1(ClkReg1_1),
+		.ClkReg1_2(ClkReg1_2),
+		.ClkReg1_3(ClkReg1_3),
+		.ClkReg1_4(ClkReg1_4),
+		.ClkReg1_5(ClkReg1_5),
+		.ClkReg1_6(ClkReg1_6),
+		.ClkReg1_FB(ClkReg1_FB),
 
-	// 0x4E
-	reg [15:0] FiltReg1;
-	// 0x4F
-	reg [15:0] FiltReg2;
+		.ClkReg2_1(ClkReg2_1),
+		.ClkReg2_2(ClkReg2_2),
+		.ClkReg2_3(ClkReg2_3),
+		.ClkReg2_4(ClkReg2_4),
+		.ClkReg2_5(ClkReg2_5),
+		.ClkReg2_6(ClkReg2_6),
+		.ClkReg2_FB(ClkReg2_FB),
 
-	// 0x27
-	reg [15:0] PowerReg;
+		.DivReg(DivReg),
+
+		.LockReg1(LockReg2),
+		.LockReg2(LockReg2),
+		.LockReg3(LockReg3),
+
+		.FiltReg1(FiltReg1),
+		.FiltReg2(FiltReg2),
+
+		.PowerReg(PowerReg));
+
 
 	/* gets assigned to the chosen CLKIN */
 	reg clkin;
@@ -365,70 +384,6 @@ module pll #(
 			clkin = CLKIN1;
 		end else if (CLKINSEL === 1'b0) begin
 			clkin = CLKIN2;
-		end
-	end
-
-	always @(posedge DCLK) begin
-		if (DEN) begin
-			DRDY <= 1'b0;
-			/* Write */
-			if (DWE) begin
-				case (DADDR)
-					7'h06 : ClkReg1_5 <= DI;
-					7'h07 : ClkReg2_5 <= DI;
-					7'h08 : ClkReg1_0 <= DI;
-					7'h09 : ClkReg2_0 <= DI;
-					7'h0A : ClkReg1_1 <= DI;
-					7'h0B : ClkReg2_1 <= DI;
-					7'h0C : ClkReg1_2 <= DI;
-					7'h0D : ClkReg2_2 <= DI;
-					7'h0E : ClkReg1_3 <= DI;
-					7'h0F : ClkReg2_3 <= DI;
-					7'h10 : ClkReg1_4 <= DI;
-					7'h11 : ClkReg2_4 <= DI;
-					7'h12 : ClkReg1_6 <= DI;
-					7'h13 : ClkReg2_6 <= DI;
-					7'h14 : ClkReg1_FB <= DI;
-					7'h15 : ClkReg2_FB <= DI;
-					7'h16 : DivReg <= DI;
-					7'h18 : LockReg1 <= DI;
-					7'h19 : LockReg2 <= DI;
-					7'h1A : LockReg3 <= DI;
-					7'h28 : PowerReg <= DI;
-					7'h4E : FiltReg1 <= DI;
-					7'h4F : FiltReg2 <= DI;
-					default : $display("default"); //TODO;
-				endcase
-			/* Read */
-			end else begin
-				case (DADDR)
-					7'h06 : DO <= ClkReg1_5;
-					7'h07 : DO <= ClkReg2_5;
-					7'h08 : DO <= ClkReg1_0;
-					7'h09 : DO <= ClkReg2_0;
-					7'h0A : DO <= ClkReg1_1;
-					7'h0B : DO <= ClkReg2_1;
-					7'h0C : DO <= ClkReg1_2;
-					7'h0D : DO <= ClkReg2_2;
-					7'h0E : DO <= ClkReg1_3;
-					7'h0F : DO <= ClkReg2_3;
-					7'h10 : DO <= ClkReg1_4;
-					7'h11 : DO <= ClkReg2_4;
-					7'h12 : DO <= ClkReg1_6;
-					7'h13 : DO <= ClkReg2_6;
-					7'h14 : DO <= ClkReg1_FB;
-					7'h15 : DO <= ClkReg2_FB;
-					7'h16 : DO <= DivReg;
-					7'h18 : DO <= LockReg1;
-					7'h19 : DO <= LockReg2;
-					7'h1A : DO <= LockReg3;
-					7'h28 : DO <= PowerReg;
-					7'h4E : DO <= FiltReg1;
-					7'h4F : DO <= FiltReg2;
-					default : $display("default"); //TODO;
-				endcase
-			end
-			DRDY <= 1'b1;
 		end
 	end
 
