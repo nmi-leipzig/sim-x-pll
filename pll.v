@@ -370,6 +370,8 @@ module pll #(
 
 	always @(posedge DCLK) begin
 		if (DEN) begin
+			DRDY <= 1'b0;
+			/* Write */
 			if (DWE) begin
 				case (DADDR)
 					7'h06 : ClkReg1_5 <= DI;
@@ -397,6 +399,7 @@ module pll #(
 					7'h4F : FiltReg2 <= DI;
 					default : $display("default"); //TODO;
 				endcase
+			/* Read */
 			end else begin
 				case (DADDR)
 					7'h06 : DO <= ClkReg1_5;
@@ -424,6 +427,8 @@ module pll #(
 					7'h4F : DO <= FiltReg2;
 					default : $display("default"); //TODO;
 				endcase
+			end
+			DRDY <= 1'b1;
 		end
 	end
 
