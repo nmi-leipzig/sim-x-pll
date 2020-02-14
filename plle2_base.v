@@ -2,7 +2,7 @@
  * plle2_base.v: Simulates the PLLE2_BASE pll of the xilinx 7 series. This
  * is just a wrapper around the actual logic found in pll.v
  * author: Till Mahlburg
- * year: 2019
+ * year: 2019-2020
  * organization: Universität Leipzig
  * license: ISC
  *

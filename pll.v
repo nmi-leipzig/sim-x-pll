@@ -2,7 +2,7 @@
  * pll.v: Simulates the pll of the xilinx 7 series. This is used by the
  * frontend files "plle2_base.v" and "plle2_adv.v"
  * author: Till Mahlburg
- * year: 2019
+ * year: 2019-2020
  * organization: Universität Leipzig
  * license: ISC
  *
