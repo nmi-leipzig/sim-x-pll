@@ -139,6 +139,7 @@ module PLLE2_ADV_tb();
 	reg 	[6:0] DADDR;
 	reg		DCLK;
 	reg		DEN;
+	reg		DWE;
 	reg		[15:0] DI;
 
 	wire	[15:0] DO;
@@ -230,6 +231,7 @@ module PLLE2_ADV_tb();
 		.DADDR(DADDR),
 		.DCLK(DCLK),
 		.DEN(DEN),
+		.DWE(DWE),
 		.DI(DI),
 
 		.DO(DO),

@@ -66,6 +66,9 @@ module PLLE2_BASE #(
 	input	PWRDWN,
 	input	RST);
 
+	wire	[15:0] DO;
+	wire	DRDY;
+
 	pll #(
  		.BANDWIDTH(BANDWIDTH),
  		.CLKFBOUT_MULT(CLKFBOUT_MULT),
@@ -119,10 +122,11 @@ module PLLE2_BASE #(
 		.CLKFBIN(CLKFBIN),
 
 		//TODO
-		.DADDR(DADDR),
-		.DCLK(DCLK),
-		.DEN(DEN),
-		.DI(DI),
+		.DADDR(7'h00),
+		.DCLK(0),
+		.DEN(1'b0),
+		.DWE(1'b0),
+		.DI(16'h0),
 
 		.DO(DO),
 		.DRDY(DRDY)

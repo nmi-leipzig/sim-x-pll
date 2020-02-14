@@ -77,6 +77,7 @@ module PLLE2_ADV #(
 	input 	[6:0] DADDR,
 	input 	DCLK,
 	input 	DEN,
+	input	DWE,
 	input 	[15:0] DI,
 
 	output	[15:0] DO,
@@ -137,6 +138,7 @@ module PLLE2_ADV #(
 		.DADDR(DADDR),
 		.DCLK(DCLK),
 		.DEN(DEN),
+		.DWE(DWE),
 		.DI(DI),
 
 		.DO(DO),
