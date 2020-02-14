@@ -29,30 +29,6 @@ module dyn_reconf_tb ();
 	wire [15:0] DO;
 	output DRDY;
 
-	wire [15:0] ClkReg1_0;
-	wire [15:0] ClkReg1_1;
-	wire [15:0] ClkReg1_2;
-	wire [15:0] ClkReg1_3;
-	wire [15:0] ClkReg1_4;
-	wire [15:0] ClkReg1_5;
-	wire [15:0] ClkReg1_6;
-	wire [15:0] ClkReg1_FB;
-	wire [15:0] ClkReg2_0;
-	wire [15:0] ClkReg2_1;
-	wire [15:0] ClkReg2_2;
-	wire [15:0] ClkReg2_3;
-	wire [15:0] ClkReg2_4;
-	wire [15:0] ClkReg2_5;
-	wire [15:0] ClkReg2_6;
-	wire [15:0] ClkReg2_FB;
-	wire [15:0] DivReg;
-	wire [15:0] LockReg1;
-	wire [15:0] LockReg2;
-	wire [15:0] LockReg3;
-	wire [15:0] FiltReg1;
-	wire [15:0] FiltReg2;
-	wire [15:0] PowerReg;
-
 	integer	pass_count;
 	integer	fail_count;
 
@@ -69,35 +45,8 @@ module dyn_reconf_tb ();
 		.DWE(DWE),
 		.DI(DI),
 		.DO(DO),
-		.DRDY(DRDY),
+		.DRDY(DRDY));
 
-		.ClkReg1_0(ClkReg1_0),
-		.ClkReg1_1(ClkReg1_1),
-		.ClkReg1_2(ClkReg1_2),
-		.ClkReg1_3(ClkReg1_3),
-		.ClkReg1_4(ClkReg1_4),
-		.ClkReg1_5(ClkReg1_5),
-		.ClkReg1_6(ClkReg1_6),
-		.ClkReg1_FB(ClkReg1_FB),
-
-		.ClkReg2_1(ClkReg2_1),
-		.ClkReg2_2(ClkReg2_2),
-		.ClkReg2_3(ClkReg2_3),
-		.ClkReg2_4(ClkReg2_4),
-		.ClkReg2_5(ClkReg2_5),
-		.ClkReg2_6(ClkReg2_6),
-		.ClkReg2_FB(ClkReg2_FB),
-
-		.DivReg(DivReg),
-
-		.LockReg1(LockReg2),
-		.LockReg2(LockReg2),
-		.LockReg3(LockReg3),
-
-		.FiltReg1(FiltReg1),
-		.FiltReg2(FiltReg2),
-
-		.PowerReg(PowerReg));
 
 	initial begin
 		$dumpfile("dyn_reconf_tb.vcd");

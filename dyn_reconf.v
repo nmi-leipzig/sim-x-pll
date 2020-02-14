@@ -20,61 +20,22 @@ module dyn_reconf (
 	input [15:0] DI,
 
 	output reg [15:0] DO,
-	output reg DRDY,
+	output reg DRDY);
 
-	/* output registers for dynamic output reconfiguration */
-	/* ADDRESS: */
-	// 0x08
-	output reg [15:0] ClkReg1_0,
-	// 0x0A
-	output reg [15:0] ClkReg1_1,
-	// 0x0C
-	output reg [15:0] ClkReg1_2,
-	// 0x0E
-	output reg [15:0] ClkReg1_3,
-	// 0x10
-	output reg [15:0] ClkReg1_4,
-	// 0x06
-	output reg [15:0] ClkReg1_5,
-	// 0x12
-	output reg [15:0] ClkReg1_6,
-	// 0x14
-	output reg [15:0] ClkReg1_FB,
+	/* registers for dynamic output reconfiguration */
+	reg [15:0] ClkReg1[0:6];
+	reg [15:0] ClkReg1_FB;
 
-	// 0x09
-	output reg [15:0] ClkReg2_0,
-	// 0x0B
-	output reg [15:0] ClkReg2_1,
-	// 0x0D
-	output reg [15:0] ClkReg2_2,
-	// 0x0F
-	output reg [15:0] ClkReg2_3,
-	// 0x11
-	output reg [15:0] ClkReg2_4,
-	// 0x07
-	output reg [15:0] ClkReg2_5,
-	// 0x13
-	output reg [15:0] ClkReg2_6,
-	// 0x15
-	output reg [15:0] ClkReg2_FB,
+	reg [15:0] ClkReg2[0:6];
+	reg [15:0] ClkReg2_FB;
 
-	// 0x16
-	output reg [15:0] DivReg,
+	reg [15:0] DivReg;
 
-	// 0x18
-	output reg [15:0] LockReg1,
-	// 0x19
-	output reg [15:0] LockReg2,
-	// 0x1A
-	output reg [15:0] LockReg3,
+	reg [15:0] LockReg[1:3];
 
-	// 0x4E
-	output reg [15:0] FiltReg1,
-	// 0x4F
-	output reg [15:0] FiltReg2,
+	reg [15:0] FiltReg[1:2];
 
-	// 0x27
-	output reg [15:0] PowerReg);
+	reg [15:0] PowerReg;
 
 
 	always @(posedge DCLK or posedge RST or posedge PWRDWN) begin
