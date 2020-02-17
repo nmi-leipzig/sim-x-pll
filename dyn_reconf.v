@@ -160,9 +160,19 @@ module dyn_reconf (
 				endcase
 			end
 		end else begin
-			CLKFBOUT_MULT <= CLKFBOUT_MULT_;
+			if (ClkReg2_FB[6]) begin
+				CLKFBOUT_MULT <= 1;
+			end else begin
+				CLKFBOUT_MULT <= CLKFBOUT_MULT_;
+			end
+
 			CLKFBOUT_PHASE <= CLKFBOUT_PHASE_;
-			DIVCLK_DIVIDE <= DIVCLK_DIVIDE_;
+
+			if (DivReg[12]) begin
+				DIVCLK_DIVIDE <= 1;
+			end else begin
+				DIVCLK_DIVIDE <= DIVCLK_DIVIDE_;
+			end
 
 			CLKOUT0_PHASE <= CLKFBOUT_PHASE[0];
 			CLKOUT1_PHASE <= CLKFBOUT_PHASE[1];
