@@ -40,6 +40,7 @@ module dyn_reconf (
 	wire [32:0] CLKOUT_DIVIDE[0:6];
 	wire [32:0] CLKOUT_DUTY_CYCLE[0:6];
 	wire [32:0] CLKFBOUT_MULT;
+	wire [32:0] DIVCLK_DIVIDE;
 
 	genvar i;
 
@@ -52,6 +53,7 @@ module dyn_reconf (
 	endgenerate
 
 	assign CLKFBOUT_MULT = ClkReg1_FB[11:6] + ClkReg2_FB[5:0];
+	assign DIVCLK_DIVIDE = DivReg[11:6] + DivReg[5:0];
 
 	always @(posedge DCLK or posedge RST or posedge PWRDWN) begin
 		if (PWRDWN) begin
@@ -60,7 +62,7 @@ module dyn_reconf (
 		end else if (RST) begin
 			DRDY <= 1'b0;
 			DO <= 16'h0000;
-		end else if (DEN) begin
+		end else if (DEN && DRDY) begin
 			DRDY <= 1'b0;
 			/* Write */
 			if (DWE) begin
@@ -123,8 +125,10 @@ module dyn_reconf (
 			end
 
 		end else begin
+			//TODO: save new information
 			DRDY <= 1'b1;
 		end
+		//TODO: or save it here?
 	end
 
 
