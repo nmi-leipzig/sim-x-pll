@@ -14,6 +14,7 @@
  * 			- DivReg: edge ?
  *			- MMCME: FRAC(ClkReg2)
  *			- Warnings if registers aren't changed
+ *			- Default case
  */
 
 `timescale 1 ns / 1 ps
@@ -90,7 +91,6 @@ module dyn_reconf (
 
 	generate
 		for (i = 0; i <= 6; i = i + 1) begin : generate_attributes
-			//TODO: No Count
 			assign CLKOUT_DIVIDE[i] = ClkReg1[i][11:6] + ClkReg1[i][5:0];
 			assign CLKOUT_DUTY_CYCLE[i] = ((ClkReg1[i][11:6] + (ClkReg2[i][7] / 2.0)) / (ClkReg1[i][5:0] - (ClkReg2[i][7] / 2.0)));
 			assign CLKOUT_PHASE[i] = (((vco_period / 8) * ClkReg1[i][15:3]) + (vco_period * ClkReg2[i][5:0]));
@@ -165,7 +165,7 @@ module dyn_reconf (
 					7'h28 : PowerReg <= DI;
 					7'h4E : FiltReg[1] <= DI;
 					7'h4F : FiltReg[2] <= DI;
-					default : $display("default"); //TODO
+					default : $display("default");
 				endcase
 			/* Read */
 			end else begin
@@ -193,7 +193,7 @@ module dyn_reconf (
 					7'h28 : DO <= PowerReg;
 					7'h4E : DO <= FiltReg[1];
 					7'h4F : DO <= FiltReg[2];
-					default : $display("default"); //TODO;
+					default : $display("default");
 				endcase
 			end
 		end else begin
