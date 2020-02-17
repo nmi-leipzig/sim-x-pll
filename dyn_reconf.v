@@ -7,6 +7,15 @@
  *
  */
 
+/* TODO: 	- check RESERVED bits for change (not allowed in the actual PLL)
+ *			- FiltReg
+ *			- PowerReg
+ *			- LockReg
+ * 			- DivReg: edge ?!
+ *			- MMCME: FRAC(ClkReg2)
+ *			- Warnings if Registers aren't changed
+ */
+
 `timescale 1 ns / 1 ps
 
 module dyn_reconf (
@@ -160,27 +169,40 @@ module dyn_reconf (
 				endcase
 			end
 		end else begin
+			/* PHASE */
 			if (ClkReg2_FB[6]) begin
 				CLKFBOUT_MULT <= 1;
 			end else begin
 				CLKFBOUT_MULT <= CLKFBOUT_MULT_;
 			end
 
-			CLKFBOUT_PHASE <= CLKFBOUT_PHASE_;
+			/* MX */
+			if (ClkReg2_FB[9:8] == 2'b00) begin
+				CLKFBOUT_PHASE <= CLKFBOUT_PHASE_;
+			end
 
+			/* NO COUNT */
 			if (DivReg[12]) begin
 				DIVCLK_DIVIDE <= 1;
 			end else begin
 				DIVCLK_DIVIDE <= DIVCLK_DIVIDE_;
 			end
 
-			CLKOUT0_PHASE <= CLKFBOUT_PHASE[0];
-			CLKOUT1_PHASE <= CLKFBOUT_PHASE[1];
-			CLKOUT2_PHASE <= CLKFBOUT_PHASE[2];
-			CLKOUT3_PHASE <= CLKFBOUT_PHASE[3];
-			CLKOUT4_PHASE <= CLKFBOUT_PHASE[4];
-			CLKOUT5_PHASE <= CLKFBOUT_PHASE[5];
-			CLKOUT6_PHASE <= CLKFBOUT_PHASE[6];
+			/* MX */
+			if (ClkReg2[0][9:8] == 2'b00)
+				CLKOUT0_PHASE <= CLKFBOUT_PHASE[0];
+			if (ClkReg2[1][9:8] == 2'b00)
+				CLKOUT1_PHASE <= CLKFBOUT_PHASE[1];
+			if (ClkReg2[2][9:8] == 2'b00)
+				CLKOUT2_PHASE <= CLKFBOUT_PHASE[2];
+			if (ClkReg2[3][9:8] == 2'b00)
+				CLKOUT3_PHASE <= CLKFBOUT_PHASE[3];
+			if (ClkReg2[4][9:8] == 2'b00)
+				CLKOUT4_PHASE <= CLKFBOUT_PHASE[4];
+			if (ClkReg2[5][9:8] == 2'b00)
+				CLKOUT5_PHASE <= CLKFBOUT_PHASE[5];
+			if (ClkReg2[6][9:8] == 2'b00)
+				CLKOUT6_PHASE <= CLKFBOUT_PHASE[6];
 
 			/* NO COUNT */
 			if (ClkReg2[0][6]) begin
