@@ -8,12 +8,12 @@
  */
 
 /* TODO: 	- check RESERVED bits for change (not allowed in the actual PLL)
- *			- FiltReg
+ *			- FiltReg (Device dependent)
  *			- PowerReg
- *			- LockReg
- * 			- DivReg: edge ?!
+ *			- LockReg (Device dependent)
+ * 			- DivReg: edge ?
  *			- MMCME: FRAC(ClkReg2)
- *			- Warnings if Registers aren't changed
+ *			- Warnings if registers aren't changed
  */
 
 `timescale 1 ns / 1 ps
@@ -86,7 +86,6 @@ module dyn_reconf (
 
 	reg [15:0] PowerReg;
 
-
 	genvar i;
 
 	generate
@@ -109,6 +108,35 @@ module dyn_reconf (
 		end else if (RST) begin
 			DRDY <= 1'b0;
 			DO <= 16'h0000;
+
+			ClkReg1[0] <= 0;
+			ClkReg1[1] <= 0;
+			ClkReg1[2] <= 0;
+			ClkReg1[3] <= 0;
+			ClkReg1[4] <= 0;
+			ClkReg1[5] <= 0;
+			ClkReg1[6] <= 0;
+
+			ClkReg2[0] <= 0;
+			ClkReg2[1] <= 0;
+			ClkReg2[2] <= 0;
+			ClkReg2[3] <= 0;
+			ClkReg2[4] <= 0;
+			ClkReg2[5] <= 0;
+			ClkReg2[6] <= 0;
+
+			ClkReg1_FB <= 0;
+			ClkReg2_FB <= 0;
+
+			DivReg <= 0;
+
+			LockReg[1] <= 0;
+			LockReg[2] <= 0;
+			LockReg[3] <= 0;
+
+			PowerReg <= 16'h1111;
+			FiltReg[1] <= 0;
+			FiltReg[2] <= 0;
 		end else if (DEN && DRDY) begin
 			DRDY <= 1'b0;
 			/* Write */
