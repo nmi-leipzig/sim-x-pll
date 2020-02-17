@@ -19,6 +19,10 @@ module dyn_reconf (
 	input DWE,
 	input [15:0] DI,
 
+	/* needed for internal calculation
+	 * is equal to clkfb period after lock is achieved */
+	input [32:0] vco_period,
+
 	output reg [15:0] DO,
 	output reg DRDY);
 
@@ -39,7 +43,9 @@ module dyn_reconf (
 
 	wire [32:0] CLKOUT_DIVIDE[0:6];
 	wire [32:0] CLKOUT_DUTY_CYCLE[0:6];
+	wire [32:0] CLKOUT_PHASE[0:6];
 	wire [32:0] CLKFBOUT_MULT;
+	wire [32:0] CLKFBOUT_PHASE;
 	wire [32:0] DIVCLK_DIVIDE;
 
 	genvar i;
@@ -49,10 +55,12 @@ module dyn_reconf (
 			//TODO: No Count
 			assign CLKOUT_DIVIDE[i] = ClkReg1[i][11:6] + ClkReg1[i][5:0];
 			assign CLKOUT_DUTY_CYCLE[i] = ((ClkReg1[i][11:6] + (ClkReg2[i][7] / 2.0)) / (ClkReg1[i][5:0] - (ClkReg2[i][7] / 2.0)));
+			assign CLKOUT_PHASE[i] = (((vco_period / 8) * ClkReg1[i][15:3]) + (vco_period * ClkReg2[i][5:0]));
 		end
 	endgenerate
 
 	assign CLKFBOUT_MULT = ClkReg1_FB[11:6] + ClkReg2_FB[5:0];
+	assign CLKFBOUT_PHASE = (((vco_period / 8) * ClkReg1_FB[15:3]) + (vco_period * ClkReg2_FB[5:0]));
 	assign DIVCLK_DIVIDE = DivReg[11:6] + DivReg[5:0];
 
 	always @(posedge DCLK or posedge RST or posedge PWRDWN) begin
@@ -92,8 +100,6 @@ module dyn_reconf (
 					7'h4F : FiltReg[2] <= DI;
 					default : $display("default"); //TODO
 				endcase
-
-
 			/* Read */
 			end else begin
 				case (DADDR)
@@ -123,7 +129,6 @@ module dyn_reconf (
 					default : $display("default"); //TODO;
 				endcase
 			end
-
 		end else begin
 			//TODO: save new information
 			DRDY <= 1'b1;
