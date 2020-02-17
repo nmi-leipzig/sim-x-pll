@@ -24,7 +24,43 @@ module dyn_reconf (
 	input [32:0] vco_period,
 
 	output reg [15:0] DO,
-	output reg DRDY);
+	output reg DRDY,
+
+	output reg [32:0] CLKOUT0_DIVIDE,
+	output reg [32:0] CLKOUT1_DIVIDE,
+	output reg [32:0] CLKOUT2_DIVIDE,
+	output reg [32:0] CLKOUT3_DIVIDE,
+	output reg [32:0] CLKOUT4_DIVIDE,
+	output reg [32:0] CLKOUT5_DIVIDE,
+	output reg [32:0] CLKOUT6_DIVIDE,
+
+	output reg [32:0] CLKOUT0_DUTY_CYCLE,
+	output reg [32:0] CLKOUT1_DUTY_CYCLE,
+	output reg [32:0] CLKOUT2_DUTY_CYCLE,
+	output reg [32:0] CLKOUT3_DUTY_CYCLE,
+	output reg [32:0] CLKOUT4_DUTY_CYCLE,
+	output reg [32:0] CLKOUT5_DUTY_CYCLE,
+	output reg [32:0] CLKOUT6_DUTY_CYCLE,
+
+	output reg [32:0] CLKOUT0_PHASE,
+	output reg [32:0] CLKOUT1_PHASE,
+	output reg [32:0] CLKOUT2_PHASE,
+	output reg [32:0] CLKOUT3_PHASE,
+	output reg [32:0] CLKOUT4_PHASE,
+	output reg [32:0] CLKOUT5_PHASE,
+	output reg [32:0] CLKOUT6_PHASE,
+
+	output reg [32:0] CLKFBOUT_MULT,
+	output reg [32:0] CLKFBOUT_PHASE,
+
+	output reg [32:0] DIVCLK_DIVIDE);
+
+	wire [32:0] CLKOUT_DIVIDE[0:6];
+	wire [32:0] CLKOUT_DUTY_CYCLE[0:6];
+	wire [32:0] CLKOUT_PHASE[0:6];
+	wire [32:0] CLKFBOUT_MULT_;
+	wire [32:0] CLKFBOUT_PHASE_;
+	wire [32:0] DIVCLK_DIVIDE_;
 
 	/* registers for dynamic output reconfiguration */
 	reg [15:0] ClkReg1[0:6];
@@ -41,12 +77,6 @@ module dyn_reconf (
 
 	reg [15:0] PowerReg;
 
-	wire [32:0] CLKOUT_DIVIDE[0:6];
-	wire [32:0] CLKOUT_DUTY_CYCLE[0:6];
-	wire [32:0] CLKOUT_PHASE[0:6];
-	wire [32:0] CLKFBOUT_MULT;
-	wire [32:0] CLKFBOUT_PHASE;
-	wire [32:0] DIVCLK_DIVIDE;
 
 	genvar i;
 
@@ -59,9 +89,9 @@ module dyn_reconf (
 		end
 	endgenerate
 
-	assign CLKFBOUT_MULT = ClkReg1_FB[11:6] + ClkReg2_FB[5:0];
-	assign CLKFBOUT_PHASE = (((vco_period / 8) * ClkReg1_FB[15:3]) + (vco_period * ClkReg2_FB[5:0]));
-	assign DIVCLK_DIVIDE = DivReg[11:6] + DivReg[5:0];
+	assign CLKFBOUT_MULT_ = ClkReg1_FB[11:6] + ClkReg2_FB[5:0];
+	assign CLKFBOUT_PHASE_ = (((vco_period / 8) * ClkReg1_FB[15:3]) + (vco_period * ClkReg2_FB[5:0]));
+	assign DIVCLK_DIVIDE_ = DivReg[11:6] + DivReg[5:0];
 
 	always @(posedge DCLK or posedge RST or posedge PWRDWN) begin
 		if (PWRDWN) begin
@@ -130,10 +160,84 @@ module dyn_reconf (
 				endcase
 			end
 		end else begin
-			//TODO: save new information
+			CLKFBOUT_MULT <= CLKFBOUT_MULT_;
+			CLKFBOUT_PHASE <= CLKFBOUT_PHASE_;
+			DIVCLK_DIVIDE <= DIVCLK_DIVIDE_;
+
+			CLKOUT0_PHASE <= CLKFBOUT_PHASE[0];
+			CLKOUT1_PHASE <= CLKFBOUT_PHASE[1];
+			CLKOUT2_PHASE <= CLKFBOUT_PHASE[2];
+			CLKOUT3_PHASE <= CLKFBOUT_PHASE[3];
+			CLKOUT4_PHASE <= CLKFBOUT_PHASE[4];
+			CLKOUT5_PHASE <= CLKFBOUT_PHASE[5];
+			CLKOUT6_PHASE <= CLKFBOUT_PHASE[6];
+
+			/* NO COUNT */
+			if (ClkReg2[0][6]) begin
+				CLKOUT0_DIVIDE <= 1;
+				CLKOUT0_DUTY_CYCLE <= 0.5;
+			end else begin
+				CLKOUT0_DIVIDE <= CLKOUT_DIVIDE[0];
+				CLKOUT0_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[0];
+			end
+
+			if (ClkReg2[1][6]) begin
+				CLKOUT1_DIVIDE <= 1;
+				CLKOUT1_DUTY_CYCLE <= 0.5;
+			end else begin
+				CLKOUT1_DIVIDE <= CLKOUT_DIVIDE[1];
+				CLKOUT1_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[0];
+			end
+
+			if (ClkReg2[2][6]) begin
+				CLKOUT2_DIVIDE <= 1;
+				CLKOUT2_DUTY_CYCLE <= 0.5;
+			end else begin
+				CLKOUT2_DIVIDE <= CLKOUT_DIVIDE[2];
+				CLKOUT2_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[2];
+			end
+
+			if (ClkReg2[3][6]) begin
+				CLKOUT3_DIVIDE <= 1;
+				CLKOUT3_DUTY_CYCLE <= 0.5;
+			end else begin
+				CLKOUT3_DIVIDE <= CLKOUT_DIVIDE[3];
+				CLKOUT3_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[3];
+			end
+
+			if (ClkReg2[4][6]) begin
+				CLKOUT4_DIVIDE <= 1;
+				CLKOUT4_DUTY_CYCLE <= 0.5;
+			end else begin
+				CLKOUT4_DIVIDE <= CLKOUT_DIVIDE[4];
+				CLKOUT4_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[4];
+			end
+
+			if (ClkReg2[4][6]) begin
+				CLKOUT4_DIVIDE <= 1;
+				CLKOUT4_DUTY_CYCLE <= 0.5;
+			end else begin
+				CLKOUT4_DIVIDE <= CLKOUT_DIVIDE[4];
+				CLKOUT4_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[4];
+			end
+
+			if (ClkReg2[5][6]) begin
+				CLKOUT5_DIVIDE <= 1;
+				CLKOUT5_DUTY_CYCLE <= 0.5;
+			end else begin
+				CLKOUT5_DIVIDE <= CLKOUT_DIVIDE[5];
+				CLKOUT5_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[5];
+			end
+
+			if (ClkReg2[6][6]) begin
+				CLKOUT6_DIVIDE <= 1;
+				CLKOUT6_DUTY_CYCLE <= 0.5;
+			end else begin
+				CLKOUT6_DIVIDE <= CLKOUT_DIVIDE[6];
+				CLKOUT6_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[6];
+			end
 			DRDY <= 1'b1;
 		end
-		//TODO: or save it here?
 	end
 
 
