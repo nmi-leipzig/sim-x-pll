@@ -43,11 +43,10 @@ module freq_gen_tb ();
 	/* adjust according to the number of test cases */
 	localparam total = 5;
 
-	freq_gen #(
+	freq_gen dut (
 		.M(`M),
 		.D(`D),
-		.O(`O))
-	dut(
+		.O(`O),
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.ref_period(ref_period_length),

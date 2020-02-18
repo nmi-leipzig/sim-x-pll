@@ -1,6 +1,6 @@
 /*
  * freq_gen.v: Generates the frequency depending on the given period length while allowing manipulation using
- * 	the parameters provided. Starts frequency generation on the first rising
+ * 	the inputs provided. Starts frequency generation on the first rising
  *	edge of the input clk after the period_stable input is 1.
  * author: Till Mahlburg
  * year: 2019
@@ -11,13 +11,14 @@
 
 `timescale 1 ns / 1 ps
 
-module freq_gen #(
+module freq_gen (
 	/* global multiplier in the PLL */
-	parameter M = 1.0,
+	input [31:0] M,
 	/* global divisor in the PLL */
-	parameter D = 1.0,
+	input [31:0] D,
 	/* output specific divisor in the PLL */
-	parameter O = 1.0) (
+	input [31:0] O,
+
 	input RST,
 	input PWRDWN,
 	/* informs the module if the given period length (ref_period) can be trusted */
