@@ -92,13 +92,13 @@ module dyn_reconf (
 	generate
 		for (i = 0; i <= 6; i = i + 1) begin : generate_attributes
 			assign CLKOUT_DIVIDE[i] = ClkReg1[i][11:6] + ClkReg1[i][5:0];
-			assign CLKOUT_PHASE[i] = (((vco_period / 8) * ClkReg1[i][15:3]) + (vco_period * ClkReg2[i][5:0]));
 			assign CLKOUT_DUTY_CYCLE[i] = ((ClkReg1[i][11:6] + (ClkReg2[i][7] / 2.0)) / (ClkReg1[i][11:6] + ClkReg1[i][5:0])) * 1000;
+			assign CLKOUT_PHASE[i] = (((vco_period / 8.0) * ClkReg1[i][15:13]) + (vco_period * ClkReg2[i][5:0]));
 		end
 	endgenerate
 
 	assign CLKFBOUT_MULT_ = ClkReg1_FB[11:6] + ClkReg2_FB[5:0];
-	assign CLKFBOUT_PHASE_ = (((vco_period / 8) * ClkReg1_FB[15:3]) + (vco_period * ClkReg2_FB[5:0]));
+	assign CLKFBOUT_PHASE_ = (((vco_period / 8) * ClkReg1_FB[15:13]) + (vco_period * ClkReg2_FB[5:0]));
 	assign DIVCLK_DIVIDE_ = DivReg[11:6] + DivReg[5:0];
 
 	always @(posedge DCLK or posedge RST or posedge PWRDWN) begin
@@ -218,19 +218,19 @@ module dyn_reconf (
 
 			/* MX */
 			if (ClkReg2[0][9:8] == 2'b00)
-				CLKOUT0_PHASE <= CLKFBOUT_PHASE[0];
+				CLKOUT0_PHASE <= CLKOUT_PHASE[0];
 			if (ClkReg2[1][9:8] == 2'b00)
-				CLKOUT1_PHASE <= CLKFBOUT_PHASE[1];
+				CLKOUT1_PHASE <= CLKOUT_PHASE[1];
 			if (ClkReg2[2][9:8] == 2'b00)
-				CLKOUT2_PHASE <= CLKFBOUT_PHASE[2];
+				CLKOUT2_PHASE <= CLKOUT_PHASE[2];
 			if (ClkReg2[3][9:8] == 2'b00)
-				CLKOUT3_PHASE <= CLKFBOUT_PHASE[3];
+				CLKOUT3_PHASE <= CLKOUT_PHASE[3];
 			if (ClkReg2[4][9:8] == 2'b00)
-				CLKOUT4_PHASE <= CLKFBOUT_PHASE[4];
+				CLKOUT4_PHASE <= CLKOUT_PHASE[4];
 			if (ClkReg2[5][9:8] == 2'b00)
-				CLKOUT5_PHASE <= CLKFBOUT_PHASE[5];
+				CLKOUT5_PHASE <= CLKOUT_PHASE[5];
 			if (ClkReg2[6][9:8] == 2'b00)
-				CLKOUT6_PHASE <= CLKFBOUT_PHASE[6];
+				CLKOUT6_PHASE <= CLKOUT_PHASE[6];
 
 			/* NO COUNT */
 			if (ClkReg2[0][6]) begin
