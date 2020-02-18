@@ -94,13 +94,13 @@ module pll #(
 	wire [31:0] clkin_period_length;
 
 	/* internal values */
-	reg [32:0] CLKOUT_DIVIDE_INT[0:5];
-	reg [32:0] CLKOUT_DUTY_CYCLE_INT_1000[0:5];
-	reg [32:0] CLKOUT_PHASE_INT[0:5];
-	reg [32:0] CLKFBOUT_MULT_INT;
-	reg [32:0] CLKFBOUT_PHASE_INT;
-	reg [32:0] DIVCLK_DIVIDE_INT;
-	reg CLKOUT_INT[0:5];
+	reg [31:0] CLKOUT_DIVIDE_INT[0:5];
+	reg [31:0] CLKOUT_DUTY_CYCLE_INT_1000[0:5];
+	reg [31:0] CLKOUT_PHASE_INT[0:5];
+	reg [31:0] CLKFBOUT_MULT_INT;
+	reg [31:0] CLKFBOUT_PHASE_INT;
+	reg [31:0] DIVCLK_DIVIDE_INT;
+	wire CLKOUT_INT[0:5];
 
 	assign CLKOUT0 = CLKOUT_INT[0];
 	assign CLKOUT1 = CLKOUT_INT[1];
@@ -141,11 +141,10 @@ module pll #(
 
 	generate
 		for (i = 0; i <= 5; i = i + 1) begin : fg
-			freq_gen #(
+			freq_gen fg (
 				.M(CLKFBOUT_MULT_INT),
 				.D(DIVCLK_DIVIDE_INT),
-				.O(CLKOUT_DIVIDE_INT[i]))
-			fg (
+				.O(CLKOUT_DIVIDE_INT[i]),
 				.RST(RST),
 				.PWRDWN(PWRDWN),
 				.period_stable(period_stable),
@@ -175,11 +174,10 @@ module pll #(
 	wire fb_lock;
 
 	/* CLKOUTFB */
-	freq_gen #(
+	freq_gen fb_fg (
 		.M(CLKFBOUT_MULT_INT),
 		.D(DIVCLK_DIVIDE_INT),
-		.O(1.0))
-	fb_fg (
+		.O(1.0),
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
@@ -199,12 +197,12 @@ module pll #(
 		.clk_shifted(CLKFBOUT));
 
 	/* dynamically set values */
-	wire [32:0] CLKOUT_DIVIDE_DYN[0:5];
-	wire [32:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:5];
-	wire [32:0] CLKOUT_PHASE_DYN[0:5];
-	wire [32:0] CLKFBOUT_MULT_DYN;
-	wire [32:0] CLKFBOUT_PHASE_DYN;
-	wire [32:0] DIVCLK_DIVIDE_DYN;
+	wire [31:0] CLKOUT_DIVIDE_DYN[0:5];
+	wire [31:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:5];
+	wire [31:0] CLKOUT_PHASE_DYN[0:5];
+	wire [31:0] CLKFBOUT_MULT_DYN;
+	wire [31:0] CLKFBOUT_PHASE_DYN;
+	wire [31:0] DIVCLK_DIVIDE_DYN;
 
 	/* reconfiguration */
 	dyn_reconf dyn_reconf (
@@ -223,27 +221,27 @@ module pll #(
 
 		.CLKOUT0_DIVIDE(CLKOUT_DIVIDE_DYN[0]),
 		.CLKOUT0_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[0]),
-		.CLKOUT0_PHASE(CLKOUT0_PHASE[0]),
+		.CLKOUT0_PHASE(CLKOUT_PHASE_DYN[0]),
 
 		.CLKOUT1_DIVIDE(CLKOUT_DIVIDE_DYN[1]),
 		.CLKOUT1_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[1]),
-		.CLKOUT1_PHASE(CLKOUT1_PHASE[1]),
+		.CLKOUT1_PHASE(CLKOUT_PHASE_DYN[1]),
 
 		.CLKOUT2_DIVIDE(CLKOUT_DIVIDE_DYN[2]),
 		.CLKOUT2_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[2]),
-		.CLKOUT2_PHASE(CLKOUT2_PHASE[2]),
+		.CLKOUT2_PHASE(CLKOUT_PHASE_DYN[2]),
 
 		.CLKOUT3_DIVIDE(CLKOUT_DIVIDE_DYN[3]),
 		.CLKOUT3_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[3]),
-		.CLKOUT3_PHASE(CLKOUT3_PHASE[3]),
+		.CLKOUT3_PHASE(CLKOUT_PHASE_DYN[3]),
 
 		.CLKOUT4_DIVIDE(CLKOUT_DIVIDE_DYN[4]),
 		.CLKOUT4_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[4]),
-		.CLKOUT4_PHASE(CLKOUT4_PHASE[4]),
+		.CLKOUT4_PHASE(CLKOUT_PHASE_DYN[4]),
 
 		.CLKOUT5_DIVIDE(CLKOUT_DIVIDE_DYN[5]),
 		.CLKOUT5_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[5]),
-		.CLKOUT5_PHASE(CLKOUT5_PHASE[5]),
+		.CLKOUT5_PHASE(CLKOUT_PHASE_DYN[5]),
 
 		.CLKFBOUT_MULT(CLKFBOUT_MULT_DYN),
 		.CLKFBOUT_PHASE(CLKFBOUT_PHASE_DYN),
@@ -252,7 +250,7 @@ module pll #(
 
 
 	/* lock detection using the lock information given by the phase shift modules */
-	assign LOCKED = lock0 & lock1 & lock2 & lock3 & lock4 & lock5 & fb_lock;
+	assign LOCKED = lock[0] & lock[1] & lock[2] & lock[3] & lock[4] & lock[5] & fb_lock;
 	/* set clkin to the correct CLKIN */
 	always @* begin
 		if (CLKINSEL === 1'b1) begin
