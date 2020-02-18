@@ -91,8 +91,23 @@ module pll #(
 
 	/* gets assigned to the chosen CLKIN */
 	reg clkin;
-
 	wire [31:0] clkin_period_length;
+
+	/* internal values */
+	reg [32:0] CLKOUT_DIVIDE_INT[0:5];
+	reg [32:0] CLKOUT_DUTY_CYCLE_INT_1000[0:5];
+	reg [32:0] CLKOUT_PHASE_INT[0:5];
+	reg [32:0] CLKFBOUT_MULT_INT;
+	reg [32:0] CLKFBOUT_PHASE_INT;
+	reg [32:0] DIVCLK_DIVIDE_INT;
+	reg CLKOUT_INT[0:5];
+
+	assign CLKOUT0 = CLKOUT_INT[0];
+	assign CLKOUT1 = CLKOUT_INT[1];
+	assign CLKOUT2 = CLKOUT_INT[2];
+	assign CLKOUT3 = CLKOUT_INT[3];
+	assign CLKOUT4 = CLKOUT_INT[4];
+	assign CLKOUT5 = CLKOUT_INT[5];
 
 	/* Used to determine the period length of the divided CLK */
 	period_count #(
@@ -117,169 +132,43 @@ module pll #(
 	wire [31:0] out0_period_length;
 	wire lock0;
 
-	/* CLKOUT0 */
-	freq_gen #(
-		.M(CLKFBOUT_MULT),
-		.D(DIVCLK_DIVIDE),
-		.O(CLKOUT0_DIVIDE))
-	fg_0 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.period_stable(period_stable),
-		.ref_period(clkin_period_length),
-		.clk(clkin),
-		.out(out0),
-		.out_period_length_1000(out0_period_length));
+	wire out[0:5];
+	wire [31:0] out_period_length_1000[0:5];
+	wire lock[0:5];
 
-	phase_shift ps0 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.clk(out0),
-		.shift(CLKOUT0_PHASE + CLKFBOUT_PHASE),
-		.clk_period_1000(out0_period_length),
-		.duty_cycle(CLKOUT0_DUTY_CYCLE * 100),
-		.lock(lock0),
-		.clk_shifted(CLKOUT0));
+	/* frequency generators */
+	genvar i;
 
-	wire out1;
-	wire [31:0] out1_period_length;
-	wire lock1;
+	generate
+		for (i = 0; i <= 5; i = i + 1) begin : fg
+			freq_gen #(
+				.M(CLKFBOUT_MULT_INT),
+				.D(DIVCLK_DIVIDE_INT),
+				.O(CLKOUT_DIVIDE_INT[i]))
+			fg (
+				.RST(RST),
+				.PWRDWN(PWRDWN),
+				.period_stable(period_stable),
+				.ref_period(clkin_period_length),
+				.clk(clkin),
+				.out(out[i]),
+				.out_period_length_1000(out_period_length_1000[i]));
+		end
+	endgenerate
 
-	/* CLKOUT1 */
-	freq_gen #(
-		.M(CLKFBOUT_MULT),
-		.D(DIVCLK_DIVIDE),
-		.O(CLKOUT1_DIVIDE))
-	fg_1 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.period_stable(period_stable),
-		.ref_period(clkin_period_length),
-		.clk(clkin),
-		.out(out1),
-		.out_period_length_1000(out1_period_length));
-
-	phase_shift ps1 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.clk(out1),
-		.shift(CLKOUT1_PHASE + CLKFBOUT_PHASE),
-		.clk_period_1000(out1_period_length),
-		.duty_cycle(CLKOUT1_DUTY_CYCLE * 100),
-		.lock(lock1),
-		.clk_shifted(CLKOUT1));
-
-	wire out2;
-	wire [31:0] out2_period_length;
-	wire lock2;
-
-	/* CLKOUT2 */
-	freq_gen #(
-		.M(CLKFBOUT_MULT),
-		.D(DIVCLK_DIVIDE),
-		.O(CLKOUT2_DIVIDE))
-	fg_2 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.period_stable(period_stable),
-		.ref_period(clkin_period_length),
-		.clk(clkin),
-		.out(out2),
-		.out_period_length_1000(out2_period_length));
-
-	phase_shift ps2 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.clk(out2),
-		.shift(CLKOUT2_PHASE + CLKFBOUT_PHASE),
-		.clk_period_1000(out2_period_length),
-		.duty_cycle(CLKOUT2_DUTY_CYCLE * 100),
-		.lock(lock2),
-		.clk_shifted(CLKOUT2));
-
-	wire out3;
-	wire [31:0] out3_period_length;
-	wire lock3;
-
-	/* CLKOUT3 */
-	freq_gen #(
-		.M(CLKFBOUT_MULT),
-		.D(DIVCLK_DIVIDE),
-		.O(CLKOUT3_DIVIDE))
-	fg_3 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.period_stable(period_stable),
-		.ref_period(clkin_period_length),
-		.clk(clkin),
-		.out(out3),
-		.out_period_length_1000(out3_period_length));
-
-	phase_shift ps3 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.clk(out3),
-		.shift(CLKOUT3_PHASE + CLKFBOUT_PHASE),
-		.clk_period_1000(out3_period_length),
-		.duty_cycle(CLKOUT3_DUTY_CYCLE * 100),
-		.lock(lock3),
-		.clk_shifted(CLKOUT3));
-
-	wire out4;
-	wire [31:0] out4_period_length;
-	wire lock4;
-
-	/* CLKOUT4 */
-	freq_gen #(
-		.M(CLKFBOUT_MULT),
-		.D(DIVCLK_DIVIDE),
-		.O(CLKOUT4_DIVIDE))
-	fg_4 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.period_stable(period_stable),
-		.ref_period(clkin_period_length),
-		.clk(clkin),
-		.out(out4),
-		.out_period_length_1000(out4_period_length));
-
-	phase_shift ps4 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.clk(out4),
-		.shift(CLKOUT4_PHASE + CLKFBOUT_PHASE),
-		.clk_period_1000(out4_period_length),
-		.duty_cycle(CLKOUT4_DUTY_CYCLE * 100),
-		.lock(lock4),
-		.clk_shifted(CLKOUT4));
-
-	wire out5;
-	wire [31:0] out5_period_length;
-	wire lock5;
-
-	/* CLKOUT5 */
-	freq_gen #(
-		.M(CLKFBOUT_MULT),
-		.D(DIVCLK_DIVIDE),
-		.O(CLKOUT5_DIVIDE))
-	fg_5 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.period_stable(period_stable),
-		.ref_period(clkin_period_length),
-		.clk(clkin),
-		.out(out5),
-		.out_period_length_1000(out5_period_length));
-
-	phase_shift ps5 (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-		.clk(out5),
-		.shift(CLKOUT5_PHASE + CLKFBOUT_PHASE),
-		.clk_period_1000(out5_period_length),
-		.duty_cycle(CLKOUT5_DUTY_CYCLE * 100),
-		.lock(lock5),
-		.clk_shifted(CLKOUT5));
+	/* phase shift */
+	generate
+		for (i = 0; i <= 5; i = i + 1) begin : ps
+			phase_shift ps (
+				.RST(RST),
+				.PWRDWN(PWRDWN),
+				.clk(out[i]),
+				.shift(CLKOUT_PHASE_INT[i] + CLKFBOUT_PHASE_INT),
+				.clk_period_1000(out_period_length_1000[i]),
+				.lock(lock[i]),
+				.clk_shifted(CLKOUT_INT[i]));
+		end
+	endgenerate
 
 	wire fb_out;
 	wire [31:0] fb_out_period_length_1000;
@@ -287,8 +176,8 @@ module pll #(
 
 	/* CLKOUTFB */
 	freq_gen #(
-		.M(CLKFBOUT_MULT),
-		.D(DIVCLK_DIVIDE),
+		.M(CLKFBOUT_MULT_INT),
+		.D(DIVCLK_DIVIDE_INT),
 		.O(1.0))
 	fb_fg (
 		.RST(RST),
@@ -303,7 +192,7 @@ module pll #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.clk(fb_out),
-		.shift(CLKFBOUT_PHASE),
+		.shift(CLKFBOUT_PHASE_INT),
 		.clk_period_1000(fb_out_period_length_1000),
 		.duty_cycle(50),
 		.lock(fb_lock),
@@ -360,6 +249,7 @@ module pll #(
 		.CLKFBOUT_PHASE(CLKFBOUT_PHASE_DYN),
 
 		.DIVCLK_DIVIDE(DIVCLK_DIVIDE_DYN));
+
 
 	/* lock detection using the lock information given by the phase shift modules */
 	assign LOCKED = lock0 & lock1 & lock2 & lock3 & lock4 & lock5 & fb_lock;
