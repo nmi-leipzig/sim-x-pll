@@ -136,6 +136,7 @@ module dyn_reconf (
 			PowerReg <= 16'h1111;
 			FiltReg[1] <= 0;
 			FiltReg[2] <= 0;
+
 			DRDY <= 1'b1;
 		end else if (DEN && DRDY) begin
 			DRDY <= 1'b0;
