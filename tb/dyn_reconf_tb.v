@@ -21,7 +21,7 @@ module dyn_reconf_tb ();
 	reg	RST;
 	reg	PWRDWN;
 
-	reg [32:0] vco_period;
+	reg [32:0] vco_period_1000;
 
 	reg [6:0] DADDR;
 	reg DCLK;
@@ -73,7 +73,7 @@ module dyn_reconf_tb ();
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 
-		.vco_period(vco_period),
+		.vco_period_1000(vco_period_1000),
 
 		.DADDR(DADDR),
 		.DCLK(DCLK),
@@ -122,7 +122,7 @@ module dyn_reconf_tb ();
 		$dumpfile("dyn_reconf_tb.vcd");
 		$dumpvars(0, dyn_reconf_tb);
 
-		vco_period = 32;
+		vco_period = 32 * 1000;
 		RST = 0;
 		DCLK = 0;
 		DADDR = 7'h00;
@@ -260,7 +260,7 @@ module dyn_reconf_tb ();
 			fail_count = fail_count + 1;
 		end
 
-		if (CLKOUT0_PHASE == ((vco_period / 8) * 3) + (vco_period * 3)) begin
+		if (CLKOUT0_PHASE == (((vco_period_1000 / 1000.0) / 8) * 3) + ((vco_period_1000 / 1000.0) * 3)) begin
 			$display("PASSED: ClkReg2 PHASE calculation");
 			pass_count = pass_count + 1;
 		end else begin

@@ -31,7 +31,7 @@ module dyn_reconf (
 
 	/* needed for internal calculation
 	 * is equal to clkfb period after lock is achieved */
-	input [32:0] vco_period,
+	input [32:0] vco_period_1000,
 
 	output reg [15:0] DO,
 	output reg DRDY,
@@ -93,12 +93,12 @@ module dyn_reconf (
 		for (i = 0; i <= 6; i = i + 1) begin : generate_attributes
 			assign CLKOUT_DIVIDE[i] = ClkReg1[i][11:6] + ClkReg1[i][5:0];
 			assign CLKOUT_DUTY_CYCLE[i] = ((ClkReg1[i][11:6] + (ClkReg2[i][7] / 2.0)) / (ClkReg1[i][11:6] + ClkReg1[i][5:0])) * 1000;
-			assign CLKOUT_PHASE[i] = (((vco_period / 8.0) * ClkReg1[i][15:13]) + (vco_period * ClkReg2[i][5:0]));
+			assign CLKOUT_PHASE[i] = ((((vco_period_1000 / 1000.0) / 8.0) * ClkReg1[i][15:13]) + ((vco_period_1000 / 1000.0) * ClkReg2[i][5:0]));
 		end
 	endgenerate
 
 	assign CLKFBOUT_MULT_ = ClkReg1_FB[11:6] + ClkReg2_FB[5:0];
-	assign CLKFBOUT_PHASE_ = (((vco_period / 8) * ClkReg1_FB[15:13]) + (vco_period * ClkReg2_FB[5:0]));
+	assign CLKFBOUT_PHASE_ = ((((vco_period_1000 / 1000.0) / 8) * ClkReg1_FB[15:13]) + ((vco_period_1000 / 1000.0) * ClkReg2_FB[5:0]));
 	assign DIVCLK_DIVIDE_ = DivReg[11:6] + DivReg[5:0];
 
 	always @(posedge DCLK or posedge RST or posedge PWRDWN) begin
