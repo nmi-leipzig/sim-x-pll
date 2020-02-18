@@ -18,7 +18,7 @@ module pll #(
 	parameter CLKFBOUT_MULT 		= 5,
 	parameter CLKFBOUT_PHASE 		= 0.0,
 
-	/* are ignored, but need to be set */
+	/* need to be set */
 	parameter CLKIN1_PERIOD			= 0.0,
 	parameter CLKIN2_PERIOD			= 0.0,
 
@@ -88,73 +88,6 @@ module pll #(
 	output	[15:0] DO,
 	/* ready flag for next operation */
 	output	DRDY);
-
-	/* registers for dynamic reconfiguration */
-	wire [15:0] ClkReg1_0;
-	wire [15:0] ClkReg1_1;
-	wire [15:0] ClkReg1_2;
-	wire [15:0] ClkReg1_3;
-	wire [15:0] ClkReg1_4;
-	wire [15:0] ClkReg1_5;
-	wire [15:0] ClkReg1_6;
-	wire [15:0] ClkReg1_FB;
-	wire [15:0] ClkReg2_0;
-	wire [15:0] ClkReg2_1;
-	wire [15:0] ClkReg2_2;
-	wire [15:0] ClkReg2_3;
-	wire [15:0] ClkReg2_4;
-	wire [15:0] ClkReg2_5;
-	wire [15:0] ClkReg2_6;
-	wire [15:0] ClkReg2_FB;
-	wire [15:0] DivReg;
-	wire [15:0] LockReg1;
-	wire [15:0] LockReg2;
-	wire [15:0] LockReg3;
-	wire [15:0] FiltReg1;
-	wire [15:0] FiltReg2;
-	wire [15:0] PowerReg;
-
-	/* reconfiguration */
-	dyn_reconf dyn_reconf (
-		.RST(RST),
-		.PWRDWN(PWRDWN),
-
-		.DADDR(DADDR),
-		.DCLK(DCLK),
-		.DEN(DEN),
-		.DWE(DWE),
-		.DI(DI),
-		.DO(DO),
-		.DRDY(DRDY),
-
-		.ClkReg1_0(ClkReg1_0),
-		.ClkReg1_1(ClkReg1_1),
-		.ClkReg1_2(ClkReg1_2),
-		.ClkReg1_3(ClkReg1_3),
-		.ClkReg1_4(ClkReg1_4),
-		.ClkReg1_5(ClkReg1_5),
-		.ClkReg1_6(ClkReg1_6),
-		.ClkReg1_FB(ClkReg1_FB),
-
-		.ClkReg2_1(ClkReg2_1),
-		.ClkReg2_2(ClkReg2_2),
-		.ClkReg2_3(ClkReg2_3),
-		.ClkReg2_4(ClkReg2_4),
-		.ClkReg2_5(ClkReg2_5),
-		.ClkReg2_6(ClkReg2_6),
-		.ClkReg2_FB(ClkReg2_FB),
-
-		.DivReg(DivReg),
-
-		.LockReg1(LockReg2),
-		.LockReg2(LockReg2),
-		.LockReg3(LockReg3),
-
-		.FiltReg1(FiltReg1),
-		.FiltReg2(FiltReg2),
-
-		.PowerReg(PowerReg));
-
 
 	/* gets assigned to the chosen CLKIN */
 	reg clkin;
@@ -375,6 +308,58 @@ module pll #(
 		.duty_cycle(50),
 		.lock(fb_lock),
 		.clk_shifted(CLKFBOUT));
+
+	/* dynamically set values */
+	wire [32:0] CLKOUT_DIVIDE_DYN[0:5];
+	wire [32:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:5];
+	wire [32:0] CLKOUT_PHASE_DYN[0:5];
+	wire [32:0] CLKFBOUT_MULT_DYN;
+	wire [32:0] CLKFBOUT_PHASE_DYN;
+	wire [32:0] DIVCLK_DIVIDE_DYN;
+
+	/* reconfiguration */
+	dyn_reconf dyn_reconf (
+		.RST(RST),
+		.PWRDWN(PWRDWN),
+
+		.vco_period_1000(fb_out_period_length_1000),
+
+		.DADDR(DADDR),
+		.DCLK(DCLK),
+		.DEN(DEN),
+		.DWE(DWE),
+		.DI(DI),
+		.DO(DO),
+		.DRDY(DRDY),
+
+		.CLKOUT0_DIVIDE(CLKOUT_DIVIDE_DYN[0]),
+		.CLKOUT0_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[0]),
+		.CLKOUT0_PHASE(CLKOUT0_PHASE[0]),
+
+		.CLKOUT1_DIVIDE(CLKOUT_DIVIDE_DYN[1]),
+		.CLKOUT1_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[1]),
+		.CLKOUT1_PHASE(CLKOUT1_PHASE[1]),
+
+		.CLKOUT2_DIVIDE(CLKOUT_DIVIDE_DYN[2]),
+		.CLKOUT2_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[2]),
+		.CLKOUT2_PHASE(CLKOUT2_PHASE[2]),
+
+		.CLKOUT3_DIVIDE(CLKOUT_DIVIDE_DYN[3]),
+		.CLKOUT3_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[3]),
+		.CLKOUT3_PHASE(CLKOUT3_PHASE[3]),
+
+		.CLKOUT4_DIVIDE(CLKOUT_DIVIDE_DYN[4]),
+		.CLKOUT4_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[4]),
+		.CLKOUT4_PHASE(CLKOUT4_PHASE[4]),
+
+		.CLKOUT5_DIVIDE(CLKOUT_DIVIDE_DYN[5]),
+		.CLKOUT5_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[5]),
+		.CLKOUT5_PHASE(CLKOUT5_PHASE[5]),
+
+		.CLKFBOUT_MULT(CLKFBOUT_MULT_DYN),
+		.CLKFBOUT_PHASE(CLKFBOUT_PHASE_DYN),
+
+		.DIVCLK_DIVIDE(DIVCLK_DIVIDE_DYN));
 
 	/* lock detection using the lock information given by the phase shift modules */
 	assign LOCKED = lock0 & lock1 & lock2 & lock3 & lock4 & lock5 & fb_lock;
