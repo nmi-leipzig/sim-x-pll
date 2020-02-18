@@ -44,13 +44,13 @@ module dyn_reconf (
 	output reg [32:0] CLKOUT5_DIVIDE,
 	output reg [32:0] CLKOUT6_DIVIDE,
 
-	output reg [32:0] CLKOUT0_DUTY_CYCLE,
-	output reg [32:0] CLKOUT1_DUTY_CYCLE,
-	output reg [32:0] CLKOUT2_DUTY_CYCLE,
-	output reg [32:0] CLKOUT3_DUTY_CYCLE,
-	output reg [32:0] CLKOUT4_DUTY_CYCLE,
-	output reg [32:0] CLKOUT5_DUTY_CYCLE,
-	output reg [32:0] CLKOUT6_DUTY_CYCLE,
+	output reg [32:0] CLKOUT0_DUTY_CYCLE_1000,
+	output reg [32:0] CLKOUT1_DUTY_CYCLE_1000,
+	output reg [32:0] CLKOUT2_DUTY_CYCLE_1000,
+	output reg [32:0] CLKOUT3_DUTY_CYCLE_1000,
+	output reg [32:0] CLKOUT4_DUTY_CYCLE_1000,
+	output reg [32:0] CLKOUT5_DUTY_CYCLE_1000,
+	output reg [32:0] CLKOUT6_DUTY_CYCLE_1000,
 
 	output reg [32:0] CLKOUT0_PHASE,
 	output reg [32:0] CLKOUT1_PHASE,
@@ -92,8 +92,8 @@ module dyn_reconf (
 	generate
 		for (i = 0; i <= 6; i = i + 1) begin : generate_attributes
 			assign CLKOUT_DIVIDE[i] = ClkReg1[i][11:6] + ClkReg1[i][5:0];
-			assign CLKOUT_DUTY_CYCLE[i] = ((ClkReg1[i][11:6] + (ClkReg2[i][7] / 2.0)) / (ClkReg1[i][5:0] - (ClkReg2[i][7] / 2.0)));
 			assign CLKOUT_PHASE[i] = (((vco_period / 8) * ClkReg1[i][15:3]) + (vco_period * ClkReg2[i][5:0]));
+			assign CLKOUT_DUTY_CYCLE[i] = ((ClkReg1[i][11:6] + (ClkReg2[i][7] / 2.0)) / (ClkReg1[i][11:6] + ClkReg1[i][5:0])) * 1000;
 		end
 	endgenerate
 
@@ -106,7 +106,6 @@ module dyn_reconf (
 			DRDY <= 1'bx;
 			DO <= 16'hXXXX;
 		end else if (RST) begin
-			DRDY <= 1'b0;
 			DO <= 16'h0000;
 
 			ClkReg1[0] <= 0;
@@ -137,6 +136,7 @@ module dyn_reconf (
 			PowerReg <= 16'h1111;
 			FiltReg[1] <= 0;
 			FiltReg[2] <= 0;
+			DRDY <= 1'b1;
 		end else if (DEN && DRDY) begin
 			DRDY <= 1'b0;
 			/* Write */
@@ -196,7 +196,7 @@ module dyn_reconf (
 					default : $display("default");
 				endcase
 			end
-		end else begin
+		end else if (DRDY == 1'b0) begin
 			/* PHASE */
 			if (ClkReg2_FB[6]) begin
 				CLKFBOUT_MULT <= 1;
@@ -235,66 +235,66 @@ module dyn_reconf (
 			/* NO COUNT */
 			if (ClkReg2[0][6]) begin
 				CLKOUT0_DIVIDE <= 1;
-				CLKOUT0_DUTY_CYCLE <= 0.5;
+				CLKOUT0_DUTY_CYCLE_1000 <= 0.5 * 1000;
 			end else begin
 				CLKOUT0_DIVIDE <= CLKOUT_DIVIDE[0];
-				CLKOUT0_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[0];
+				CLKOUT0_DUTY_CYCLE_1000 <= CLKOUT_DUTY_CYCLE[0];
 			end
 
 			if (ClkReg2[1][6]) begin
 				CLKOUT1_DIVIDE <= 1;
-				CLKOUT1_DUTY_CYCLE <= 0.5;
+				CLKOUT1_DUTY_CYCLE_1000 <= 0.5 * 1000;
 			end else begin
 				CLKOUT1_DIVIDE <= CLKOUT_DIVIDE[1];
-				CLKOUT1_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[0];
+				CLKOUT1_DUTY_CYCLE_1000 <= CLKOUT_DUTY_CYCLE[0];
 			end
 
 			if (ClkReg2[2][6]) begin
 				CLKOUT2_DIVIDE <= 1;
-				CLKOUT2_DUTY_CYCLE <= 0.5;
+				CLKOUT2_DUTY_CYCLE_1000 <= 0.5 * 1000;
 			end else begin
 				CLKOUT2_DIVIDE <= CLKOUT_DIVIDE[2];
-				CLKOUT2_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[2];
+				CLKOUT2_DUTY_CYCLE_1000 <= CLKOUT_DUTY_CYCLE[2];
 			end
 
 			if (ClkReg2[3][6]) begin
 				CLKOUT3_DIVIDE <= 1;
-				CLKOUT3_DUTY_CYCLE <= 0.5;
+				CLKOUT3_DUTY_CYCLE_1000 <= 0.5 * 1000;
 			end else begin
 				CLKOUT3_DIVIDE <= CLKOUT_DIVIDE[3];
-				CLKOUT3_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[3];
+				CLKOUT3_DUTY_CYCLE_1000 <= CLKOUT_DUTY_CYCLE[3];
 			end
 
 			if (ClkReg2[4][6]) begin
 				CLKOUT4_DIVIDE <= 1;
-				CLKOUT4_DUTY_CYCLE <= 0.5;
+				CLKOUT4_DUTY_CYCLE_1000 <= 0.5 * 1000;
 			end else begin
 				CLKOUT4_DIVIDE <= CLKOUT_DIVIDE[4];
-				CLKOUT4_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[4];
+				CLKOUT4_DUTY_CYCLE_1000 <= CLKOUT_DUTY_CYCLE[4];
 			end
 
 			if (ClkReg2[4][6]) begin
 				CLKOUT4_DIVIDE <= 1;
-				CLKOUT4_DUTY_CYCLE <= 0.5;
+				CLKOUT4_DUTY_CYCLE_1000 <= 0.5 * 1000;
 			end else begin
 				CLKOUT4_DIVIDE <= CLKOUT_DIVIDE[4];
-				CLKOUT4_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[4];
+				CLKOUT4_DUTY_CYCLE_1000 <= CLKOUT_DUTY_CYCLE[4];
 			end
 
 			if (ClkReg2[5][6]) begin
 				CLKOUT5_DIVIDE <= 1;
-				CLKOUT5_DUTY_CYCLE <= 0.5;
+				CLKOUT5_DUTY_CYCLE_1000 <= 0.5 * 1000;
 			end else begin
 				CLKOUT5_DIVIDE <= CLKOUT_DIVIDE[5];
-				CLKOUT5_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[5];
+				CLKOUT5_DUTY_CYCLE_1000 <= CLKOUT_DUTY_CYCLE[5];
 			end
 
 			if (ClkReg2[6][6]) begin
 				CLKOUT6_DIVIDE <= 1;
-				CLKOUT6_DUTY_CYCLE <= 0.5;
+				CLKOUT6_DUTY_CYCLE_1000 <= 0.5 * 1000;
 			end else begin
 				CLKOUT6_DIVIDE <= CLKOUT_DIVIDE[6];
-				CLKOUT6_DUTY_CYCLE <= CLKOUT_DUTY_CYCLE[6];
+				CLKOUT6_DUTY_CYCLE_1000 <= CLKOUT_DUTY_CYCLE[6];
 			end
 			DRDY <= 1'b1;
 		end
