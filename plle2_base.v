@@ -114,8 +114,8 @@ module PLLE2_BASE #(
 		.LOCKED(LOCKED),
 
 		.CLKIN1(CLKIN1),
-		.CLKIN2(0),
-		.CLKINSEL(1),
+		.CLKIN2(1'b0),
+		.CLKINSEL(1'b1),
 
 		.PWRDWN(PWRDWN),
 		.RST(RST),
@@ -123,7 +123,7 @@ module PLLE2_BASE #(
 
 		//TODO
 		.DADDR(7'h00),
-		.DCLK(0),
+		.DCLK(1'b0),
 		.DEN(1'b0),
 		.DWE(1'b0),
 		.DI(16'h0),
