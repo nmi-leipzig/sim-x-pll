@@ -21,7 +21,7 @@ module dyn_reconf_tb ();
 	reg	RST;
 	reg	PWRDWN;
 
-	reg [32:0] vco_period_1000;
+	reg [31:0] vco_period_1000;
 
 	reg [6:0] DADDR;
 	reg DCLK;
