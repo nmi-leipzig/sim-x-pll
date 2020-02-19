@@ -1,4 +1,4 @@
-.# Xilinx 7 Series PLLE2_BASE Simulation
+# Xilinx 7 Series PLLE2_BASE Simulation
 
 This project aims to simulate the behavior of the PLLE2_BASE as well as the PLLE2_ADV PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff. This way you can just drop the files listed below into your project, instantiate the PLL like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
 
