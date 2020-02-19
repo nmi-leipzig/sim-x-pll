@@ -252,6 +252,7 @@ module pll #(
 
 	/* lock detection using the lock information given by the phase shift modules */
 	assign LOCKED = lock[0] & lock[1] & lock[2] & lock[3] & lock[4] & lock[5] & fb_lock;
+
 	/* set clkin to the correct CLKIN */
 	always @* begin
 		if (CLKINSEL === 1'b1) begin
@@ -259,6 +260,25 @@ module pll #(
 		end else if (CLKINSEL === 1'b0) begin
 			clkin = CLKIN2;
 		end
+	end
+
+	integer k;
+	/* set the internal values to the dynamically set */
+	always @* begin
+		for (k = 0; k <= 5; k = k + 1) begin
+			if (CLKOUT_DIVIDE_DYN[k] != 0)
+				CLKOUT_DIVIDE_INT[k] = CLKOUT_DIVIDE_DYN[k];
+			if (CLKOUT_DUTY_CYCLE_DYN_1000[k] != 0)
+				CLKOUT_DUTY_CYCLE_INT_1000[k] = CLKOUT_DUTY_CYCLE_DYN_1000[k];
+			if (CLKOUT_PHASE_DYN[k] != 0)
+				CLKOUT_PHASE_INT[k] = CLKOUT_PHASE_DYN[k];
+		end
+		if (CLKFBOUT_MULT_DYN != 0)
+			CLKFBOUT_MULT_INT = CLKFBOUT_PHASE_DYN;
+		if (CLKFBOUT_PHASE_DYN != 0)
+			CLKFBOUT_PHASE_INT = CLKFBOUT_PHASE_DYN;
+		if (DIVCLK_DIVIDE_DYN != 0)
+			DIVCLK_DIVIDE_INT = DIVCLK_DIVIDE_DYN;
 	end
 
 	reg invalid = 1'b0;
