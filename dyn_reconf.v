@@ -31,46 +31,46 @@ module dyn_reconf (
 
 	/* needed for internal calculation
 	 * is equal to clkfb period after lock is achieved */
-	input [32:0] vco_period_1000,
+	input [31:0] vco_period_1000,
 
 	output reg [15:0] DO,
 	output reg DRDY,
 
-	output reg [32:0] CLKOUT0_DIVIDE,
-	output reg [32:0] CLKOUT1_DIVIDE,
-	output reg [32:0] CLKOUT2_DIVIDE,
-	output reg [32:0] CLKOUT3_DIVIDE,
-	output reg [32:0] CLKOUT4_DIVIDE,
-	output reg [32:0] CLKOUT5_DIVIDE,
-	output reg [32:0] CLKOUT6_DIVIDE,
+	output reg [31:0] CLKOUT0_DIVIDE,
+	output reg [31:0] CLKOUT1_DIVIDE,
+	output reg [31:0] CLKOUT2_DIVIDE,
+	output reg [31:0] CLKOUT3_DIVIDE,
+	output reg [31:0] CLKOUT4_DIVIDE,
+	output reg [31:0] CLKOUT5_DIVIDE,
+	output reg [31:0] CLKOUT6_DIVIDE,
 
-	output reg [32:0] CLKOUT0_DUTY_CYCLE_1000,
-	output reg [32:0] CLKOUT1_DUTY_CYCLE_1000,
-	output reg [32:0] CLKOUT2_DUTY_CYCLE_1000,
-	output reg [32:0] CLKOUT3_DUTY_CYCLE_1000,
-	output reg [32:0] CLKOUT4_DUTY_CYCLE_1000,
-	output reg [32:0] CLKOUT5_DUTY_CYCLE_1000,
-	output reg [32:0] CLKOUT6_DUTY_CYCLE_1000,
+	output reg [31:0] CLKOUT0_DUTY_CYCLE_1000,
+	output reg [31:0] CLKOUT1_DUTY_CYCLE_1000,
+	output reg [31:0] CLKOUT2_DUTY_CYCLE_1000,
+	output reg [31:0] CLKOUT3_DUTY_CYCLE_1000,
+	output reg [31:0] CLKOUT4_DUTY_CYCLE_1000,
+	output reg [31:0] CLKOUT5_DUTY_CYCLE_1000,
+	output reg [31:0] CLKOUT6_DUTY_CYCLE_1000,
 
-	output reg [32:0] CLKOUT0_PHASE,
-	output reg [32:0] CLKOUT1_PHASE,
-	output reg [32:0] CLKOUT2_PHASE,
-	output reg [32:0] CLKOUT3_PHASE,
-	output reg [32:0] CLKOUT4_PHASE,
-	output reg [32:0] CLKOUT5_PHASE,
-	output reg [32:0] CLKOUT6_PHASE,
+	output reg [31:0] CLKOUT0_PHASE,
+	output reg [31:0] CLKOUT1_PHASE,
+	output reg [31:0] CLKOUT2_PHASE,
+	output reg [31:0] CLKOUT3_PHASE,
+	output reg [31:0] CLKOUT4_PHASE,
+	output reg [31:0] CLKOUT5_PHASE,
+	output reg [31:0] CLKOUT6_PHASE,
 
-	output reg [32:0] CLKFBOUT_MULT,
-	output reg [32:0] CLKFBOUT_PHASE,
+	output reg [31:0] CLKFBOUT_MULT,
+	output reg [31:0] CLKFBOUT_PHASE,
 
-	output reg [32:0] DIVCLK_DIVIDE);
+	output reg [31:0] DIVCLK_DIVIDE);
 
-	wire [32:0] CLKOUT_DIVIDE[0:6];
-	wire [32:0] CLKOUT_DUTY_CYCLE[0:6];
-	wire [32:0] CLKOUT_PHASE[0:6];
-	wire [32:0] CLKFBOUT_MULT_;
-	wire [32:0] CLKFBOUT_PHASE_;
-	wire [32:0] DIVCLK_DIVIDE_;
+	wire [31:0] CLKOUT_DIVIDE[0:6];
+	wire [31:0] CLKOUT_DUTY_CYCLE[0:6];
+	wire [31:0] CLKOUT_PHASE[0:6];
+	wire [31:0] CLKFBOUT_MULT_;
+	wire [31:0] CLKFBOUT_PHASE_;
+	wire [31:0] DIVCLK_DIVIDE_;
 
 	/* registers for dynamic output reconfiguration */
 	reg [15:0] ClkReg1[0:6];

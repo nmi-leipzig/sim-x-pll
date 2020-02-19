@@ -32,34 +32,34 @@ module dyn_reconf_tb ();
 	wire [15:0] DO;
 	output DRDY;
 
-	wire [32:0] CLKOUT0_DIVIDE;
-	wire [32:0] CLKOUT1_DIVIDE;
-	wire [32:0] CLKOUT2_DIVIDE;
-	wire [32:0] CLKOUT3_DIVIDE;
-	wire [32:0] CLKOUT4_DIVIDE;
-	wire [32:0] CLKOUT5_DIVIDE;
-	wire [32:0] CLKOUT6_DIVIDE;
+	wire [31:0] CLKOUT0_DIVIDE;
+	wire [31:0] CLKOUT1_DIVIDE;
+	wire [31:0] CLKOUT2_DIVIDE;
+	wire [31:0] CLKOUT3_DIVIDE;
+	wire [31:0] CLKOUT4_DIVIDE;
+	wire [31:0] CLKOUT5_DIVIDE;
+	wire [31:0] CLKOUT6_DIVIDE;
 
-	wire [32:0] CLKOUT0_DUTY_CYCLE;
-	wire [32:0] CLKOUT1_DUTY_CYCLE;
-	wire [32:0] CLKOUT2_DUTY_CYCLE;
-	wire [32:0] CLKOUT3_DUTY_CYCLE;
-	wire [32:0] CLKOUT4_DUTY_CYCLE;
-	wire [32:0] CLKOUT5_DUTY_CYCLE;
-	wire [32:0] CLKOUT6_DUTY_CYCLE;
+	wire [31:0] CLKOUT0_DUTY_CYCLE;
+	wire [31:0] CLKOUT1_DUTY_CYCLE;
+	wire [31:0] CLKOUT2_DUTY_CYCLE;
+	wire [31:0] CLKOUT3_DUTY_CYCLE;
+	wire [31:0] CLKOUT4_DUTY_CYCLE;
+	wire [31:0] CLKOUT5_DUTY_CYCLE;
+	wire [31:0] CLKOUT6_DUTY_CYCLE;
 
-	wire [32:0] CLKOUT0_PHASE;
-	wire [32:0] CLKOUT1_PHASE;
-	wire [32:0] CLKOUT2_PHASE;
-	wire [32:0] CLKOUT3_PHASE;
-	wire [32:0] CLKOUT4_PHASE;
-	wire [32:0] CLKOUT5_PHASE;
-	wire [32:0] CLKOUT6_PHASE;
+	wire [31:0] CLKOUT0_PHASE;
+	wire [31:0] CLKOUT1_PHASE;
+	wire [31:0] CLKOUT2_PHASE;
+	wire [31:0] CLKOUT3_PHASE;
+	wire [31:0] CLKOUT4_PHASE;
+	wire [31:0] CLKOUT5_PHASE;
+	wire [31:0] CLKOUT6_PHASE;
 
-	wire [32:0] CLKFBOUT_MULT;
-	wire [32:0] CLKFBOUT_PHASE;
+	wire [31:0] CLKFBOUT_MULT;
+	wire [31:0] CLKFBOUT_PHASE;
 
-	wire [32:0] DIVCLK_DIVIDE;
+	wire [31:0] DIVCLK_DIVIDE;
 
 	integer duty_cycle;
 
@@ -122,7 +122,7 @@ module dyn_reconf_tb ();
 		$dumpfile("dyn_reconf_tb.vcd");
 		$dumpvars(0, dyn_reconf_tb);
 
-		vco_period = 32 * 1000;
+		vco_period_1000 = 32 * 1000;
 		RST = 0;
 		DCLK = 0;
 		DADDR = 7'h00;
@@ -217,7 +217,7 @@ module dyn_reconf_tb ();
 			fail_count = fail_count + 1;
 		end
 
-		if (CLKOUT0_PHASE == ((vco_period / 8) * 3)) begin
+		if (CLKOUT0_PHASE == (((vco_period_1000 / 1000) / 8) * 3)) begin
 			$display("PASSED: ClkReg1 PHASE calculation");
 			pass_count = pass_count + 1;
 		end else begin
