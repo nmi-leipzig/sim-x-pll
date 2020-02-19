@@ -117,6 +117,29 @@
 	`define COMPENSATION "ZHOLD"
 `endif
 
+
+/* set two DADDR and two DI to test the dynamic reconfiguration */
+`ifndef DADDR1
+	`define DADDR1 7'h08
+`endif
+
+`ifndef DADDR2
+	`define DADDR2 7'h09
+`endif
+
+`ifndef DI1
+	`define DI1 16'b011_0_000110_000011
+`endif
+
+`ifndef DI2
+	`define DI2 16'b0_000_0_0_00_1_0_00011;
+`endif
+
+`ifndef DCLK_PERIOD
+	`define DCLK_PERIOD 2
+`endif
+
+
 module PLLE2_ADV_tb();
 	wire 	CLKOUT0;
 	wire 	CLKOUT1;
@@ -409,6 +432,13 @@ module PLLE2_ADV_tb();
 		CLKIN2 = 0;
 		RST = 0;
 		PWRDWN = 0;
+
+		DADDR = 7'h00;
+		DI = 16'h0000;
+		DEN = 1'b0;
+		DWE = 1'b0;
+		DCLK = 1'b0;
+
 		#10;
 		reset = 1;
 		RST = 1;
@@ -615,6 +645,52 @@ module PLLE2_ADV_tb();
 			fail_count = fail_count + 1;
 		end
 
+		/*------- DYNAMIC RECONFIGURATION ---------*/
+		if (DRDY == 1'b1) begin
+			$display("PASSED: DRDY high");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: DRDY high");
+			fail_count = fail_count + 1;
+		end
+
+		DADDR = `DADDR1;
+		DI = `DI1;
+		DEN = 1'b1;
+		DWE = 1'b1;
+		#(`DCLK_PERIOD * 2);
+
+		if (DRDY == 1'b0) begin
+			$display("PASSED: DRDY low");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: DRDY low");
+			fail_count = fail_count + 1;
+		end
+
+		DWE = 1'b0;
+		DEN = 1'b0;
+		#(`DCLK_PERIOD * 2);
+
+		DEN = 1'b1;
+		#(`DCLK_PERIOD * 2);
+
+		if (DO == DI) begin
+			$display("PASSED: DO");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: DO");
+			fail_count = fail_count + 1;
+		end
+
+		DE = 1'b0;
+		#(`DCLK_PERIOD * 2);
+		DADDR = `DADDR2;
+		DI = `DI2;
+		DEN = 1'b1;
+		DWE = 1'b1;
+
+
 
 		PWRDWN = 1;
 		#100;
@@ -644,8 +720,9 @@ module PLLE2_ADV_tb();
 		CLKFBIN <= CLKFBOUT;
 	end
 
-	always #(`CLKIN1_PERIOD / 2) CLKIN1 = ~CLKIN1;
-	always #(`CLKIN2_PERIOD / 2) CLKIN2 = ~CLKIN2;
+	always #(`CLKIN1_PERIOD / 2.0) CLKIN1 = ~CLKIN1;
+	always #(`CLKIN2_PERIOD / 2.0) CLKIN2 = ~CLKIN2;
+	always #(`DCLK_PERIOD / 2.0) DCLK = ~DCLK;
 endmodule
 
 
