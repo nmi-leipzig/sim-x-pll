@@ -57,10 +57,10 @@ duty_cycle_check_build: ../duty_cycle_check.v duty_cycle_check_tb.v
 duty_cycle_check_test: duty_cycle_check_build
 	- vvp duty_cycle_check_tb
 
-period_helper_build: ../period_helper.v period_helper_tb.v
-	- $(VC) ../period_helper.v period_helper_tb.v -o period_helper_tb
-period_helper_test: period_helper_build
-	- vvp period_helper_tb
+phase_shift_check_build: ../phase_shift_check.v phase_shift_check_tb.v
+	- $(VC) ../phase_shift_check.v phase_shift_check_tb.v -o phase_shift_check_tb
+phase_shift_check_test: phase_shift_check_build
+	- vvp phase_shift_check_tb
 
 clean:
 	- rm *_tb
