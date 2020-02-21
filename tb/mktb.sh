@@ -41,16 +41,16 @@ cat << EOF
 \`endif
 
 module $1_tb ();
-	reg		rst;
+	reg rst;
 
-	integer	pass_count;
-	integer	fail_count;
+	integer pass_count;
+	integer fail_count;
 
 	/* adjust according to the number of test cases */
 	localparam total = ;
 
 	$1 dut(
-		);
+	);
 
 	initial begin
 		\$dumpfile("$1_tb.vcd");

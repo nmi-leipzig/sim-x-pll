@@ -134,6 +134,8 @@ You can test this project automatically using avocado or make. The testbenches t
 
 This diagram roughly outlines the basic architecture of the project for PLLE2_BASE.
 
+TODO: replace with current model
+
 ![architecture diagram](https://raw.githubusercontent.com/ti-leipzig/sim-x-pll/master/arch.svg?sanitize=true)
 
 ## License
