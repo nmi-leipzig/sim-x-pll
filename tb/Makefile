@@ -37,8 +37,8 @@ phase_shift_build: ../phase_shift.v phase_shift_tb.v
 phase_shift_test: phase_shift_build
 	- vvp phase_shift_tb
 
-plle2_base_build: ../plle2_base.v ../period_count.v ../period_check.v ../freq_gen.v ../phase_shift.v ../pll.v ../dyn_reconf.v ../phase_shift_check.v ../duty_cycle_check.v ../period_helper.v plle2_base_tb.v
-	- $(VC) ../plle2_base.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v ../pll.v ../dyn_reconf.v ../duty_cycle_check.v ../phase_shift_check.v ../period_helper.v plle2_base_tb.v -o plle2_base_tb
+plle2_base_build: ../plle2_base.v ../period_count.v ../period_check.v ../freq_gen.v ../phase_shift.v ../pll.v ../dyn_reconf.v ../phase_shift_check.v ../duty_cycle_check.v plle2_base_tb.v
+	- $(VC) ../plle2_base.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v ../pll.v ../dyn_reconf.v ../duty_cycle_check.v ../phase_shift_check.v plle2_base_tb.v -o plle2_base_tb
 plle2_base_test: plle2_base_build
 	- vvp plle2_base_tb
 
