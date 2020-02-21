@@ -168,7 +168,7 @@ class PLLTest(Test):
 		"""test plle2 base"""
 
 		test_files = ["plle2_base_tb.v"]
-		src_files = ["phase_shift.v", "plle2_base.v", "freq_gen.v", "period_check.v", "period_count.v", "dyn_reconf.v", "pll.v"]
+		src_files = ["phase_shift.v", "plle2_base.v", "freq_gen.v", "period_check.v", "period_count.v", "dyn_reconf.v", "pll.v", "phase_shift_check.v", "duty_cycle_check.v"]
 		# copy source files so we know that all required files are there
 		self.copy_sources(test_files, src_files)
 

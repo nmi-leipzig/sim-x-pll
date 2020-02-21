@@ -201,47 +201,40 @@ module PLLE2_BASE_tb();
 		.CLKFBIN(CLKFBIN)
 	);
 
-	period_helper frequency_counter_0 (
-		.reset(reset),
-		.LOCKED(LOCKED),
+	period_count frequency_counter_0 (
+		.RST(reset),
 		.clk(CLKOUT0),
-		.period_1000(frequency_0)
+		.period_length_1000(frequency_0)
 	);
-	period_helper frequency_counter_1 (
-		.reset(reset),
-		.LOCKED(LOCKED),
+	period_count frequency_counter_1 (
+		.RST(reset),
 		.clk(CLKOUT1),
-		.period_1000(frequency_1)
+		.period_length_1000(frequency_1)
 	);
-	period_helper frequency_counter_2 (
-		.reset(reset),
-		.LOCKED(LOCKED),
+	period_count frequency_counter_2 (
+		.RST(reset),
 		.clk(CLKOUT2),
-		.period_1000(frequency_2)
+		.period_length_1000(frequency_2)
 	);
-	period_helper frequency_counter_3 (
-		.reset(reset),
-		.LOCKED(LOCKED),
+	period_count frequency_counter_3 (
+		.RST(reset),
 		.clk(CLKOUT3),
-		.period_1000(frequency_3)
+		.period_length_1000(frequency_3)
 	);
-	period_helper frequency_counter_4 (
-		.reset(reset),
-		.LOCKED(LOCKED),
+	period_count frequency_counter_4 (
+		.RST(reset),
 		.clk(CLKOUT4),
-		.period_1000(frequency_4)
+		.period_length_1000(frequency_4)
 	);
-	period_helper frequency_counter_5 (
-		.reset(reset),
-		.LOCKED(LOCKED),
+	period_count frequency_counter_5 (
+		.RST(reset),
 		.clk(CLKOUT5),
-		.period_1000(frequency_5)
+		.period_length_1000(frequency_5)
 	);
-	period_helper frequency_counter_fb (
-		.reset(reset),
-		.LOCKED(LOCKED),
+	period_count frequency_counter_fb (
+		.RST(reset),
 		.clk(CLKFBOUT),
-		.period_1000(frequency_fb)
+		.period_length_1000(frequency_fb)
 	);
 
 	duty_cycle_check #(
@@ -402,6 +395,7 @@ module PLLE2_BASE_tb();
 			$display("PASSED: CLKOUT0 frequency");
 			pass_count = pass_count + 1;
 		end else begin
+			$display("%0f, %0f", frequency_0, (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * `CLKOUT0_DIVIDE * 1.0) / `CLKFBOUT_MULT)));
 			$display("FAILED: CLKOUT0 frequency");
 			fail_count = fail_count + 1;
 		end
@@ -410,7 +404,7 @@ module PLLE2_BASE_tb();
 			$display("PASSED: CLKOUT1 frequency");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: CLKOUT1 frequency %0f, %0f", frequency_1, (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * `CLKOUT1_DIVIDE * 1.0) / `CLKFBOUT_MULT)));
+			$display("FAILED: CLKOUT1 frequency");
 			fail_count = fail_count + 1;
 		end
 

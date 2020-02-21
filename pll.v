@@ -91,7 +91,7 @@ module pll #(
 
 	/* gets assigned to the chosen CLKIN */
 	reg clkin;
-	wire [31:0] clkin_period_length;
+	wire [31:0] clkin_period_length_1000;
 
 	/* internal values */
 	reg [31:0] CLKOUT_DIVIDE_INT[0:5];
@@ -116,7 +116,7 @@ module pll #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.clk(clkin),
-		.period_length(clkin_period_length));
+		.period_length_1000(clkin_period_length_1000));
 
 	wire period_stable;
 
@@ -125,12 +125,8 @@ module pll #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.clk(clkin),
-		.period_length(clkin_period_length),
+		.period_length((clkin_period_length_1000 / 1000.0)),
 		.period_stable(period_stable));
-
-	wire out0;
-	wire [31:0] out0_period_length;
-	wire lock0;
 
 	wire out[0:5];
 	wire [31:0] out_period_length_1000[0:5];
@@ -148,7 +144,7 @@ module pll #(
 				.RST(RST),
 				.PWRDWN(PWRDWN),
 				.period_stable(period_stable),
-				.ref_period(clkin_period_length),
+				.ref_period((clkin_period_length_1000 / 1000.0)),
 				.clk(clkin),
 				.out(out[i]),
 				.out_period_length_1000(out_period_length_1000[i]));
@@ -182,7 +178,7 @@ module pll #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period(clkin_period_length),
+		.ref_period((clkin_period_length_1000 / 1000.0)),
 		.clk(clkin),
 		.out(fb_out),
 		.out_period_length_1000(fb_out_period_length_1000));

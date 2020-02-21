@@ -22,7 +22,7 @@ module period_count_tb ();
 	reg		PWRDWN;
 	reg		clk;
 
-	wire 	[31:0] period_length;
+	wire 	[31:0] period_length_1000;
 
 	reg 	[31:0] clk_period;
 
@@ -38,7 +38,7 @@ module period_count_tb ();
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.clk(clk),
-		.period_length(period_length));
+		.period_length_1000(period_length_1000));
 
 	initial begin
 		$dumpfile("period_count_tb.vcd");
@@ -56,7 +56,7 @@ module period_count_tb ();
 		RST = 1;
 		#10;
 
-		if (period_length === 0) begin
+		if (period_length_1000 === 0) begin
 			$display("PASSED: RST");
 			pass_count = pass_count + 1;
 		end else begin
@@ -67,7 +67,7 @@ module period_count_tb ();
 		RST = 0;
 		#`WAIT_INTERVAL;
 
-		if (period_length == clk_period) begin
+		if ((period_length_1000 / 1000.0) == clk_period) begin
 			$display("PASSED: period = 10");
 			pass_count = pass_count + 1;
 		end else begin
@@ -78,7 +78,7 @@ module period_count_tb ();
 		clk_period = 13;
 		#`WAIT_INTERVAL;
 
-		if (period_length == clk_period) begin
+		if ((period_length_1000 / 1000.0) == clk_period) begin
 			$display("PASSED: period = 13");
 			pass_count = pass_count + 1;
 		end else begin
@@ -89,7 +89,7 @@ module period_count_tb ();
 		clk_period = 1;
 		#`WAIT_INTERVAL;
 
-		if (period_length == clk_period) begin
+		if ((period_length_1000 / 1000.0) == clk_period) begin
 			$display("PASSED: period = 1");
 			pass_count = pass_count + 1;
 		end else begin
@@ -100,7 +100,7 @@ module period_count_tb ();
 		clk_period = (`WAIT_INTERVAL / 2);
 		#`WAIT_INTERVAL;
 
-		if (period_length == `WAIT_INTERVAL / 2) begin
+		if ((period_length_1000 / 1000.0) == `WAIT_INTERVAL / 2) begin
 			$display("PASSED: period = %0d", (`WAIT_INTERVAL / 2));
 			pass_count = pass_count + 1;
 		end else begin
