@@ -1,7 +1,7 @@
 /*
  * plle2_base_tb.v: Testbench for plle2_base.v
  * author: Till Mahlburg
- * year: 2019
+ * year: 2019-2020
  * organization: Universität Leipzig
  * license: ISC
  *
@@ -201,43 +201,43 @@ module PLLE2_BASE_tb();
 		.CLKFBIN(CLKFBIN)
 	);
 
-	frequency_counter frequency_counter_0 (
+	period_helper frequency_counter_0 (
 		.reset(reset),
 		.LOCKED(LOCKED),
 		.clk(CLKOUT0),
 		.period_1000(frequency_0)
 	);
-	frequency_counter frequency_counter_1 (
+	period_helper frequency_counter_1 (
 		.reset(reset),
 		.LOCKED(LOCKED),
 		.clk(CLKOUT1),
 		.period_1000(frequency_1)
 	);
-	frequency_counter frequency_counter_2 (
+	period_helper frequency_counter_2 (
 		.reset(reset),
 		.LOCKED(LOCKED),
 		.clk(CLKOUT2),
 		.period_1000(frequency_2)
 	);
-	frequency_counter frequency_counter_3 (
+	period_helper frequency_counter_3 (
 		.reset(reset),
 		.LOCKED(LOCKED),
 		.clk(CLKOUT3),
 		.period_1000(frequency_3)
 	);
-	frequency_counter frequency_counter_4 (
+	period_helper frequency_counter_4 (
 		.reset(reset),
 		.LOCKED(LOCKED),
 		.clk(CLKOUT4),
 		.period_1000(frequency_4)
 	);
-	frequency_counter frequency_counter_5 (
+	period_helper frequency_counter_5 (
 		.reset(reset),
 		.LOCKED(LOCKED),
 		.clk(CLKOUT5),
 		.period_1000(frequency_5)
 	);
-	frequency_counter frequency_counter_fb (
+	period_helper frequency_counter_fb (
 		.reset(reset),
 		.LOCKED(LOCKED),
 		.clk(CLKFBOUT),
@@ -592,97 +592,4 @@ module PLLE2_BASE_tb();
 	end
 
 	always #(`CLKIN1_PERIOD / 2) CLKIN1 = ~CLKIN1;
-endmodule
-
-
-/* counts all the highs of the input signal */
-module frequency_counter #(
-	parameter RESOLUTION = 0.01) (
-	input	clk,
-	input 	reset,
-	input	LOCKED,
-
-	output reg [31:0] period_1000);
-
-	reg [31:0] count;
-
-	always begin
-		#0.001;
-		if (reset) begin
-			count <= 0;
-		end else begin
-			count <= count + 1;
-		end
-		#(RESOLUTION - 0.001);
-	end
-
-	always @(posedge clk) begin
-		period_1000 <= (count * RESOLUTION * 1000);
-		count <= 0;
-	end
-endmodule
-
-/* checks the duty cycle of the input signal */
-module duty_cycle_check (
-	input clk,
-	input reset,
-	input LOCKED,
-
-	/* 0 - clk duty cycle matches desired_duty_cycle
-	 * 1 - clk duty cycle does not match the desired_duty_cycle
-	 */
-	output reg fail);
-
-	/* duty cycle as decimal (0.5 for 50 % in high) */
-	parameter desired_duty_cycle = 0.5;
-	parameter clk_period = 10;
-
-	always @(posedge clk or posedge reset) begin
-		if (!reset && LOCKED) begin
-			#((clk_period * desired_duty_cycle) - 1);
-			if (clk != 1) begin
-				fail <= 1;
-			end
-			#2;
-			if (clk != 0) begin
-				fail <= 1;
-			end
-		end else begin
-			fail <= 0;
-		end
-	end
-endmodule
-
-/* checks the phase shift of the input signal in relation to clk */
-module phase_shift_check #(
-	parameter desired_shift = 0,
-	parameter clk_period = 10) (
-	input clk_shifted,
-	input clk,
-	input rst,
-	input LOCKED,
-	output reg fail);
-
-	always @(posedge clk or posedge rst) begin
-		if (rst) begin
-			fail <= 0;
-		end else if (LOCKED) begin
-			if (desired_shift >= 0) begin
-				#((desired_shift * (clk_period / 360.0)) - 0.1);
-				if (clk_shifted != 0) begin
-					fail <= 1;
-				end
-			end else begin
-				#((clk_period + (desired_shift * (clk_period / 360.0))) - 0.1);
-				if (clk_shifted != 0) begin
-					fail <= 1;
-				end
-			end
-
-			#0.2;
-			if (clk_shifted != 1) begin
-				fail <= 1;
-			end
-		end
-	end
 endmodule
