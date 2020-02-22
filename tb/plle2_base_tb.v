@@ -132,7 +132,7 @@ module PLLE2_BASE_tb();
 	wire psc_fail[0:5];
 	wire psc_fail_fb;
 
-	integer CLKOUT_DIVIDE[0:5];
+	wire [31:0] CLKOUT_DIVIDE[0:5];
 	assign CLKOUT_DIVIDE[0] = `CLKOUT0_DIVIDE;
 	assign CLKOUT_DIVIDE[1] = `CLKOUT1_DIVIDE;
 	assign CLKOUT_DIVIDE[2] = `CLKOUT2_DIVIDE;
@@ -140,7 +140,7 @@ module PLLE2_BASE_tb();
 	assign CLKOUT_DIVIDE[4] = `CLKOUT4_DIVIDE;
 	assign CLKOUT_DIVIDE[5] = `CLKOUT5_DIVIDE;
 
-	integer CLKOUT_DUTY_CYCLE_1000[0:5];
+	wire [31:0] CLKOUT_DUTY_CYCLE_1000[0:5];
 	assign CLKOUT_DUTY_CYCLE_1000[0] = (`CLKOUT0_DUTY_CYCLE * 1000);
 	assign CLKOUT_DUTY_CYCLE_1000[1] = (`CLKOUT1_DUTY_CYCLE * 1000);
 	assign CLKOUT_DUTY_CYCLE_1000[2] = (`CLKOUT2_DUTY_CYCLE * 1000);
@@ -148,7 +148,7 @@ module PLLE2_BASE_tb();
 	assign CLKOUT_DUTY_CYCLE_1000[4] = (`CLKOUT4_DUTY_CYCLE * 1000);
 	assign CLKOUT_DUTY_CYCLE_1000[5] = (`CLKOUT5_DUTY_CYCLE * 1000);
 
-	integer CLKOUT_PHASE_1000[0:5];
+	wire [31:0] CLKOUT_PHASE_1000[0:5];
 	assign CLKOUT_PHASE_1000[0] = (`CLKOUT0_PHASE * 1000);
 	assign CLKOUT_PHASE_1000[1] = (`CLKOUT1_PHASE * 1000);
 	assign CLKOUT_PHASE_1000[2] = (`CLKOUT2_PHASE * 1000);
@@ -215,10 +215,9 @@ module PLLE2_BASE_tb();
 		end
 
 		for (i = 0; i <= 5; i = i + 1) begin : dcc
-			duty_cycle_check #(
-				.desired_duty_cycle((CLKOUT_DUTY_CYCLE_1000[i] / 1000.0)),
-				.clk_period(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / `CLKFBOUT_MULT)))
-			dcc (
+			duty_cycle_check dcc (
+				.desired_duty_cycle_1000(CLKOUT_DUTY_CYCLE_1000[i]),
+				.clk_period_1000((`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / `CLKFBOUT_MULT)) * 1000),
 				.clk(CLKOUT[i]),
 				.reset(reset),
 				.LOCKED(LOCKED),
@@ -226,10 +225,9 @@ module PLLE2_BASE_tb();
 		end
 
 		for (i = 0; i <= 5; i = i + 1) begin : psc
-			phase_shift_check #(
-				.desired_shift((CLKOUT_PHASE_1000[i] / 1000.0)),
-				.clk_period(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / `CLKFBOUT_MULT)))
-			psc (
+			phase_shift_check psc (
+				.desired_shift_1000(CLKOUT_PHASE_1000[i]),
+				.clk_period_1000(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / `CLKFBOUT_MULT) * 1000),
 				.clk_shifted(CLKOUT[i]),
 				.clk(CLKFBOUT),
 				.rst(RST),
@@ -237,15 +235,15 @@ module PLLE2_BASE_tb();
 				.fail(psc_fail[i]));
 		end
 	endgenerate
+
 	period_count period_count_fb (
 		.RST(reset),
 		.clk(CLKFBOUT),
 		.period_length_1000(period_1000_fb));
 
-	phase_shift_check #(
-		.desired_shift(`CLKFBOUT_PHASE),
-		.clk_period(`CLKIN1_PERIOD * (`DIVCLK_DIVIDE / `CLKFBOUT_MULT)))
-	pscfb (
+	phase_shift_check pscfb (
+		.desired_shift_1000(`CLKFBOUT_PHASE * 1000),
+		.clk_period_1000(`CLKIN1_PERIOD * (`DIVCLK_DIVIDE / `CLKFBOUT_MULT) * 1000),
 		.clk_shifted(CLKFBOUT),
 		.clk(CLKIN1),
 		.rst(RST),
