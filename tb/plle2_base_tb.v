@@ -227,7 +227,7 @@ module PLLE2_BASE_tb();
 		for (i = 0; i <= 5; i = i + 1) begin : psc
 			phase_shift_check psc (
 				.desired_shift_1000(CLKOUT_PHASE_1000[i]),
-				.clk_period_1000(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / `CLKFBOUT_MULT) * 1000),
+				.clk_period_1000(1000 * `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / `CLKFBOUT_MULT)),
 				.clk_shifted(CLKOUT[i]),
 				.clk(CLKFBOUT),
 				.rst(RST),
