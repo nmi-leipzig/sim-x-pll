@@ -14,17 +14,17 @@
 `endif
 
 `ifndef DESIRED_SHIFT
-	`define DESIRED_SHIFT 0
+	`define DESIRED_SHIFT 45
 `endif
 
 `ifndef CLK_PERIOD
-	`define CLK_PERIOD 10
+	`define CLK_PERIOD 20
 `endif
 
 module phase_shift_check_tb ();
 	reg rst;
 	reg clk;
-	reg clk_shifted;
+	wire clk_shifted;
 	reg LOCKED;
 
 	wire fail;
@@ -46,6 +46,15 @@ module phase_shift_check_tb ();
 		.LOCKED(LOCKED),
 		.fail(fail));
 
+	phase_shift ps (
+		.PWRDWN(1'b0),
+		.RST(rst),
+		.clk(clk),
+		.shift(shift),
+		.clk_period_1000(`CLK_PERIOD * 1000),
+		.duty_cycle(50),
+		.clk_shifted(clk_shifted));
+
 	initial begin
 		$dumpfile("phase_shift_check_tb.vcd");
 		$dumpvars(0, phase_shift_check_tb);
@@ -54,7 +63,6 @@ module phase_shift_check_tb ();
 
 		shift = `DESIRED_SHIFT;
 		clk = 0;
-		clk_shifted = 0;
 		LOCKED = 0;
 
 		pass_count = 0;
@@ -117,5 +125,4 @@ module phase_shift_check_tb ();
 	end
 
 	always #(`CLK_PERIOD / 2.0) clk <= ~clk;
-	always #(`CLK_PERIOD / 2.0) clk_shifted <= ~clk_shifted;
 endmodule
