@@ -436,7 +436,7 @@ module PLLE2_ADV_tb();
 		DI = `DI1;
 		DEN = 1'b1;
 		DWE = 1'b1;
-		#(`DCLK_PERIOD * 2);
+		#`DCLK_PERIOD;
 
 		if (DRDY == 1'b0) begin
 			$display("PASSED: DRDY low");
@@ -468,6 +468,8 @@ module PLLE2_ADV_tb();
 		DEN = 1'b1;
 		DWE = 1'b1;
 
+		#(`DCLK_PERIOD * 2);
+
 
 		PWRDWN = 1;
 		#100;
@@ -497,6 +499,7 @@ module PLLE2_ADV_tb();
 		CLKFBIN <= CLKFBOUT;
 	end
 
-	always #(`CLKIN1_PERIOD / 2) CLKIN1 = ~CLKIN1;
-	always #(`CLKIN2_PERIOD / 2) CLKIN2 = ~CLKIN2;
+	always #(`CLKIN1_PERIOD / 2.0) CLKIN1 = ~CLKIN1;
+	always #(`CLKIN2_PERIOD / 2.0) CLKIN2 = ~CLKIN2;
+	always #(`DCLK_PERIOD / 2.0) DCLK = ~DCLK;
 endmodule
