@@ -37,10 +37,9 @@ module phase_shift_check_tb ();
 	/* adjust according to the number of test cases */
 	localparam total = 4;
 
-	phase_shift_check #(
-		.desired_shift(`DESIRED_SHIFT),
-		.clk_period(`CLK_PERIOD))
-	dut (
+	phase_shift_check dut (
+		.desired_shift_1000(`DESIRED_SHIFT * 1000),
+		.clk_period_1000(`CLK_PERIOD * 1000),
 		.clk_shifted(clk_shifted),
 		.clk(clk),
 		.rst(rst),

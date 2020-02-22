@@ -36,10 +36,9 @@ module duty_cycle_check_tb ();
 	/* adjust according to the number of test cases */
 	localparam total = 4;
 
-	duty_cycle_check #(
-		.desired_duty_cycle(`DESIRED_DUTY_CYCLE),
-		.clk_period(`CLK_PERIOD))
-	dut (
+	duty_cycle_check dut (
+		.desired_duty_cycle_1000(`DESIRED_DUTY_CYCLE * 1000),
+		.clk_period_1000(`CLK_PERIOD * 1000),
 		.clk(clk),
 		.reset(rst),
 		.LOCKED(LOCKED),

@@ -10,10 +10,10 @@
 
 `timescale 1 ns / 1 ps
 
-module duty_cycle_check #(
-	/* duty cycle as decimal (0.5 for 50 % in high) */
-	parameter desired_duty_cycle = 0.5,
-	parameter clk_period = 10) 	(
+module duty_cycle_check (
+	/* duty cycle multiplied by 1000 (500 for 50 % in high) */
+	input [31:0] desired_duty_cycle_1000,
+	input [31:0] clk_period_1000,
 	input clk,
 	input reset,
 	input LOCKED,
@@ -27,7 +27,7 @@ module duty_cycle_check #(
 		if (reset) begin
 			fail <= 0;
 		end else if (LOCKED) begin
-			#((clk_period * desired_duty_cycle) - 0.1);
+			#(((clk_period_1000 / 1000.0) * (desired_duty_cycle_1000 / 1000.0)) - 0.1);
 			if (clk != 1) begin
 				fail <= 1;
 			end
