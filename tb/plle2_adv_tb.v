@@ -166,7 +166,7 @@ module PLLE2_ADV_tb();
 	integer	pass_count;
 	integer	fail_count;
 	/* change according to the number of test cases */
-	localparam total = 23;
+	localparam total = 27;
 
 	reg reset;
 	wire [31:0] period_1000[0:5];
@@ -498,4 +498,5 @@ module PLLE2_ADV_tb();
 	end
 
 	always #(`CLKIN1_PERIOD / 2) CLKIN1 = ~CLKIN1;
+	always #(`CLKIN2_PERIOD / 2) CLKIN2 = ~CLKIN2;
 endmodule
