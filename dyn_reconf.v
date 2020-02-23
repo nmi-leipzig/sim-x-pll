@@ -138,7 +138,7 @@ module dyn_reconf (
 			FiltReg[2] <= 0;
 
 			DRDY <= 1'b1;
-		end else if (DEN && DRDY) begin
+		end else if (DEN) begin
 			DRDY <= 1'b0;
 			/* Write */
 			if (DWE) begin
@@ -198,6 +198,8 @@ module dyn_reconf (
 				endcase
 			end
 		end else if (DRDY == 1'b0) begin
+			DO <= 0;
+
 			/* PHASE */
 			if (ClkReg2_FB[6]) begin
 				CLKFBOUT_MULT <= 1;
