@@ -132,7 +132,7 @@
 `endif
 
 `ifndef DI2
-	`define DI2 16'b0_000_0_0_00_1_0_00011;
+	`define DI2 16'b0_000_0_0_00_0_0_00011;
 `endif
 
 `ifndef DCLK_PERIOD
@@ -467,8 +467,10 @@ module PLLE2_ADV_tb();
 		DI = `DI2;
 		DEN = 1'b1;
 		DWE = 1'b1;
-
 		#(`DCLK_PERIOD * 2);
+		DEN = 1'b0;
+		DWE = 1'b0;
+		#`WAIT_INTERVAL;
 
 
 		PWRDWN = 1;
