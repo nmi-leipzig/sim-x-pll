@@ -73,14 +73,20 @@ module PLLE2_ADV #(
 	input	RST,
 
 	/* Dynamic reconfiguration ports */
-	//TODO: port descriptions
+	/* Address to write/read reconfiguration data to/from */
 	input 	[6:0] DADDR,
+	/* CLK to drive the reconfiguration */
 	input 	DCLK,
+	/* ENable the reconfiguration functionality */
 	input 	DEN,
+	/* Enable Write access on the given address */
 	input	DWE,
+	/* What to write in the given ADDR */
 	input 	[15:0] DI,
 
+	/* Content of the given address */
 	output	[15:0] DO,
+	/* Tells you, when the reconfiguration is done and ready for new inputs */
 	output	DRDY);
 
 	pll #(
