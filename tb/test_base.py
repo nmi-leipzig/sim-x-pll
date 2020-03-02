@@ -4,7 +4,6 @@ import shutil
 import re
 import os
 
-from avocado import Test
 from avocado.utils import process
 
 
