@@ -115,7 +115,7 @@ module PLLE2_BASE_tb();
 
 	reg PWRDWN;
 	reg RST;
-	reg CLKFBIN;
+	wire CLKFBIN;
 
 	integer	pass_count;
 	integer	fail_count;
