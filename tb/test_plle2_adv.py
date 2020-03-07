@@ -177,7 +177,7 @@ class Plle2AdvTest(Test, test_base.Mixin):
         # save vcd for analysis
         shutil.copy("plle2_adv_tb.vcd", self.outputdir)
 
-        self.check_test_bench_output(sim_output, 28)
+        self.check_test_bench_output(sim_output, 48)
 
     def test_plle2_adv_default(self):
         """

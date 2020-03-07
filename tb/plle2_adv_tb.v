@@ -166,7 +166,7 @@ module PLLE2_ADV_tb();
 	integer	pass_count;
 	integer	fail_count;
 	/* change according to the number of test cases */
-	localparam total = 27;
+	localparam total = 47;
 
 	reg reset;
 	wire [31:0] period_1000[0:5];
@@ -385,7 +385,7 @@ module PLLE2_ADV_tb();
 
 		/*------- FREQUENCY ---------*/
 		for (k = 0; k <= 5; k = k + 1) begin
-			if ((period_1000[k] / 1000.0 == `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[k] * 1.0) / `CLKFBOUT_MULT))) begin
+			if ((period_1000[k] / 1000.0 == `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[k] * 1.0) / CLKFBOUT_MULT))) begin
 				$display("PASSED: CLKOUT%0d frequency", k);
 				pass_count = pass_count + 1;
 			end else begin
@@ -394,7 +394,7 @@ module PLLE2_ADV_tb();
 			end
 		end
 
-		if ((period_1000_fb / 1000.0) == (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * 1.0) / `CLKFBOUT_MULT))) begin
+		if ((period_1000_fb / 1000.0) == (`CLKIN1_PERIOD * ((DIVCLK_DIVIDE * 1.0) / CLKFBOUT_MULT))) begin
 			$display("PASSED: CLKFBOUT frequency");
 			pass_count = pass_count + 1;
 		end else begin
@@ -480,7 +480,60 @@ module PLLE2_ADV_tb();
 		#(`DCLK_PERIOD * 2);
 		DEN = 1'b0;
 		DWE = 1'b0;
+		reset = 1;
 		#`WAIT_INTERVAL;
+		reset = 0;
+		#`WAIT_INTERVAL;
+
+		/*------- FREQUENCY ---------*/
+		for (k = 0; k <= 5; k = k + 1) begin
+			if ((period_1000[k] / 1000.0 == `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[k] * 1.0) / CLKFBOUT_MULT))) begin
+				$display("PASSED: CLKOUT%0d frequency", k);
+				pass_count = pass_count + 1;
+			end else begin
+				$display("FAILED: CLKOUT%0d frequency", k);
+				fail_count = fail_count + 1;
+			end
+		end
+
+		if ((period_1000_fb / 1000.0) == (`CLKIN1_PERIOD * ((DIVCLK_DIVIDE * 1.0) / CLKFBOUT_MULT))) begin
+			$display("PASSED: CLKFBOUT frequency");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKFBOUT frequency");
+			fail_count = fail_count + 1;
+		end
+
+
+		/*------- DUTY CYCLE ---------*/
+		for (k = 0; k <= 5; k = k + 1) begin
+			if (dcc_fail[k] !== 1'b1) begin
+				$display("PASSED: CLKOUT%0d duty cycle", k);
+				pass_count = pass_count + 1;
+			end else begin
+				$display("FAILED: CLKOUT%0d duty cycle", k);
+				fail_count = fail_count + 1;
+			end
+		end
+
+		/*------- PHASE SHIFT ---------*/
+		for (k = 0; k <= 5; k = k + 1) begin
+			if (psc_fail[k] !== 1'b1) begin
+				$display("PASSED: CLKOUT%0d phase shift", k);
+				pass_count = pass_count + 1;
+			end else begin
+				$display("FAILED: CLKOUT%0d phase shift", k);
+				fail_count = fail_count + 1;
+			end
+		end
+
+		if (psc_fail_fb !== 1'b1) begin
+			$display("PASSED: CLKFBOUT phase shift");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKFBOUT phase shift");
+			fail_count = fail_count + 1;
+		end
 
 
 		PWRDWN = 1;
