@@ -1,8 +1,8 @@
 /*
- * plle2_base.v: Simulates the PLLE2_BASE pll of the xilinx 7 series. This
- * is just a wrapper around the actual logic found in pll.v
+ * plle2_adv.v: Simulates the PLLE2_ADV pll of the xilinx 7 series. This is
+ * just a wrapper around the actual logic found in pll.v
  * author: Till Mahlburg
- * year: 2019-2020
+ * year: 2020
  * organization: Universität Leipzig
  * license: ISC
  *
@@ -10,16 +10,17 @@
 
 `timescale 1 ns / 1 ps
 
-/* A reference for the interface can be found in Xilinx UG953 page 509ff */
-module PLLE2_BASE #(
+/* A reference for the interface can be found in Xilinx UG953 page 503ff */
+module PLLE2_ADV #(
 	/* not implemented */
 	parameter BANDWIDTH 			= "OPTIMIZED",
 
 	parameter CLKFBOUT_MULT 		= 5,
 	parameter CLKFBOUT_PHASE 		= 0.0,
 
-	/* is ignored, but should be set */
+	/* are ignored, but need to be set */
 	parameter CLKIN1_PERIOD			= 0.0,
+	parameter CLKIN2_PERIOD			= 0.0,
 
 	parameter CLKOUT0_DIVIDE		= 1,
 	parameter CLKOUT1_DIVIDE		= 1,
@@ -44,9 +45,11 @@ module PLLE2_BASE #(
 
 	parameter DIVCLK_DIVIDE			= 1,
 
-	/* both not implemented */
-	parameter REF_JITTER1			= 0.0,
-	parameter STARTUP_WAIT			= "FALSE")(
+	/* not implemented */
+	parameter REF_JITTER1			= 0.010,
+	parameter REF_JITTER2			= 0.010,
+	parameter STARTUP_WAIT			= "FALSE",
+	parameter COMPENSATION			= "ZHOLD")(
 	output 	CLKOUT0,
 	output 	CLKOUT1,
 	output 	CLKOUT2,
@@ -59,22 +62,39 @@ module PLLE2_BASE #(
 	output	LOCKED,
 
 	input 	CLKIN1,
+	input 	CLKIN2,
+	/* Select input clk. 1 for CLKIN1, 0 for CLKIN2 */
+	input 	CLKINSEL,
 	/* PLL feedback input. Is ignored in this implementation, but should be connected to CLKFBOUT for internal feedback. */
 	input 	CLKFBIN,
 
 	/* Used to power down instatiated but unused PLLs */
 	input	PWRDWN,
-	input	RST);
+	input	RST,
 
-	wire	[15:0] DO;
-	wire	DRDY;
+	/* Dynamic reconfiguration ports */
+	/* Address to write/read reconfiguration data to/from */
+	input 	[6:0] DADDR,
+	/* CLK to drive the reconfiguration */
+	input 	DCLK,
+	/* ENable the reconfiguration functionality */
+	input 	DEN,
+	/* Enable Write access on the given address */
+	input	DWE,
+	/* What to write in the given ADDR */
+	input 	[15:0] DI,
+
+	/* Content of the given address */
+	output	[15:0] DO,
+	/* Tells you, when the reconfiguration is done and ready for new inputs */
+	output	DRDY);
 
 	pll #(
  		.BANDWIDTH(BANDWIDTH),
  		.CLKFBOUT_MULT(CLKFBOUT_MULT),
 		.CLKFBOUT_PHASE(CLKFBOUT_PHASE),
 		.CLKIN1_PERIOD(CLKIN1_PERIOD),
-		.CLKIN2_PERIOD(0.000),
+		.CLKIN2_PERIOD(CLKIN2_PERIOD),
 
 		.CLKOUT0_DIVIDE(CLKOUT0_DIVIDE),
 		.CLKOUT1_DIVIDE(CLKOUT1_DIVIDE),
@@ -99,9 +119,9 @@ module PLLE2_BASE #(
 
 		.DIVCLK_DIVIDE(DIVCLK_DIVIDE),
 		.REF_JITTER1(REF_JITTER1),
-		.REF_JITTER2(0.010),
+		.REF_JITTER2(REF_JITTER2),
 		.STARTUP_WAIT(STARTUP_WAIT),
-		.COMPENSATION("ZHOLD"))
+		.COMPENSATION(COMPENSATION))
 	plle2_adv (
 		.CLKOUT0(CLKOUT0),
 		.CLKOUT1(CLKOUT1),
@@ -114,19 +134,18 @@ module PLLE2_BASE #(
 		.LOCKED(LOCKED),
 
 		.CLKIN1(CLKIN1),
-		.CLKIN2(1'b0),
-		.CLKINSEL(1'b1),
+		.CLKIN2(CLKIN2),
+		.CLKINSEL(CLKINSEL),
 
 		.PWRDWN(PWRDWN),
 		.RST(RST),
 		.CLKFBIN(CLKFBIN),
 
-		//TODO
-		.DADDR(7'h00),
-		.DCLK(1'b0),
-		.DEN(1'b0),
-		.DWE(1'b0),
-		.DI(16'h0),
+		.DADDR(DADDR),
+		.DCLK(DCLK),
+		.DEN(DEN),
+		.DWE(DWE),
+		.DI(DI),
 
 		.DO(DO),
 		.DRDY(DRDY)

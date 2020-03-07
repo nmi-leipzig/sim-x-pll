@@ -1,19 +1,24 @@
 # Xilinx 7 Series PLLE2_BASE Simulation
 
-This project aims to simulate the behavior of the PLLE2_BASE PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff. This way you can just drop the files listed below into your project, instantiate the PLL like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
+This project aims to simulate the behavior of the PLLE2_BASE as well as the PLLE2_ADV PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff. This way you can just drop the files listed below into your project, instantiate the PLL like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
 
 ## Quickstart
 
+
 To use this module, you need to have the following files in your project:
-- ```plle2_base.v```
+- ```plle2_base.v``` or ```plle2_adv.v```, depending on [which one you want](#pll-choosing)
 - ```period_count.v```
 - ```period_check.v```
 - ```freq_gen.v```
 - ```divider.v```
 - ```phase_shift.v```
+- ```dyn_reconf.v```
+- ```pll.v```
+
+
 
 To build and simulate your project, you can use [icarus verilog and vvp](http://iverilog.icarus.com/) and view the results in [GTKWave](http://gtkwave.sourceforge.net/):
-- ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v <your project files> -o <your project name>```
+- ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>``` or ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>```, depending on which one you want
 - ```vvp <your project name>```
 - ```gtkwave dump.vcd```
 
@@ -21,7 +26,7 @@ If you specified the name of your output file using something like ```$dumpfile(
 
 The module works by supplying an input clock, which will be transformed to an, or rather 6, output clocks. This output clock depends on the input clock and multiple parameters. You can set the wanted output frequency, phase shift and duty cycle. The output frequency is calculated like this: ```output frequency = input frequency * (multiplier / (divider * output divider))```, while the output phase can be calculated (in relation to the input phase) by using this formula: ```output phase = feedback phase + output phase```. The parts of these formulas with "output" in their name are specific to one specific output, while the others are global. There are certain limits to the values. If you hit them, the module is going to stop simulation and inform you about it. Check out the FAQ section at the end to learn more about these limits.
 
-An typical instatiation of the module might look like this:
+An typical instatiation of the PLLE2_BASE module might look like this:
 
 	PLLE2_BASE #(
 		.CLKFBOUT_MULT(8), 			// This multiplies your output clock by 8
@@ -78,7 +83,7 @@ An typical instatiation of the module might look like this:
 
 ## Example project
 
-An example project found under ```pll_example/pll_example.srcs/sources_1/new/```. It is a simple program to show the usage of the module. It can be simulated from the ```tb/``` or the ```pll_example``` directory using
+An example project using the PLLE2_BASE found under ```pll_example/pll_example.srcs/sources_1/new/```. It is a simple program to show the usage of the module. It can be simulated from the ```tb/``` or the ```pll_example``` directory using
 - ```make pll_led_test```
 
 This runs iverilog and vvp to simulate the module.
@@ -99,13 +104,16 @@ To learn more about the instantiation of the module, you should read [Xilinx UG9
 - PWRDWN and RST signals
 - setting DIVCLK_DIVIDE (divides the input clock)
 - tests for RST, PWRDWN, output frequency, output phase and output duty cycle
-- applying CLKFB_MULT to multiply the output frequency
-- applying CLKFB_PHASE to set a phase shift to every output
+- applying CLKFBOUT_MULT to multiply the output frequency
+- applying CLKFBOUT_PHASE to set a phase shift to every output
+- setting CLKINSEL and selecting one of two input clocks
+- basic dynamic reconfiguration functionality
 
 ### Not Working
 - there is no feedback loop by design
-- BANDWIDTH, REF_JITTER1 and STARTUP_WAIT settings won't work with the current design approach
+- BANDWIDTH, REF_JITTER1, REF_JITTER2, COMPENSATION and STARTUP_WAIT settings won't work with the current design approach
 - connecting CLKFBIN to any other clock than CLKFBOUT won't work with the current design approach
+- dynamic reconfiguration only has an effect in the ClkReg1 and ClkReg2 registers
 
 ## Test
 
@@ -115,7 +123,7 @@ You can test this project automatically using avocado or make. The testbenches t
 
 - install avocado: [Documentation](https://avocado-framework.readthedocs.io/en/latest/#how-to-install)
 - change into the ```tb/``` folder
-- run ```$ avocado run test_pll.py```
+- run ```$ avocado run test_freq_gen.py test_high_counter.py test_period_check.py test_period_count.py test_phase_shift.py test_plle2_adv.py test_plle2_base.py```
 
 ### Make
 
@@ -124,7 +132,7 @@ You can test this project automatically using avocado or make. The testbenches t
 
 ## Architecture
 
-This diagram roughly outlines the basic architecture of the project.
+This diagram roughly outlines the basic architecture of the project for PLLE2_BASE.
 
 ![architecture diagram](https://raw.githubusercontent.com/ti-leipzig/sim-x-pll/master/arch.svg?sanitize=true)
 
@@ -149,4 +157,9 @@ Use this table for parameters:
 | REF_JITTER1        | 0.000 - 0.999              |
 | STARTUP_WAIT       | "FALSE", "TRUE"            |
 
-Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLKDIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
+Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
+
+<h3 id="pll-choosing">Which PLL should I choose?</h3>
+The main differences between the two versions are the support for two input clocks and dynamic reconfiguration in PLLE2_ADV. For a more in-depth overview of the differences see [UGS472 page 70](https://www.xilinx.com/support/documentation/user_guides/ug472_7Series_Clocking.pdf).
+
+### How do I use the dynamic reconfiguration features?
