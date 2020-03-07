@@ -278,7 +278,7 @@ module pll #(
 	end
 
 	reg invalid = 1'b0;
-	/* check if the given values are valid*/
+	/* check if the given values are valid */
 	initial begin
 		CLKOUT_DIVIDE_INT[0] = CLKOUT0_DIVIDE;
 		CLKOUT_DIVIDE_INT[1] = CLKOUT1_DIVIDE;

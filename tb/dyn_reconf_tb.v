@@ -116,8 +116,6 @@ module dyn_reconf_tb ();
 
 		.DIVCLK_DIVIDE(DIVCLK_DIVIDE));
 
-
-
 	initial begin
 		$dumpfile("dyn_reconf_tb.vcd");
 		$dumpvars(0, dyn_reconf_tb);

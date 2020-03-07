@@ -8,9 +8,6 @@
  */
 
 `timescale 1 ns / 1 ps
-`ifndef WAIT_INTERVAL
-	`define WAIT_INTERVAL 1000
-`endif
 
 /* define all attributes as macros, so different combinations can be tested
  * more easily.
@@ -18,6 +15,9 @@
  */
 
 /* not implemented */
+`ifndef WAIT_INTERVAL
+	`define WAIT_INTERVAL 1000
+`endif
 `ifndef BANDWIDTH
 	`define BANDWIDTH "OPTIMIZED"
 `endif
@@ -152,7 +152,7 @@ module PLLE2_ADV_tb();
 
 	reg PWRDWN;
 	reg RST;
-	reg CLKFBIN;
+	wire CLKFBIN;
 
 	reg [6:0] DADDR;
 	reg	DCLK;
@@ -178,29 +178,13 @@ module PLLE2_ADV_tb();
 	wire psc_fail[0:5];
 	wire psc_fail_fb;
 
-	wire [31:0] CLKOUT_DIVIDE[0:5];
-	assign CLKOUT_DIVIDE[0] = `CLKOUT0_DIVIDE;
-	assign CLKOUT_DIVIDE[1] = `CLKOUT1_DIVIDE;
-	assign CLKOUT_DIVIDE[2] = `CLKOUT2_DIVIDE;
-	assign CLKOUT_DIVIDE[3] = `CLKOUT3_DIVIDE;
-	assign CLKOUT_DIVIDE[4] = `CLKOUT4_DIVIDE;
-	assign CLKOUT_DIVIDE[5] = `CLKOUT5_DIVIDE;
+	reg [31:0] CLKOUT_DIVIDE[0:5];
+	reg [31:0] CLKOUT_DUTY_CYCLE_1000[0:5];
+	reg [31:0] CLKOUT_PHASE_1000[0:5];
 
-	wire [31:0] CLKOUT_DUTY_CYCLE_1000[0:5];
-	assign CLKOUT_DUTY_CYCLE_1000[0] = (`CLKOUT0_DUTY_CYCLE * 1000);
-	assign CLKOUT_DUTY_CYCLE_1000[1] = (`CLKOUT1_DUTY_CYCLE * 1000);
-	assign CLKOUT_DUTY_CYCLE_1000[2] = (`CLKOUT2_DUTY_CYCLE * 1000);
-	assign CLKOUT_DUTY_CYCLE_1000[3] = (`CLKOUT3_DUTY_CYCLE * 1000);
-	assign CLKOUT_DUTY_CYCLE_1000[4] = (`CLKOUT4_DUTY_CYCLE * 1000);
-	assign CLKOUT_DUTY_CYCLE_1000[5] = (`CLKOUT5_DUTY_CYCLE * 1000);
-
-	wire [31:0] CLKOUT_PHASE_1000[0:5];
-	assign CLKOUT_PHASE_1000[0] = (`CLKOUT0_PHASE * 1000);
-	assign CLKOUT_PHASE_1000[1] = (`CLKOUT1_PHASE * 1000);
-	assign CLKOUT_PHASE_1000[2] = (`CLKOUT2_PHASE * 1000);
-	assign CLKOUT_PHASE_1000[3] = (`CLKOUT3_PHASE * 1000);
-	assign CLKOUT_PHASE_1000[4] = (`CLKOUT4_PHASE * 1000);
-	assign CLKOUT_PHASE_1000[5] = (`CLKOUT5_PHASE * 1000);
+	reg [31:0] CLKFBOUT_MULT;
+	reg [31:0] CLKFBOUT_PHASE;
+	reg [31:0] DIVCLK_DIVIDE;
 
 	/* instantiate PLLE2_ADV with default values for all the attributes */
 	PLLE2_ADV #(
@@ -277,7 +261,7 @@ module PLLE2_ADV_tb();
 		for (i = 0; i <= 5; i = i + 1) begin : dcc
 			duty_cycle_check dcc (
 				.desired_duty_cycle_1000(CLKOUT_DUTY_CYCLE_1000[i]),
-				.clk_period_1000((`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / `CLKFBOUT_MULT)) * 1000),
+				.clk_period_1000((`CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / CLKFBOUT_MULT)) * 1000),
 				.clk(CLKOUT[i]),
 				.reset(reset),
 				.LOCKED(LOCKED),
@@ -287,7 +271,7 @@ module PLLE2_ADV_tb();
 		for (i = 0; i <= 5; i = i + 1) begin : psc
 			phase_shift_check psc (
 				.desired_shift_1000(CLKOUT_PHASE_1000[i]),
-				.clk_period_1000(1000 * `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / `CLKFBOUT_MULT)),
+				.clk_period_1000(1000 * `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / CLKFBOUT_MULT)),
 				.clk_shifted(CLKOUT[i]),
 				.clk(CLKFBOUT),
 				.rst(RST),
@@ -302,8 +286,8 @@ module PLLE2_ADV_tb();
 		.period_length_1000(period_1000_fb));
 
 	phase_shift_check pscfb (
-		.desired_shift_1000(`CLKFBOUT_PHASE * 1000),
-		.clk_period_1000(`CLKIN1_PERIOD * (`DIVCLK_DIVIDE / `CLKFBOUT_MULT) * 1000),
+		.desired_shift_1000(CLKFBOUT_PHASE * 1000),
+		.clk_period_1000(`CLKIN1_PERIOD * (DIVCLK_DIVIDE / CLKFBOUT_MULT) * 1000),
 		.clk_shifted(CLKFBOUT),
 		.clk(CLKIN1),
 		.rst(RST),
@@ -327,6 +311,32 @@ module PLLE2_ADV_tb();
 		CLKIN2 = 0;
 		RST = 0;
 		PWRDWN = 0;
+
+		/* set up initial values */
+		CLKOUT_DIVIDE[0] = `CLKOUT0_DIVIDE;
+		CLKOUT_DIVIDE[1] = `CLKOUT1_DIVIDE;
+		CLKOUT_DIVIDE[2] = `CLKOUT2_DIVIDE;
+		CLKOUT_DIVIDE[3] = `CLKOUT3_DIVIDE;
+		CLKOUT_DIVIDE[4] = `CLKOUT4_DIVIDE;
+		CLKOUT_DIVIDE[5] = `CLKOUT5_DIVIDE;
+
+		CLKOUT_DUTY_CYCLE_1000[0] = (`CLKOUT0_DUTY_CYCLE * 1000);
+		CLKOUT_DUTY_CYCLE_1000[1] = (`CLKOUT1_DUTY_CYCLE * 1000);
+		CLKOUT_DUTY_CYCLE_1000[2] = (`CLKOUT2_DUTY_CYCLE * 1000);
+		CLKOUT_DUTY_CYCLE_1000[3] = (`CLKOUT3_DUTY_CYCLE * 1000);
+		CLKOUT_DUTY_CYCLE_1000[4] = (`CLKOUT4_DUTY_CYCLE * 1000);
+		CLKOUT_DUTY_CYCLE_1000[5] = (`CLKOUT5_DUTY_CYCLE * 1000);
+
+		CLKOUT_PHASE_1000[0] = (`CLKOUT0_PHASE * 1000);
+		CLKOUT_PHASE_1000[1] = (`CLKOUT1_PHASE * 1000);
+		CLKOUT_PHASE_1000[2] = (`CLKOUT2_PHASE * 1000);
+		CLKOUT_PHASE_1000[3] = (`CLKOUT3_PHASE * 1000);
+		CLKOUT_PHASE_1000[4] = (`CLKOUT4_PHASE * 1000);
+		CLKOUT_PHASE_1000[5] = (`CLKOUT5_PHASE * 1000);
+
+		CLKFBOUT_MULT = `CLKFBOUT_MULT;
+		CLKFBOUT_PHASE = `CLKFBOUT_PHASE;
+		DIVCLK_DIVIDE = `DIVCLK_DIVIDE;
 
 		DADDR = 7'h00;
 		DI = 16'h0000;
@@ -416,10 +426,10 @@ module PLLE2_ADV_tb();
 		end
 
 		if (psc_fail_fb !== 1'b1) begin
-			$display("PASSED: CLKOUTFB phase shift");
+			$display("PASSED: CLKFBOUT phase shift");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: CLKOUTFB phase shift");
+			$display("FAILED: CLKFBOUT phase shift");
 			fail_count = fail_count + 1;
 		end
 
@@ -497,11 +507,126 @@ module PLLE2_ADV_tb();
 	end
 
 	/* connect CLKFBIN with CLKFBOUT to use internal feedback */
-	always @(posedge CLKFBOUT or negedge CLKFBOUT) begin
-		CLKFBIN <= CLKFBOUT;
-	end
+	assign CLKFBIN = CLKFBOUT;
 
 	always #(`CLKIN1_PERIOD / 2.0) CLKIN1 = ~CLKIN1;
 	always #(`CLKIN2_PERIOD / 2.0) CLKIN2 = ~CLKIN2;
 	always #(`DCLK_PERIOD / 2.0) DCLK = ~DCLK;
+
+
+	/* calculate the dynamic values */
+	wire [31:0] CLKOUT_DIVIDE_DYN[0:5];
+	wire [31:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:5];
+	wire [31:0] CLKOUT_PHASE_DYN[0:5];
+	wire [31:0] CLKFBOUT_MULT_DYN;
+	wire [31:0] CLKFBOUT_PHASE_DYN;
+	wire [31:0] DIVCLK_DIVIDE_DYN;
+
+	dyn_reconf dyn_reconf_calc (
+		.RST(RST),
+		.PWRDWN(PWRDWN),
+
+		.vco_period_1000(period_1000_fb),
+
+		.DADDR(DADDR),
+		.DCLK(DCLK),
+		.DEN(DEN),
+		.DWE(DWE),
+		.DI(DI),
+		.DO(DO),
+		.DRDY(DRDY),
+
+		.CLKOUT0_DIVIDE(CLKOUT_DIVIDE_DYN[0]),
+		.CLKOUT0_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[0]),
+		.CLKOUT0_PHASE(CLKOUT_PHASE_DYN[0]),
+
+		.CLKOUT1_DIVIDE(CLKOUT_DIVIDE_DYN[1]),
+		.CLKOUT1_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[1]),
+		.CLKOUT1_PHASE(CLKOUT_PHASE_DYN[1]),
+
+		.CLKOUT2_DIVIDE(CLKOUT_DIVIDE_DYN[2]),
+		.CLKOUT2_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[2]),
+		.CLKOUT2_PHASE(CLKOUT_PHASE_DYN[2]),
+
+		.CLKOUT3_DIVIDE(CLKOUT_DIVIDE_DYN[3]),
+		.CLKOUT3_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[3]),
+		.CLKOUT3_PHASE(CLKOUT_PHASE_DYN[3]),
+
+		.CLKOUT4_DIVIDE(CLKOUT_DIVIDE_DYN[4]),
+		.CLKOUT4_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[4]),
+		.CLKOUT4_PHASE(CLKOUT_PHASE_DYN[4]),
+
+		.CLKOUT5_DIVIDE(CLKOUT_DIVIDE_DYN[5]),
+		.CLKOUT5_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[5]),
+		.CLKOUT5_PHASE(CLKOUT_PHASE_DYN[5]),
+
+		.CLKFBOUT_MULT(CLKFBOUT_MULT_DYN),
+		.CLKFBOUT_PHASE(CLKFBOUT_PHASE_DYN),
+
+		.DIVCLK_DIVIDE(DIVCLK_DIVIDE_DYN));
+
+	dyn_reconf dyn_reconf (
+		.RST(RST),
+		.PWRDWN(PWRDWN),
+
+		.vco_period_1000(period_1000_fb),
+
+		.DADDR(DADDR),
+		.DCLK(DCLK),
+		.DEN(DEN),
+		.DWE(DWE),
+		.DI(DI),
+		.DO(DO),
+		.DRDY(DRDY),
+
+		.CLKOUT0_DIVIDE(CLKOUT_DIVIDE_DYN[0]),
+		.CLKOUT0_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[0]),
+		.CLKOUT0_PHASE(CLKOUT_PHASE_DYN[0]),
+
+		.CLKOUT1_DIVIDE(CLKOUT_DIVIDE_DYN[1]),
+		.CLKOUT1_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[1]),
+		.CLKOUT1_PHASE(CLKOUT_PHASE_DYN[1]),
+
+		.CLKOUT2_DIVIDE(CLKOUT_DIVIDE_DYN[2]),
+		.CLKOUT2_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[2]),
+		.CLKOUT2_PHASE(CLKOUT_PHASE_DYN[2]),
+
+		.CLKOUT3_DIVIDE(CLKOUT_DIVIDE_DYN[3]),
+		.CLKOUT3_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[3]),
+		.CLKOUT3_PHASE(CLKOUT_PHASE_DYN[3]),
+
+		.CLKOUT4_DIVIDE(CLKOUT_DIVIDE_DYN[4]),
+		.CLKOUT4_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[4]),
+		.CLKOUT4_PHASE(CLKOUT_PHASE_DYN[4]),
+
+		.CLKOUT5_DIVIDE(CLKOUT_DIVIDE_DYN[5]),
+		.CLKOUT5_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[5]),
+		.CLKOUT5_PHASE(CLKOUT_PHASE_DYN[5]),
+
+		.CLKFBOUT_MULT(CLKFBOUT_MULT_DYN),
+		.CLKFBOUT_PHASE(CLKFBOUT_PHASE_DYN),
+
+		.DIVCLK_DIVIDE(DIVCLK_DIVIDE_DYN));
+
+
+	/* lock detection using the lock information given by the phase shift modules */
+
+	integer l;
+	/* set the internal values to the dynamically set */
+	always @* begin
+		for (l = 0; l <= 5; l = l + 1) begin
+			if (CLKOUT_DIVIDE_DYN[l] != 0)
+				CLKOUT_DIVIDE[l] = CLKOUT_DIVIDE_DYN[l];
+			if (CLKOUT_DUTY_CYCLE_DYN_1000[l] != 0)
+				CLKOUT_DUTY_CYCLE_1000[l] = CLKOUT_DUTY_CYCLE_DYN_1000[l];
+			if (CLKOUT_PHASE_DYN[l] != 0)
+				CLKOUT_PHASE_1000[l] = CLKOUT_PHASE_DYN[l];
+		end
+		if (CLKFBOUT_MULT_DYN != 0)
+			CLKFBOUT_MULT = CLKFBOUT_PHASE_DYN;
+		if (CLKFBOUT_PHASE_DYN != 0)
+			CLKFBOUT_PHASE = CLKFBOUT_PHASE_DYN;
+		if (DIVCLK_DIVIDE_DYN != 0)
+			DIVCLK_DIVIDE = DIVCLK_DIVIDE_DYN;
+	end
 endmodule
