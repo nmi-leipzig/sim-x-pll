@@ -132,7 +132,7 @@
 `endif
 
 `ifndef DI2
-	`define DI2 16'b0_000_0_0_00_0_0_00011;
+	`define DI2 16'b0_000_0_0_00_0_0_00011
 `endif
 
 `ifndef DCLK_PERIOD
