@@ -368,9 +368,7 @@ module PLLE2_BASE_tb();
 	end
 
 	/* connect CLKFBIN with CLKFBOUT to use internal feedback */
-	always @(posedge CLKFBOUT or negedge CLKFBOUT) begin
-		CLKFBIN <= CLKFBOUT;
-	end
+	assign CLKFBIN = CLKFBOUT;
 
 	always #(`CLKIN1_PERIOD / 2) CLKIN1 = ~CLKIN1;
 endmodule
