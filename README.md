@@ -123,7 +123,7 @@ You can test this project automatically using avocado or make. The testbenches t
 
 - install avocado: [Documentation](https://avocado-framework.readthedocs.io/en/latest/#how-to-install)
 - change into the ```tb/``` folder
-- run ```$ avocado run test_pll.py```
+- run ```$ avocado run test_freq_gen.py test_high_counter.py test_period_check.py test_period_count.py test_phase_shift.py test_plle2_adv.py test_plle2_base.py```
 
 ### Make
 
@@ -133,8 +133,6 @@ You can test this project automatically using avocado or make. The testbenches t
 ## Architecture
 
 This diagram roughly outlines the basic architecture of the project for PLLE2_BASE.
-
-TODO: replace with current model
 
 ![architecture diagram](https://raw.githubusercontent.com/ti-leipzig/sim-x-pll/master/arch.svg?sanitize=true)
 
@@ -159,7 +157,9 @@ Use this table for parameters:
 | REF_JITTER1        | 0.000 - 0.999              |
 | STARTUP_WAIT       | "FALSE", "TRUE"            |
 
-Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLKDIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
+Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
 
 <h3 id="pll-choosing">Which PLL should I choose?</h3>
 The main differences between the two versions are the support for two input clocks and dynamic reconfiguration in PLLE2_ADV. For a more in-depth overview of the differences see [UGS472 page 70](https://www.xilinx.com/support/documentation/user_guides/ug472_7Series_Clocking.pdf).
+
+### How do I use the dynamic reconfiguration features?
