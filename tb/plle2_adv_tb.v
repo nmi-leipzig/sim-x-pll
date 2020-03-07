@@ -662,8 +662,6 @@ module PLLE2_ADV_tb();
 		.DIVCLK_DIVIDE(DIVCLK_DIVIDE_DYN));
 
 
-	/* lock detection using the lock information given by the phase shift modules */
-
 	integer l;
 	/* set the internal values to the dynamically set */
 	always @* begin
