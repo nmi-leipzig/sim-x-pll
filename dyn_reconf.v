@@ -11,10 +11,8 @@
  *			- FiltReg (Device dependent)
  *			- PowerReg
  *			- LockReg (Device dependent)
- * 			- DivReg: edge ?
+ * 			- DivReg: What purpose does edge have here?
  *			- MMCME: FRAC(ClkReg2)
- *			- Warnings if registers aren't changed
- *			- Default case
  */
 
 `timescale 1 ns / 1 ps
@@ -160,13 +158,34 @@ module dyn_reconf (
 					7'h14 : ClkReg1_FB <= DI;
 					7'h15 : ClkReg2_FB <= DI;
 					7'h16 : DivReg <= DI;
-					7'h18 : LockReg[1] <= DI;
-					7'h19 : LockReg[2] <= DI;
-					7'h1A : LockReg[3] <= DI;
-					7'h28 : PowerReg <= DI;
-					7'h4E : FiltReg[1] <= DI;
-					7'h4F : FiltReg[2] <= DI;
-					default : $display("default");
+					7'h18 : begin
+						LockReg[1] <= DI;
+						$display("This register has no functionality yet.");
+					end
+					7'h19 : begin
+						LockReg[2] <= DI;
+						$display("This register has no functionality yet.");
+					end
+					7'h1A : begin
+						LockReg[3] <= DI;
+						$display("This register has no functionality yet.");
+					end
+					7'h28 : begin
+						PowerReg <= DI;
+						$display("This register has no functionality yet.");
+					end
+					7'h4E : begin
+						FiltReg[1] <= DI;
+						$display("This register has no functionality yet.");
+					end
+					7'h4F : begin
+						FiltReg[2] <= DI;
+						$display("This register has no functionality yet.");
+					end
+					default : begin
+						$display("There is no register under this address.");
+						$finish;
+					end
 				endcase
 			/* Read */
 			end else begin
@@ -194,7 +213,10 @@ module dyn_reconf (
 					7'h28 : DO <= PowerReg;
 					7'h4E : DO <= FiltReg[1];
 					7'h4F : DO <= FiltReg[2];
-					default : $display("default");
+					default : begin
+						$display("There is no register under this address.");
+						$finish;
+					end
 				endcase
 			end
 		end else if (DRDY == 1'b0) begin
@@ -210,6 +232,9 @@ module dyn_reconf (
 			/* MX */
 			if (ClkReg2_FB[9:8] == 2'b00) begin
 				CLKFBOUT_PHASE <= CLKFBOUT_PHASE_;
+			end else begin
+				$display("MX has to be 2'b00.");
+				$finish();
 			end
 
 			/* NO COUNT */
@@ -222,18 +247,46 @@ module dyn_reconf (
 			/* MX */
 			if (ClkReg2[0][9:8] == 2'b00)
 				CLKOUT0_PHASE <= CLKOUT_PHASE[0];
+			else begin
+				$display("MX has to be 2'b00.");
+				$finish();
+			end
 			if (ClkReg2[1][9:8] == 2'b00)
 				CLKOUT1_PHASE <= CLKOUT_PHASE[1];
+			else begin
+				$display("MX has to be 2'b00.");
+				$finish();
+			end
 			if (ClkReg2[2][9:8] == 2'b00)
 				CLKOUT2_PHASE <= CLKOUT_PHASE[2];
+			else begin
+				$display("MX has to be 2'b00.");
+				$finish();
+			end
 			if (ClkReg2[3][9:8] == 2'b00)
 				CLKOUT3_PHASE <= CLKOUT_PHASE[3];
+			else begin
+				$display("MX has to be 2'b00.");
+				$finish();
+			end
 			if (ClkReg2[4][9:8] == 2'b00)
 				CLKOUT4_PHASE <= CLKOUT_PHASE[4];
+			else begin
+				$display("MX has to be 2'b00.");
+				$finish();
+			end
 			if (ClkReg2[5][9:8] == 2'b00)
 				CLKOUT5_PHASE <= CLKOUT_PHASE[5];
+			else begin
+				$display("MX has to be 2'b00.");
+				$finish();
+			end
 			if (ClkReg2[6][9:8] == 2'b00)
 				CLKOUT6_PHASE <= CLKOUT_PHASE[6];
+			else begin
+				$display("MX has to be 2'b00.");
+				$finish();
+			end
 
 			/* NO COUNT */
 			if (ClkReg2[0][6]) begin
