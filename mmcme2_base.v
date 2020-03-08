@@ -21,14 +21,13 @@ module PLLE2_BASE #(
 	/* is ignored, but should be set */
 	parameter CLKIN1_PERIOD			= 0.000,
 
-	parameter CLKOUT0_DIVIDE		= 1,
+	parameter CLKOUT0_DIVIDE_F		= 1.000,
 	parameter CLKOUT1_DIVIDE		= 1,
 	parameter CLKOUT2_DIVIDE		= 1,
 	parameter CLKOUT3_DIVIDE		= 1,
 	parameter CLKOUT4_DIVIDE		= 1,
 	parameter CLKOUT5_DIVIDE		= 1,
 	parameter CLKOUT6_DIVIDE		= 1,
-	parameter CLKOUT0_DIVIDE_F		= 1.000,
 
 	parameter CLKOUT0_DUTY_CYCLE	= 0.500,
 	parameter CLKOUT1_DUTY_CYCLE	= 0.500,

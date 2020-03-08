@@ -16,8 +16,8 @@ module freq_gen (
 	input [31:0] M,
 	/* global divisor in the PLL */
 	input [31:0] D,
-	/* output specific divisor in the PLL */
-	input [31:0] O,
+	/* output specific divisor in the PLL, multiplied by 1000 */
+	input [31:0] O_1000,
 
 	input RST,
 	input PWRDWN,
@@ -51,9 +51,9 @@ module freq_gen (
 			 * point number. Multiplying the out_period_length_1000 by 1000 is an
 			 * easy solution to returning floating point numbers.
 			 */
-			out_period_length_1000 <= (ref_period * ((D * O * 1.0) / M) * 1000);
+			out_period_length_1000 <= (ref_period * ((D * (O_1000 / 1000.0) * 1.0) / M) * 1000);
 			out <= ~out;
-			#((ref_period * ((D * O * 1.0) / M)) / 2.0);
+			#((ref_period * ((D * (O_1000 / 1000.0) * 1.0) / M)) / 2.0);
 		end else begin
 			out <= 1'b0;
 			#1;

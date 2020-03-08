@@ -21,8 +21,8 @@
 	`define D 1
 `endif
 
-`ifndef O
-	`define O 1
+`ifndef O_1000
+	`define O_1000 1000
 `endif
 
 module freq_gen_tb ();
@@ -46,7 +46,7 @@ module freq_gen_tb ();
 	freq_gen dut (
 		.M(`M),
 		.D(`D),
-		.O(`O),
+		.O_1000(`O_1000),
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.ref_period(ref_period_length),
@@ -99,7 +99,7 @@ module freq_gen_tb ();
 
 		#(`WAIT_INTERVAL - (ref_period_length + 11));
 		/* use 1.0 to calculate floating point numbers */
-		if ($floor(`WAIT_INTERVAL / highs_counted) == $floor(ref_period_length * ((`D * `O * 1.0) / `M))) begin
+		if ($floor(`WAIT_INTERVAL / highs_counted) == $floor(ref_period_length * ((`D * (`O_1000 / 1000.0) * 1.0) / `M))) begin
 			$display("PASSED: ref period = 20");
 			pass_count = pass_count + 1;
 		end else begin
@@ -112,7 +112,7 @@ module freq_gen_tb ();
 		#`WAIT_INTERVAL;
 		period_stable = 1;
 		#`WAIT_INTERVAL;
-		if ($floor((`WAIT_INTERVAL + ref_period_length) / highs_counted) == $floor(ref_period_length * ((`D * `O * 1.0) / `M))) begin
+		if ($floor((`WAIT_INTERVAL + ref_period_length) / highs_counted) == $floor(ref_period_length * ((`D * (`O_1000 / 1000.0) * 1.0) / `M))) begin
 			$display("PASSED: ref period = 10");
 			pass_count = pass_count + 1;
 		end else begin

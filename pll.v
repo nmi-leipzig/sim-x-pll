@@ -22,14 +22,13 @@ module pll #(
 	parameter CLKIN1_PERIOD			= 0.0,
 	parameter CLKIN2_PERIOD			= 0.0,
 
-	parameter CLKOUT0_DIVIDE		= 1,
+	parameter CLKOUT0_DIVIDE_F		= 1.0,
 	parameter CLKOUT1_DIVIDE		= 1,
 	parameter CLKOUT2_DIVIDE		= 1,
 	parameter CLKOUT3_DIVIDE		= 1,
 	parameter CLKOUT4_DIVIDE		= 1,
 	parameter CLKOUT5_DIVIDE		= 1,
 	parameter CLKOUT6_DIVIDE		= 1,
-	parameter CLKOUT0_DIVIDE_F		= 1.0,
 
 	parameter CLKOUT0_DUTY_CYCLE	= 0.5,
 	parameter CLKOUT1_DUTY_CYCLE	= 0.5,
@@ -112,7 +111,7 @@ module pll #(
 	wire [31:0] clkin_period_length_1000;
 
 	/* internal values */
-	reg [31:0] CLKOUT_DIVIDE_INT[0:6];
+	reg [31:0] CLKOUT_DIVIDE_INT_1000[0:6];
 	reg [31:0] CLKOUT_DUTY_CYCLE_INT_1000[0:6];
 	reg [31:0] CLKOUT_PHASE_INT[0:6];
 	reg [31:0] CLKFBOUT_MULT_F_INT_1000;
@@ -159,7 +158,7 @@ module pll #(
 			freq_gen fg (
 				.M(CLKFBOUT_MULT_F_INT_1000 / 1000.0),
 				.D(DIVCLK_DIVIDE_INT),
-				.O(CLKOUT_DIVIDE_INT[i]),
+				.O_1000(CLKOUT_DIVIDE_INT_1000[i]),
 				.RST(RST),
 				.PWRDWN(PWRDWN),
 				.period_stable(period_stable),
@@ -193,7 +192,7 @@ module pll #(
 	freq_gen fb_fg (
 		.M(CLKFBOUT_MULT_F_INT_1000 / 1000.0),
 		.D(DIVCLK_DIVIDE_INT),
-		.O(1.0),
+		.O_1000(1000.0),
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
@@ -286,7 +285,7 @@ module pll #(
 	always @* begin
 		for (k = 0; k <= 6; k = k + 1) begin
 			if (CLKOUT_DIVIDE_DYN[k] != 0)
-				CLKOUT_DIVIDE_INT[k] = CLKOUT_DIVIDE_DYN[k];
+				CLKOUT_DIVIDE_INT_1000[k] = CLKOUT_DIVIDE_DYN[k] * 1000;
 			if (CLKOUT_DUTY_CYCLE_DYN_1000[k] != 0)
 				CLKOUT_DUTY_CYCLE_INT_1000[k] = CLKOUT_DUTY_CYCLE_DYN_1000[k];
 			if (CLKOUT_PHASE_DYN[k] != 0)
@@ -303,13 +302,16 @@ module pll #(
 	reg invalid = 1'b0;
 	/* check if the given values are valid */
 	initial begin
-		CLKOUT_DIVIDE_INT[0] = CLKOUT0_DIVIDE;
-		CLKOUT_DIVIDE_INT[1] = CLKOUT1_DIVIDE;
-		CLKOUT_DIVIDE_INT[2] = CLKOUT2_DIVIDE;
-		CLKOUT_DIVIDE_INT[3] = CLKOUT3_DIVIDE;
-		CLKOUT_DIVIDE_INT[4] = CLKOUT4_DIVIDE;
-		CLKOUT_DIVIDE_INT[5] = CLKOUT5_DIVIDE;
-		CLKOUT_DIVIDE_INT[6] = CLKOUT6_DIVIDE;
+		CLKOUT_DIVIDE_INT_1000[0] = CLKOUT0_DIVIDE_F * 1000;
+		CLKOUT_DIVIDE_INT_1000[1] = CLKOUT1_DIVIDE * 1000;
+		CLKOUT_DIVIDE_INT_1000[2] = CLKOUT2_DIVIDE * 1000;
+		CLKOUT_DIVIDE_INT_1000[3] = CLKOUT3_DIVIDE * 1000;
+		if (CLKOUT4_CASCADE == "FALSE")
+			CLKOUT_DIVIDE_INT_1000[4] = CLKOUT4_DIVIDE * 1000;
+		else if (CLKOUT4_CASCADE == "TRUE")
+			CLKOUT_DIVIDE_INT_1000[4] = CLKOUT4_DIVIDE * CLKOUT6_DIVIDE * 1000;
+		CLKOUT_DIVIDE_INT_1000[5] = CLKOUT5_DIVIDE * 1000;
+		CLKOUT_DIVIDE_INT_1000[6] = CLKOUT6_DIVIDE * 1000;
 
 		CLKOUT_DUTY_CYCLE_INT_1000[0] = CLKOUT0_DUTY_CYCLE * 1000;
 		CLKOUT_DUTY_CYCLE_INT_1000[1] = CLKOUT1_DUTY_CYCLE * 1000;
@@ -347,7 +349,7 @@ module pll #(
 		end else if (CLKIN2_PERIOD < 0.000 || CLKIN2_PERIOD > 52.631) begin
 			$display("CLKIN2_PERIOD is not in the allowed range (0 - 52.631).");
 			invalid = 1'b1;
-		end else if (CLKOUT0_DIVIDE < 1 || CLKOUT0_DIVIDE > 128 ||
+		end else if (CLKOUT0_DIVIDE_F < 1 || CLKOUT0_DIVIDE_F > 128 ||
 					 CLKOUT1_DIVIDE < 1 || CLKOUT1_DIVIDE > 128 ||
 					 CLKOUT2_DIVIDE < 1 || CLKOUT2_DIVIDE > 128 ||
 					 CLKOUT3_DIVIDE < 1 || CLKOUT3_DIVIDE > 128 ||

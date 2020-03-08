@@ -266,7 +266,6 @@ module dyn_reconf_tb ();
 			fail_count = fail_count + 1;
 		end
 
-
 		//TODO: test for non existing address
 
 		if ((pass_count + fail_count) == total) begin
