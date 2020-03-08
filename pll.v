@@ -110,13 +110,12 @@ module pll #(
 	wire [31:0] clkin_period_length_1000;
 
 	/* internal values */
-	reg [31:0] CLKOUT_DIVIDE_INT[0:5];
-	reg [31:0] CLKOUT_DUTY_CYCLE_INT_1000[0:5];
-	reg [31:0] CLKOUT_PHASE_INT[0:5];
-	reg [31:0] CLKFBOUT_MULT_INT;
+	reg [31:0] CLKOUT_DIVIDE_INT[0:6];
+	reg [31:0] CLKOUT_DUTY_CYCLE_INT_1000[0:6];
+	reg [31:0] CLKOUT_PHASE_INT[0:6];
 	reg [31:0] CLKFBOUT_PHASE_INT;
 	reg [31:0] DIVCLK_DIVIDE_INT;
-	wire CLKOUT_INT[0:5];
+	wire CLKOUT_INT[0:6];
 
 	assign CLKOUT0 = CLKOUT_INT[0];
 	assign CLKOUT1 = CLKOUT_INT[1];
@@ -124,6 +123,7 @@ module pll #(
 	assign CLKOUT3 = CLKOUT_INT[3];
 	assign CLKOUT4 = CLKOUT_INT[4];
 	assign CLKOUT5 = CLKOUT_INT[5];
+	assign CLKOUT6 = CLKOUT_INT[6];
 
 	/* Used to determine the period length of the divided CLK */
 	period_count #(
@@ -144,15 +144,15 @@ module pll #(
 		.period_length((clkin_period_length_1000 / 1000.0)),
 		.period_stable(period_stable));
 
-	wire out[0:5];
-	wire [31:0] out_period_length_1000[0:5];
-	wire lock[0:5];
+	wire out[0:6];
+	wire [31:0] out_period_length_1000[0:6];
+	wire lock[0:6];
 
 	/* frequency generators */
 	genvar i;
 
 	generate
-		for (i = 0; i <= 5; i = i + 1) begin : fg
+		for (i = 0; i <= 6; i = i + 1) begin : fg
 			freq_gen fg (
 				.M(CLKFBOUT_MULT_INT),
 				.D(DIVCLK_DIVIDE_INT),
@@ -169,7 +169,7 @@ module pll #(
 
 	/* phase shift */
 	generate
-		for (i = 0; i <= 5; i = i + 1) begin : ps
+		for (i = 0; i <= 6; i = i + 1) begin : ps
 			phase_shift ps (
 				.RST(RST),
 				.PWRDWN(PWRDWN),
@@ -210,10 +210,10 @@ module pll #(
 		.clk_shifted(CLKFBOUT));
 
 	/* dynamically set values */
-	wire [31:0] CLKOUT_DIVIDE_DYN[0:5];
-	wire [31:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:5];
-	wire [31:0] CLKOUT_PHASE_DYN[0:5];
 	wire [31:0] CLKFBOUT_MULT_DYN;
+	wire [31:0] CLKOUT_DIVIDE_DYN[0:6];
+	wire [31:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:6];
+	wire [31:0] CLKOUT_PHASE_DYN[0:6];
 	wire [31:0] CLKFBOUT_PHASE_DYN;
 	wire [31:0] DIVCLK_DIVIDE_DYN;
 
@@ -257,13 +257,16 @@ module pll #(
 		.CLKOUT5_PHASE(CLKOUT_PHASE_DYN[5]),
 
 		.CLKFBOUT_MULT(CLKFBOUT_MULT_DYN),
+		.CLKOUT6_DIVIDE(CLKOUT_DIVIDE_DYN[6]),
+		.CLKOUT6_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[6]),
+		.CLKOUT6_PHASE(CLKOUT_PHASE_DYN[6]),
 		.CLKFBOUT_PHASE(CLKFBOUT_PHASE_DYN),
 
 		.DIVCLK_DIVIDE(DIVCLK_DIVIDE_DYN));
 
 
 	/* lock detection using the lock information given by the phase shift modules */
-	assign LOCKED = lock[0] & lock[1] & lock[2] & lock[3] & lock[4] & lock[5] & fb_lock;
+	assign LOCKED = lock[0] & lock[1] & lock[2] & lock[3] & lock[4] & lock[5] & lock[6] & fb_lock;
 
 	/* set clkin to the correct CLKIN */
 	always @* begin
@@ -277,7 +280,7 @@ module pll #(
 	integer k;
 	/* set the internal values to the dynamically set */
 	always @* begin
-		for (k = 0; k <= 5; k = k + 1) begin
+		for (k = 0; k <= 6; k = k + 1) begin
 			if (CLKOUT_DIVIDE_DYN[k] != 0)
 				CLKOUT_DIVIDE_INT[k] = CLKOUT_DIVIDE_DYN[k];
 			if (CLKOUT_DUTY_CYCLE_DYN_1000[k] != 0)
@@ -302,6 +305,7 @@ module pll #(
 		CLKOUT_DIVIDE_INT[3] = CLKOUT3_DIVIDE;
 		CLKOUT_DIVIDE_INT[4] = CLKOUT4_DIVIDE;
 		CLKOUT_DIVIDE_INT[5] = CLKOUT5_DIVIDE;
+		CLKOUT_DIVIDE_INT[6] = CLKOUT6_DIVIDE;
 
 		CLKOUT_DUTY_CYCLE_INT_1000[0] = CLKOUT0_DUTY_CYCLE * 1000;
 		CLKOUT_DUTY_CYCLE_INT_1000[1] = CLKOUT1_DUTY_CYCLE * 1000;
@@ -309,6 +313,7 @@ module pll #(
 		CLKOUT_DUTY_CYCLE_INT_1000[3] = CLKOUT3_DUTY_CYCLE * 1000;
 		CLKOUT_DUTY_CYCLE_INT_1000[4] = CLKOUT4_DUTY_CYCLE * 1000;
 		CLKOUT_DUTY_CYCLE_INT_1000[5] = CLKOUT5_DUTY_CYCLE * 1000;
+		CLKOUT_DUTY_CYCLE_INT_1000[6] = CLKOUT6_DUTY_CYCLE * 1000;
 
 		CLKOUT_PHASE_INT[0] = CLKOUT0_PHASE;
 		CLKOUT_PHASE_INT[1] = CLKOUT1_PHASE;
@@ -316,6 +321,7 @@ module pll #(
 		CLKOUT_PHASE_INT[3] = CLKOUT3_PHASE;
 		CLKOUT_PHASE_INT[4] = CLKOUT4_PHASE;
 		CLKOUT_PHASE_INT[5] = CLKOUT5_PHASE;
+		CLKOUT_PHASE_INT[6] = CLKOUT6_PHASE;
 
 		CLKFBOUT_MULT_INT = CLKFBOUT_MULT;
 		CLKFBOUT_PHASE_INT = CLKFBOUT_PHASE;
@@ -342,7 +348,8 @@ module pll #(
 					 CLKOUT2_DIVIDE < 1 || CLKOUT2_DIVIDE > 128 ||
 					 CLKOUT3_DIVIDE < 1 || CLKOUT3_DIVIDE > 128 ||
 					 CLKOUT4_DIVIDE < 1 || CLKOUT4_DIVIDE > 128 ||
-					 CLKOUT5_DIVIDE < 1 || CLKOUT5_DIVIDE > 128) begin
+					 CLKOUT5_DIVIDE < 1 || CLKOUT5_DIVIDE > 128 ||
+					 CLKOUT6_DIVIDE < 1 || CLKOUT6_DIVIDE > 128) begin
 			$display("One of the CLKOUTn_DIVIDE parameters is not in the allowed range (1-128).");
 			invalid = 1'b1;
 		end else if (CLKOUT0_DUTY_CYCLE < 0.001 || CLKOUT0_DUTY_CYCLE > 0.999 ||
@@ -350,7 +357,8 @@ module pll #(
 					 CLKOUT2_DUTY_CYCLE < 0.001 || CLKOUT2_DUTY_CYCLE > 0.999 ||
 					 CLKOUT3_DUTY_CYCLE < 0.001 || CLKOUT3_DUTY_CYCLE > 0.999 ||
 					 CLKOUT4_DUTY_CYCLE < 0.001 || CLKOUT4_DUTY_CYCLE > 0.999 ||
-					 CLKOUT5_DUTY_CYCLE < 0.001 || CLKOUT5_DUTY_CYCLE > 0.999) begin
+					 CLKOUT5_DUTY_CYCLE < 0.001 || CLKOUT5_DUTY_CYCLE > 0.999 ||
+					 CLKOUT6_DUTY_CYCLE < 0.001 || CLKOUT6_DUTY_CYCLE > 0.99) begin
 			$display("One of the CLKOUTn_DUTY_CYCLE parameters is not in the allowed range (0.001-0.999).");
 			invalid = 1'b1;
 		end else if (CLKOUT0_PHASE < -360.000 || CLKOUT0_PHASE > 360.000 ||
@@ -358,7 +366,8 @@ module pll #(
 					 CLKOUT2_PHASE < -360.000 || CLKOUT2_PHASE > 360.000 ||
 					 CLKOUT3_PHASE < -360.000 || CLKOUT3_PHASE > 360.000 ||
 					 CLKOUT4_PHASE < -360.000 || CLKOUT4_PHASE > 360.000 ||
-					 CLKOUT5_PHASE < -360.000 || CLKOUT5_PHASE > 360.000) begin
+					 CLKOUT5_PHASE < -360.000 || CLKOUT5_PHASE > 360.000 ||
+					 CLKOUT6_PHASE < -360.000 || CLKOUT6_PHASE > 360.000) begin
 			$display("One of the CLKOUTn_PHASE parameters is not in the allowed range (-360.00-360.00).");
 			invalid = 1'b1;
 		end else if (DIVCLK_DIVIDE < 1 || DIVCLK_DIVIDE > 56) begin
