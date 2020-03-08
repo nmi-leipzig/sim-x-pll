@@ -99,6 +99,12 @@ module pll #(
 	/* ready flag for next operation */
 	output DRDY);
 
+	/* assign inverted outputs */
+	assign CLKOUT0B = ~CLKOUT0;
+	assign CLKOUT1B = ~CLKOUT1;
+	assign CLKOUT2B = ~CLKOUT2;
+	assign CLKOUT3B = ~CLKOUT3;
+	assign CLKFBOUTB = ~CLKFBOUT;
 	/* gets assigned to the chosen CLKIN */
 	reg clkin;
 	wire [31:0] clkin_period_length_1000;
