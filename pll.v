@@ -15,7 +15,7 @@ module pll #(
 	/* not implemented */
 	parameter BANDWIDTH 			= "OPTIMIZED",
 
-	parameter CLKFBOUT_MULT 		= 5,
+	parameter CLKFBOUT_MULT_F		= 5.0,
 	parameter CLKFBOUT_PHASE 		= 0.0,
 
 	/* need to be set */
@@ -28,6 +28,8 @@ module pll #(
 	parameter CLKOUT3_DIVIDE		= 1,
 	parameter CLKOUT4_DIVIDE		= 1,
 	parameter CLKOUT5_DIVIDE		= 1,
+	parameter CLKOUT6_DIVIDE		= 1,
+	parameter CLKOUT0_DIVIDE_F		= 1.0,
 
 	parameter CLKOUT0_DUTY_CYCLE	= 0.5,
 	parameter CLKOUT1_DUTY_CYCLE	= 0.5,
@@ -35,6 +37,7 @@ module pll #(
 	parameter CLKOUT3_DUTY_CYCLE	= 0.5,
 	parameter CLKOUT4_DUTY_CYCLE	= 0.5,
 	parameter CLKOUT5_DUTY_CYCLE	= 0.5,
+	parameter CLKOUT6_DUTY_CYCLE	= 0.5,
 
 	parameter CLKOUT0_PHASE			= 0.0,
 	parameter CLKOUT1_PHASE			= 0.0,
@@ -42,7 +45,9 @@ module pll #(
 	parameter CLKOUT3_PHASE			= 0.0,
 	parameter CLKOUT4_PHASE			= 0.0,
 	parameter CLKOUT5_PHASE			= 0.0,
+	parameter CLKOUT6_PHASE			= 0.0,
 
+	parameter CLKOUT4_CASCADE		= "FALSE",
 	parameter DIVCLK_DIVIDE			= 1,
 
 	/* not implemented */
@@ -50,44 +55,49 @@ module pll #(
 	parameter REF_JITTER2			= 0.010,
 	parameter STARTUP_WAIT			= "FALSE",
 	parameter COMPENSATION			= "ZHOLD")(
-	output 	CLKOUT0,
-	output 	CLKOUT1,
-	output 	CLKOUT2,
-	output 	CLKOUT3,
-	output 	CLKOUT4,
-	output 	CLKOUT5,
+	output CLKOUT0,
+	output CLKOUT0B,
+	output CLKOUT1,
+	output CLKOUT1B,
+	output CLKOUT2,
+	output CLKOUT2B,
+	output CLKOUT3,
+	output CLKOUT3B,
+	output CLKOUT4,
+	output CLKOUT5,
+	output CLKOUT6,
 	/* PLL feedback output. */
-	output 	CLKFBOUT,
+	output CLKFBOUT,
+	output CLKFBOUTB,
 
-	output	LOCKED,
+	output LOCKED,
 
-	input 	CLKIN1,
-	input 	CLKIN2,
+	input CLKIN1,
+	input CLKIN2,
 	/* Select input clk. 1 for CLKIN1, 0 for CLKIN2 */
-	input 	CLKINSEL,
+	input CLKINSEL,
 	/* PLL feedback input. Is ignored in this implementation, but should be connected to CLKFBOUT for internal feedback. */
-	input 	CLKFBIN,
+	input CLKFBIN,
 
 	/* Used to power down instatiated but unused PLLs */
-	input	PWRDWN,
-	input	RST,
+	input PWRDWN,
+	input RST,
 
 	/* Dynamic reconfiguration ports */
 	/* register address to write to or read from */
-	input 	[6:0] DADDR,
+	input [6:0] DADDR,
 	/* reference clk */
-	input 	DCLK,
+	input DCLK,
 	/* enable dynamic reconfiguration (read only) */
-	input 	DEN,
+	input DEN,
 	/* enable writing */
-	input 	DWE,
+	input DWE,
 	/* what to write */
-	input 	[15:0] DI,
-
+	input [15:0] DI,
 	/* read values */
-	output	[15:0] DO,
+	output [15:0] DO,
 	/* ready flag for next operation */
-	output	DRDY);
+	output DRDY);
 
 	/* gets assigned to the chosen CLKIN */
 	reg clkin;
