@@ -2,7 +2,7 @@
  * mmcme2_base.v: Simulates the MMCME2_BASE pll of the Xilinx 7 series. This
  * is just a wrapper around the actual logic found in pll.v
  * author: Till Mahlburg
- * year: 2019-2020
+ * year: 2020
  * organization: Universität Leipzig
  * license: ISC
  *

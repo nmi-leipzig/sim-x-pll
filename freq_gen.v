@@ -3,7 +3,7 @@
  * 	the inputs provided. Starts frequency generation on the first rising
  *	edge of the input clk after the period_stable input is 1.
  * author: Till Mahlburg
- * year: 2019
+ * year: 2019-2020
  * organization: Universität Leipzig
  * license: ISC
  *
