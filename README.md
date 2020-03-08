@@ -106,14 +106,14 @@ To learn more about the instantiation of the module, you should read [Xilinx UG9
 - tests for RST, PWRDWN, output frequency, output phase and output duty cycle
 - applying CLKFBOUT_MULT to multiply the output frequency
 - applying CLKFBOUT_PHASE to set a phase shift to every output
-- setting CLKINSEL and selecting one of two input clocks
-- basic dynamic reconfiguration functionality
+- setting CLKINSEL and selecting one of two input clocks (PLLE2_ADV)
+- basic dynamic reconfiguration functionality (PLLE2_ADV)
 
 ### Not Working
 - there is no feedback loop by design
 - BANDWIDTH, REF_JITTER1, REF_JITTER2, COMPENSATION and STARTUP_WAIT settings won't work with the current design approach
 - connecting CLKFBIN to any other clock than CLKFBOUT won't work with the current design approach
-- dynamic reconfiguration only has an effect in the ClkReg1 and ClkReg2 registers
+- dynamic reconfiguration only has an effect in the ClkReg1 and ClkReg2 registers (PLLE2_ADV)
 
 ## Test
 
@@ -138,7 +138,7 @@ This diagram roughly outlines the basic architecture of the project for PLLE2_BA
 
 ## License
 
-This project is licensed under the ISC license.
+This project is licensed under the [ISC license](https://github.com/ti-leipzig/sim-x-pll/blob/master/LICENSE).
 
 ## FAQ
 
@@ -161,5 +161,3 @@ Also there is a limitation in the PLL regarding the possible frequency. They dep
 
 <h3 id="pll-choosing">Which PLL should I choose?</h3>
 The main differences between the two versions are the support for two input clocks and dynamic reconfiguration in PLLE2_ADV. For a more in-depth overview of the differences see [UGS472 page 70](https://www.xilinx.com/support/documentation/user_guides/ug472_7Series_Clocking.pdf).
-
-### How do I use the dynamic reconfiguration features?
