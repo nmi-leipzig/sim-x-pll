@@ -58,7 +58,7 @@ module dyn_reconf (
 	output reg [31:0] CLKOUT5_PHASE,
 	output reg [31:0] CLKOUT6_PHASE,
 
-	output reg [31:0] CLKFBOUT_MULT,
+	output reg [31:0] CLKFBOUT_MULT_F_1000,
 	output reg [31:0] CLKFBOUT_PHASE,
 
 	output reg [31:0] DIVCLK_DIVIDE);
@@ -224,9 +224,9 @@ module dyn_reconf (
 
 			/* PHASE */
 			if (ClkReg2_FB[6]) begin
-				CLKFBOUT_MULT <= 1;
+				CLKFBOUT_MULT_F_1000 <= 1000;
 			end else begin
-				CLKFBOUT_MULT <= CLKFBOUT_MULT_;
+				CLKFBOUT_MULT_F_1000 <= CLKFBOUT_MULT_ * 1000;
 			end
 
 			/* MX */
