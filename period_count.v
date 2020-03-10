@@ -21,13 +21,12 @@ module period_count #(
 
 	/* count up continuously with the given resolution */
 	always begin
-		#0.001;
 		if (RST) begin
 			period_counter <= 0;
 		end else begin
 			period_counter <= period_counter + 1;
 		end
-		#(RESOLUTION - 0.001);
+		#RESOLUTION;
 	end
 
 	/* output counted value and reset counter on every rising clk edge */
