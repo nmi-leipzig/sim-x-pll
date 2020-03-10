@@ -238,7 +238,9 @@ module MMCME2_BASE_tb();
 	genvar i;
 	generate
 		for (i = 0; i <= 6; i = i + 1) begin : period_count
-			period_count period_count (
+			period_count #(
+				.RESOLUTION(0.01))
+			period_count (
 				.RST(reset),
 				.clk(CLKOUT[i]),
 				.period_length_1000(period_1000[i]));
@@ -329,7 +331,6 @@ module MMCME2_BASE_tb();
 				pass_count = pass_count + 1;
 			end else begin
 				$display("FAILED: CLKOUT%0d inverted output", k);
-				$display("%0d, %0d", CLKOUTB[k], CLKOUT[k]);
 				fail_count = fail_count + 1;
 			end
 		end
