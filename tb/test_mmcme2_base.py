@@ -21,45 +21,45 @@ class Mmcme2BaseTest(Test, test_base.Mixin):
         # change to workdir so simulation process find the source files
         os.chdir(self.workdir)
 
-    def generic_plle2_base_test(self,
-                                wait_interval=1000,
-                                bandwidth=r'\"OPTIMIZED\"',
+    def generic_mmcme2_base_test(self,
+                                 wait_interval=1000,
+                                 bandwidth=r'\"OPTIMIZED\"',
 
-                                clkfbout_mult_f=5.000,
-                                clkfbout_phase=0.000,
+                                 clkfbout_mult_f=5.000,
+                                 clkfbout_phase=0.000,
 
-                                clkin1_period=5.000,
+                                 clkin1_period=5.000,
 
-                                clkout0_divide_f=1.000,
-                                clkout1_divide=1,
-                                clkout2_divide=1,
-                                clkout3_divide=1,
-                                clkout4_divide=1,
-                                clkout5_divide=1,
-                                clkout6_divide=1,
+                                 clkout0_divide_f=1.000,
+                                 clkout1_divide=1,
+                                 clkout2_divide=1,
+                                 clkout3_divide=1,
+                                 clkout4_divide=1,
+                                 clkout5_divide=1,
+                                 clkout6_divide=1,
 
-                                clkout0_duty_cycle=0.500,
-                                clkout1_duty_cycle=0.500,
-                                clkout2_duty_cycle=0.500,
-                                clkout3_duty_cycle=0.500,
-                                clkout4_duty_cycle=0.500,
-                                clkout5_duty_cycle=0.500,
-                                clkout6_duty_cycle=0.500,
+                                 clkout0_duty_cycle=0.500,
+                                 clkout1_duty_cycle=0.500,
+                                 clkout2_duty_cycle=0.500,
+                                 clkout3_duty_cycle=0.500,
+                                 clkout4_duty_cycle=0.500,
+                                 clkout5_duty_cycle=0.500,
+                                 clkout6_duty_cycle=0.500,
 
-                                clkout0_phase=0.000,
-                                clkout1_phase=0.000,
-                                clkout2_phase=0.000,
-                                clkout3_phase=0.000,
-                                clkout4_phase=0.000,
-                                clkout5_phase=0.000,
-                                clkout6_phase=0.000,
+                                 clkout0_phase=0.000,
+                                 clkout1_phase=0.000,
+                                 clkout2_phase=0.000,
+                                 clkout3_phase=0.000,
+                                 clkout4_phase=0.000,
+                                 clkout5_phase=0.000,
+                                 clkout6_phase=0.000,
 
-                                clkout4_cascade=r'\"FALSE\"',
+                                 clkout4_cascade=r'\"FALSE\"',
 
-                                divclk_divide=1,
+                                 divclk_divide=1,
 
-                                ref_jitter1=0.010,
-                                startup_wait=r'\"FALSE\"'):
+                                 ref_jitter1=0.010,
+                                 startup_wait=r'\"FALSE\"'):
         """test mmcme2 base"""
 
         test_files = ["mmcme2_base_tb.v"]
@@ -172,4 +172,21 @@ class Mmcme2BaseTest(Test, test_base.Mixin):
         :avocado: tags:quick,verilog
         """
 
-        self.generic_plle2_base_test()
+        self.generic_mmcme2_base_test()
+
+    def test_mmcme2_base_clkout0(self):
+        """
+        :avocado: tags:quick,verilog
+        """
+
+        self.generic_mmcme2_base_test(clkout0_divide_f=2.5,
+                                      clkout0_duty_cycle=0.6)
+
+    def test_mmcme2_base_clkfbout(self):
+        """
+        :avocado: tags:quick,verilog
+        """
+
+        self.generic_mmcme2_base_test(clkfbout_mult_f=5.5,
+                                      clkfbout_phase=10,
+                                      clkin1_period=5.5)
