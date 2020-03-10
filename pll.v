@@ -129,7 +129,7 @@ module pll #(
 
 	/* Used to determine the period length of the divided CLK */
 	period_count #(
-		.RESOLUTION(0.1))
+		.RESOLUTION(0.01))
 	period_count (
 		.RST(RST),
 		.PWRDWN(PWRDWN),
@@ -156,13 +156,13 @@ module pll #(
 	generate
 		for (i = 0; i <= 6; i = i + 1) begin : fg
 			freq_gen fg (
-				.M(CLKFBOUT_MULT_F_INT_1000 / 1000.0),
+				.M_1000(CLKFBOUT_MULT_F_INT_1000),
 				.D(DIVCLK_DIVIDE_INT),
 				.O_1000(CLKOUT_DIVIDE_INT_1000[i]),
 				.RST(RST),
 				.PWRDWN(PWRDWN),
 				.period_stable(period_stable),
-				.ref_period((clkin_period_length_1000 / 1000.0)),
+				.ref_period_1000((clkin_period_length_1000)),
 				.clk(clkin),
 				.out(out[i]),
 				.out_period_length_1000(out_period_length_1000[i]));
@@ -190,13 +190,13 @@ module pll #(
 
 	/* CLKOUTFB */
 	freq_gen fb_fg (
-		.M(CLKFBOUT_MULT_F_INT_1000 / 1000.0),
+		.M_1000(CLKFBOUT_MULT_F_INT_1000),
 		.D(DIVCLK_DIVIDE_INT),
 		.O_1000(1000.0),
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period((clkin_period_length_1000 / 1000.0)),
+		.ref_period_1000((clkin_period_length_1000)),
 		.clk(clkin),
 		.out(fb_out),
 		.out_period_length_1000(fb_out_period_length_1000));
