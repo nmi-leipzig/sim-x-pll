@@ -22,7 +22,7 @@
 	`define BANDWIDTH "OPTIMIZED"
 `endif
 `ifndef CLKFBOUT_MULT_F
-	`define CLKFBOUT_MULT 5.000
+	`define CLKFBOUT_MULT_F 5.000
 `endif
 `ifndef CLKFBOUT_PHASE
 	`define CLKFBOUT_PHASE 0.000
@@ -33,7 +33,7 @@
 `endif
 
 `ifndef CLKOUT0_DIVIDE_F
-	`define CLKOUT0_DIVIDE 1.000
+	`define CLKOUT0_DIVIDE_F 1.000
 `endif
 `ifndef CLKOUT1_DIVIDE
 	`define CLKOUT1_DIVIDE 1
@@ -135,7 +135,7 @@ module MMCME2_BASE_tb();
 	integer	pass_count;
 	integer	fail_count;
 	/* change according to the number of test cases */
-	localparam total = 23;
+	localparam total = 31;
 
 	reg reset;
 	wire [31:0] period_1000[0:6];
@@ -153,23 +153,26 @@ module MMCME2_BASE_tb();
 	assign CLKOUT_DIVIDE_1000[2] = `CLKOUT2_DIVIDE * 1000;
 	assign CLKOUT_DIVIDE_1000[3] = `CLKOUT3_DIVIDE * 1000;
 	assign CLKOUT_DIVIDE_1000[4] = `CLKOUT4_DIVIDE * 1000;
-	assign CLKOUT_DIVIDE_1000[5] = `CLKOUT5_DIVIDE;
+	assign CLKOUT_DIVIDE_1000[5] = `CLKOUT5_DIVIDE * 1000;
+	assign CLKOUT_DIVIDE_1000[6] = `CLKOUT6_DIVIDE * 1000;
 
-	wire [31:0] CLKOUT_DUTY_CYCLE_1000[0:5];
+	wire [31:0] CLKOUT_DUTY_CYCLE_1000[0:6];
 	assign CLKOUT_DUTY_CYCLE_1000[0] = (`CLKOUT0_DUTY_CYCLE * 1000);
 	assign CLKOUT_DUTY_CYCLE_1000[1] = (`CLKOUT1_DUTY_CYCLE * 1000);
 	assign CLKOUT_DUTY_CYCLE_1000[2] = (`CLKOUT2_DUTY_CYCLE * 1000);
 	assign CLKOUT_DUTY_CYCLE_1000[3] = (`CLKOUT3_DUTY_CYCLE * 1000);
 	assign CLKOUT_DUTY_CYCLE_1000[4] = (`CLKOUT4_DUTY_CYCLE * 1000);
 	assign CLKOUT_DUTY_CYCLE_1000[5] = (`CLKOUT5_DUTY_CYCLE * 1000);
+	assign CLKOUT_DUTY_CYCLE_1000[6] = (`CLKOUT6_DUTY_CYCLE * 1000);
 
-	wire [31:0] CLKOUT_PHASE_1000[0:5];
+	wire [31:0] CLKOUT_PHASE_1000[0:6];
 	assign CLKOUT_PHASE_1000[0] = (`CLKOUT0_PHASE * 1000);
 	assign CLKOUT_PHASE_1000[1] = (`CLKOUT1_PHASE * 1000);
 	assign CLKOUT_PHASE_1000[2] = (`CLKOUT2_PHASE * 1000);
 	assign CLKOUT_PHASE_1000[3] = (`CLKOUT3_PHASE * 1000);
 	assign CLKOUT_PHASE_1000[4] = (`CLKOUT4_PHASE * 1000);
 	assign CLKOUT_PHASE_1000[5] = (`CLKOUT5_PHASE * 1000);
+	assign CLKOUT_PHASE_1000[6] = (`CLKOUT6_PHASE * 1000);
 
 	/* instantiate PLLE2_BASE with default values for all the attributes */
 	MMCME2_BASE #(
@@ -209,27 +212,28 @@ module MMCME2_BASE_tb();
 		.STARTUP_WAIT(`STARTUP_WAIT))
 	dut (
 		.CLKOUT0(CLKOUT[0]),
-		.CLKOUT0B(CLKOUTB[0]),
 		.CLKOUT1(CLKOUT[1]),
-		.CLKOUT1B(CLKOUTB[1]),
 		.CLKOUT2(CLKOUT[2]),
-		.CLKOUT2B(CLKOUTB[2]),
 		.CLKOUT3(CLKOUT[3]),
-		.CLKOUT3B(CLKOUTB[3]),
 		.CLKOUT4(CLKOUT[4]),
 		.CLKOUT5(CLKOUT[5]),
 		.CLKOUT6(CLKOUT[6]),
 
+		.CLKOUT0B(CLKOUTB[0]),
+		.CLKOUT1B(CLKOUTB[1]),
+		.CLKOUT2B(CLKOUTB[2]),
+		.CLKOUT3B(CLKOUTB[3]),
+
 		.CLKFBOUT(CLKFBOUT),
 		.CLKFBOUTB(CLKFBOUTB),
+
 		.LOCKED(LOCKED),
 
 		.CLKIN1(CLKIN1),
 
 		.PWRDWN(PWRDWN),
 		.RST(RST),
-		.CLKFBIN(CLKFBIN)
-	);
+		.CLKFBIN(CLKFBIN));
 
 	genvar i;
 	generate
@@ -243,17 +247,17 @@ module MMCME2_BASE_tb();
 		for (i = 0; i <= 6; i = i + 1) begin : dcc
 			duty_cycle_check dcc (
 				.desired_duty_cycle_1000(CLKOUT_DUTY_CYCLE_1000[i]),
-				.clk_period_1000((`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * (CLKOUT_DIVIDE_1000[i] / 1000.0)) / `CLKFBOUT_MULT)) * 1000),
+				.clk_period_1000(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE_1000[i]) / `CLKFBOUT_MULT_F)),
 				.clk(CLKOUT[i]),
 				.reset(reset),
 				.LOCKED(LOCKED),
 				.fail(dcc_fail[i]));
 		end
 
-		for (i = 0; i <= 5; i = i + 1) begin : psc
+		for (i = 0; i <= 6; i = i + 1) begin : psc
 			phase_shift_check psc (
 				.desired_shift_1000(CLKOUT_PHASE_1000[i]),
-				.clk_period_1000(1000 * `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * (CLKOUT_DIVIDE_1000[i] / 1000.0)) / `CLKFBOUT_MULT)),
+				.clk_period_1000(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE_1000[i]) / `CLKFBOUT_MULT_F)),
 				.clk_shifted(CLKOUT[i]),
 				.clk(CLKFBOUT),
 				.rst(RST),
@@ -269,7 +273,7 @@ module MMCME2_BASE_tb();
 
 	phase_shift_check pscfb (
 		.desired_shift_1000(`CLKFBOUT_PHASE * 1000),
-		.clk_period_1000(`CLKIN1_PERIOD * (`DIVCLK_DIVIDE / `CLKFBOUT_MULT) * 1000),
+		.clk_period_1000(`CLKIN1_PERIOD * (`DIVCLK_DIVIDE / `CLKFBOUT_MULT_F) * 1000),
 		.clk_shifted(CLKFBOUT),
 		.clk(CLKIN1),
 		.rst(RST),
@@ -282,8 +286,8 @@ module MMCME2_BASE_tb();
 	integer k;
 
 	initial begin
-		$dumpfile("plle2_base_tb.vcd");
-		$dumpvars(0, PLLE2_BASE_tb);
+		$dumpfile("mmcme2_base_tb.vcd");
+		$dumpvars(0, MMCME2_BASE_tb);
 
 		pass_count = 0;
 		fail_count = 0;
@@ -296,7 +300,7 @@ module MMCME2_BASE_tb();
 		reset = 1;
 		RST = 1;
 		#10;
-		if ((CLKOUT[0] & CLKOUT[1] & CLKOUT[2] & CLKOUT[3] & CLKOUT[4] & CLKOUT[5] & CLKOUT[6] & CLKFBOUT & LOCKED) == 0) begin
+		if ((CLKOUT[0] & CLKOUT[1] & CLKOUT[2] & CLKOUT[3] & CLKOUT[4] & CLKOUT[5] & CLKOUT[6] & ~CLKOUTB[0] & ~CLKOUTB[1] & ~CLKOUTB[2] & ~CLKOUTB[3] & CLKFBOUT & ~CLKFBOUTB & LOCKED) == 0) begin
 			$display("PASSED: RST signal");
 			pass_count = pass_count + 1;
 		end else begin
@@ -318,10 +322,29 @@ module MMCME2_BASE_tb();
 			fail_count = fail_count + 1;
 		end
 
+		/*------- INVERTED OUTPUTS --*/
+		for (k = 0; k <= 3; k = k + 1) begin
+			if (CLKOUTB[k] == ~CLKOUT[k]) begin
+				$display("PASSED: CLKOUT%0d inverted output", k);
+				pass_count = pass_count + 1;
+			end else begin
+				$display("FAILED: CLKOUT%0d inverted output", k);
+				$display("%0d, %0d", CLKOUTB[k], CLKOUT[k]);
+				fail_count = fail_count + 1;
+			end
+		end
+
+		if (CLKFBOUTB == ~CLKFBOUT) begin
+			$display("PASSED: CLKFBOUT inverted output");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKFBOUT inverted output");
+			fail_count = fail_count + 1;
+		end
 
 		/*------- FREQUENCY ---------*/
 		for (k = 0; k <= 6; k = k + 1) begin
-			if ((period_1000[k] / 1000.0 == `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * (CLKOUT_DIVIDE_1000[k] / 1000.0) * 1.0) / `CLKFBOUT_MULT))) begin
+			if ((period_1000[k] / 1000.0 == `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * (CLKOUT_DIVIDE_1000[k] / 1000.0) * 1.0) / `CLKFBOUT_MULT_F))) begin
 				$display("PASSED: CLKOUT%0d frequency", k);
 				pass_count = pass_count + 1;
 			end else begin
@@ -330,7 +353,7 @@ module MMCME2_BASE_tb();
 			end
 		end
 
-		if ((period_1000_fb / 1000.0) == (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * 1.0) / `CLKFBOUT_MULT))) begin
+		if ((period_1000_fb / 1000.0) == (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * 1.0) / `CLKFBOUT_MULT_F))) begin
 			$display("PASSED: CLKFBOUT frequency");
 			pass_count = pass_count + 1;
 		end else begin
@@ -372,7 +395,7 @@ module MMCME2_BASE_tb();
 
 		PWRDWN = 1;
 		#100;
-		if ((CLKOUT[0] & CLKOUT[1] & CLKOUT[2] & CLKOUT[3] & CLKOUT[4] & CLKOUT[5] & CLKOUT[6] & CLKFBOUT) === 1'bx) begin
+		if ((CLKOUT[0] & CLKOUT[1] & CLKOUT[2] & CLKOUT[3] & CLKOUT[4] & CLKOUT[5] & CLKOUT[6] & CLKOUTB[0] & CLKOUTB[1] & CLKOUTB[2] & CLKOUTB[3] & CLKFBOUT & CLKFBOUTB & LOCKED) === 1'bx) begin
 			$display("PASSED: PWRDWN");
 			pass_count = pass_count + 1;
 		end else begin

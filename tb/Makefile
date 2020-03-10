@@ -1,10 +1,10 @@
 VC	= iverilog
 
-test: period_check_test freq_gen_test period_count_test high_counter_test phase_shift_test plle2_base_test plle2_adv_test dyn_reconf_test
+test: period_check_test freq_gen_test period_count_test high_counter_test phase_shift_test plle2_base_test plle2_adv_test dyn_reconf_test mmcme2_base_test
 
-build_all: period_check_build freq_gen_build freq_gen_build period_count_build high_counter_build phase_shift_build plle2_base_build pll_led_build plle2_adv_build dyn_reconf_build
+build: period_check_build freq_gen_build freq_gen_build period_count_build high_counter_build phase_shift_build plle2_base_build pll_led_build plle2_adv_build dyn_reconf_build mmcme2_base_build
 
-build_pll: plle2_base_build plle2_adv_build
+test_pll: plle2_base_build plle2_adv_build mmcme2_base_test
 
 
 pll_led_build: ../pll_example/pll_example.srcs/sources_1/new/pll_led_tb.v ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v ../pll.v ../dyn_reconf.v
@@ -41,6 +41,11 @@ plle2_base_build: ../plle2_base.v ../period_count.v ../period_check.v ../freq_ge
 	- $(VC) ../plle2_base.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v ../pll.v ../dyn_reconf.v ../duty_cycle_check.v ../phase_shift_check.v plle2_base_tb.v -o plle2_base_tb
 plle2_base_test: plle2_base_build
 	- vvp plle2_base_tb
+
+mmcme2_base_build: ../mmcme2_base.v ../period_count.v ../period_check.v ../freq_gen.v ../phase_shift.v ../pll.v ../dyn_reconf.v ../phase_shift_check.v ../duty_cycle_check.v mmcme2_base_tb.v
+	- $(VC) ../mmcme2_base.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v ../pll.v ../dyn_reconf.v ../duty_cycle_check.v ../phase_shift_check.v mmcme2_base_tb.v -o mmcme2_base_tb
+mmcme2_base_test: mmcme2_base_build
+	- vvp mmcme2_base_tb
 
 plle2_adv_build: ../plle2_adv.v ../period_count.v ../period_check.v ../freq_gen.v ../phase_shift.v ../pll.v ../dyn_reconf.v ../duty_cycle_check.v ../phase_shift_check.v plle2_adv_tb.v
 	- $(VC) ../plle2_adv.v ../period_check.v ../period_count.v ../freq_gen.v ../phase_shift.v ../dyn_reconf.v ../duty_cycle_check.v ../phase_shift_check.v plle2_adv_tb.v ../pll.v -o plle2_adv_tb
