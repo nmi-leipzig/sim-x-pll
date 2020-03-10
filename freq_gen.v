@@ -12,8 +12,8 @@
 `timescale 1 ns / 1 ps
 
 module freq_gen (
-	/* global multiplier in the PLL */
-	input [31:0] M,
+	/* global multiplier in the PLL, multiplied by 1000 */
+	input [31:0] M_1000,
 	/* global divisor in the PLL */
 	input [31:0] D,
 	/* output specific divisor in the PLL, multiplied by 1000 */
@@ -23,7 +23,7 @@ module freq_gen (
 	input PWRDWN,
 	/* informs the module if the given period length (ref_period) can be trusted */
 	input period_stable,
-	input [31:0] ref_period,
+	input [31:0] ref_period_1000,
 	/* needed to achieve phase lock, by detecting the first rising edge of the clk
 	 * and aligning the output clk to it */
 	input clk,
@@ -44,16 +44,16 @@ module freq_gen (
 			out <= 1'b0;
 			start <= 1'b0;
 			#1;
-		end else if (ref_period > 0 && start) begin
+		end else if (ref_period_1000 > 0 && start) begin
 			/* The formula used is based on Equation 3-2 on page 72 of Xilinx UG472,
 			 * but adjusted to calculate the period length not the frequency.
 			 * Multiplying by 1.0 forces verilog to calculate with floating
 			 * point number. Multiplying the out_period_length_1000 by 1000 is an
 			 * easy solution to returning floating point numbers.
 			 */
-			out_period_length_1000 <= (ref_period * ((D * (O_1000 / 1000.0) * 1.0) / M) * 1000);
+			out_period_length_1000 <= ((ref_period_1000 / 1000.0) * ((D * (O_1000 / 1000.0) * 1.0) / (M_1000 / 1000.0)) * 1000);
 			out <= ~out;
-			#((ref_period * ((D * (O_1000 / 1000.0) * 1.0) / M)) / 2.0);
+			#(((ref_period_1000 / 1000.0) * ((D * (O_1000 / 1000.0) * 1.0) / (M_1000 / 1000.0))) / 2.0);
 		end else begin
 			out <= 1'b0;
 			#1;
@@ -63,7 +63,7 @@ module freq_gen (
 	/* detect the first rising edge of the input clk, after period_stable is achieved */
 	always @(posedge clk) begin
 		if (period_stable && !start) begin
-			#(ref_period - 1);
+			#((ref_period_1000 / 1000.0) - 1);
 			start <= 1'b1;
 		end else if (!period_stable) begin
 			start <= 1'b0;
