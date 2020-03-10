@@ -11,7 +11,7 @@
 `timescale 1 ns / 1 ps
 
 /* A reference for the interface can be found in Xilinx UG953 page 461ff */
-module PLLE2_BASE #(
+module MMCME2_BASE #(
 	/* not implemented */
 	parameter BANDWIDTH 			= "OPTIMIZED",
 
@@ -50,7 +50,7 @@ module PLLE2_BASE #(
 	parameter DIVCLK_DIVIDE			= 1,
 
 	/* both not implemented */
-	parameter REF_JITTER1			= 0.0,
+	parameter REF_JITTER1			= 0.010,
 	parameter STARTUP_WAIT			= "FALSE")(
 	output CLKOUT0,
 	output CLKOUT0B,
