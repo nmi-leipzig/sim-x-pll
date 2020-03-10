@@ -344,12 +344,33 @@ module MMCME2_BASE_tb();
 
 		/*------- FREQUENCY ---------*/
 		for (k = 0; k <= 6; k = k + 1) begin
-			if ((period_1000[k] / 1000.0 == `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * (CLKOUT_DIVIDE_1000[k] / 1000.0) * 1.0) / `CLKFBOUT_MULT_F))) begin
-				$display("PASSED: CLKOUT%0d frequency", k);
-				pass_count = pass_count + 1;
+			if (k == 4 && `CLKOUT4_CASCADE == "TRUE") begin
+				// Check for CLKOUT4 correctly, if CLKOUT4_CASCADE is set
+				if ((period_1000[k] / 1000.0) == (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * ((CLKOUT_DIVIDE_1000[k] * CLKOUT_DIVIDE_1000[k+2]) / 1000.0))/ `CLKFBOUT_MULT_F))) begin
+					$display("PASSED: CLKOUT%0d frequency with CLKOUT4_CASCADE", k);
+					pass_count = pass_count + 1;
+				end else begin
+					$display("FAILED: CLKOUT%0d frequency with CLKOUT4_CASCADE", k);
+					fail_count = fail_count + 1;
+				end
+			end else if (k == 6 && `CLKOUT4_CASCADE == "TRUE") begin
+				/* Don't check against the CLKOUT6 divider, because it is
+				 * used by CLKOUT4 */
+				if ((period_1000[k] / 1000.0) == `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * 1.0) / `CLKFBOUT_MULT_F)) begin
+					$display("PASSED: CLKOUT%0d frequeny with CLKOUT4_CASCADE", k);
+					pass_count = pass_count + 1;
+				end else begin
+					$display("FAILED: CLKOUT%0d frequeny with CLKOUT4_CASCADE", k);
+					fail_count = fail_count + 1;
+				end
 			end else begin
-				$display("FAILED: CLKOUT%0d frequency", k);
-				fail_count = fail_count + 1;
+				if ((period_1000[k] / 1000.0) == `CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * (CLKOUT_DIVIDE_1000[k] / 1000.0) * 1.0) / `CLKFBOUT_MULT_F)) begin
+					$display("PASSED: CLKOUT%0d frequency", k);
+					pass_count = pass_count + 1;
+				end else begin
+					$display("FAILED: CLKOUT%0d frequency", k);
+					fail_count = fail_count + 1;
+				end
 			end
 		end
 
