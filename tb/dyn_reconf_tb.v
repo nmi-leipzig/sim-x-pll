@@ -56,7 +56,7 @@ module dyn_reconf_tb ();
 	wire [31:0] CLKOUT5_PHASE;
 	wire [31:0] CLKOUT6_PHASE;
 
-	wire [31:0] CLKFBOUT_MULT;
+	wire [31:0] CLKFBOUT_MULT_F_1000;
 	wire [31:0] CLKFBOUT_PHASE;
 
 	wire [31:0] DIVCLK_DIVIDE;
@@ -111,7 +111,7 @@ module dyn_reconf_tb ();
 		.CLKOUT6_DUTY_CYCLE_1000(CLKOUT6_DUTY_CYCLE),
 		.CLKOUT6_PHASE(CLKOUT6_PHASE),
 
-		.CLKFBOUT_MULT(CLKFBOUT_MULT),
+		.CLKFBOUT_MULT_F_1000(CLKFBOUT_MULT_F_1000),
 		.CLKFBOUT_PHASE(CLKFBOUT_PHASE),
 
 		.DIVCLK_DIVIDE(DIVCLK_DIVIDE));
@@ -265,7 +265,6 @@ module dyn_reconf_tb ();
 			$display("FAILED: ClkReg2 PHASE calculation");
 			fail_count = fail_count + 1;
 		end
-
 
 		//TODO: test for non existing address
 

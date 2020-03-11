@@ -15,19 +15,20 @@ module pll #(
 	/* not implemented */
 	parameter BANDWIDTH 			= "OPTIMIZED",
 
-	parameter CLKFBOUT_MULT 		= 5,
+	parameter CLKFBOUT_MULT_F		= 5.0,
 	parameter CLKFBOUT_PHASE 		= 0.0,
 
 	/* need to be set */
 	parameter CLKIN1_PERIOD			= 0.0,
 	parameter CLKIN2_PERIOD			= 0.0,
 
-	parameter CLKOUT0_DIVIDE		= 1,
+	parameter CLKOUT0_DIVIDE_F		= 1.0,
 	parameter CLKOUT1_DIVIDE		= 1,
 	parameter CLKOUT2_DIVIDE		= 1,
 	parameter CLKOUT3_DIVIDE		= 1,
 	parameter CLKOUT4_DIVIDE		= 1,
 	parameter CLKOUT5_DIVIDE		= 1,
+	parameter CLKOUT6_DIVIDE		= 1,
 
 	parameter CLKOUT0_DUTY_CYCLE	= 0.5,
 	parameter CLKOUT1_DUTY_CYCLE	= 0.5,
@@ -35,6 +36,7 @@ module pll #(
 	parameter CLKOUT3_DUTY_CYCLE	= 0.5,
 	parameter CLKOUT4_DUTY_CYCLE	= 0.5,
 	parameter CLKOUT5_DUTY_CYCLE	= 0.5,
+	parameter CLKOUT6_DUTY_CYCLE	= 0.5,
 
 	parameter CLKOUT0_PHASE			= 0.0,
 	parameter CLKOUT1_PHASE			= 0.0,
@@ -42,6 +44,9 @@ module pll #(
 	parameter CLKOUT3_PHASE			= 0.0,
 	parameter CLKOUT4_PHASE			= 0.0,
 	parameter CLKOUT5_PHASE			= 0.0,
+	parameter CLKOUT6_PHASE			= 0.0,
+
+	parameter CLKOUT4_CASCADE		= "FALSE",
 
 	parameter DIVCLK_DIVIDE			= 1,
 
@@ -50,57 +55,69 @@ module pll #(
 	parameter REF_JITTER2			= 0.010,
 	parameter STARTUP_WAIT			= "FALSE",
 	parameter COMPENSATION			= "ZHOLD")(
-	output 	CLKOUT0,
-	output 	CLKOUT1,
-	output 	CLKOUT2,
-	output 	CLKOUT3,
-	output 	CLKOUT4,
-	output 	CLKOUT5,
+	output CLKOUT0,
+	output CLKOUT0B,
+	output CLKOUT1,
+	output CLKOUT1B,
+	output CLKOUT2,
+	output CLKOUT2B,
+	output CLKOUT3,
+	output CLKOUT3B,
+	output CLKOUT4,
+	output CLKOUT5,
+	output CLKOUT6,
 	/* PLL feedback output. */
-	output 	CLKFBOUT,
+	output CLKFBOUT,
+	output CLKFBOUTB,
 
-	output	LOCKED,
+	output LOCKED,
 
-	input 	CLKIN1,
-	input 	CLKIN2,
+	input CLKIN1,
+	input CLKIN2,
 	/* Select input clk. 1 for CLKIN1, 0 for CLKIN2 */
-	input 	CLKINSEL,
+	input CLKINSEL,
 	/* PLL feedback input. Is ignored in this implementation, but should be connected to CLKFBOUT for internal feedback. */
-	input 	CLKFBIN,
+	input CLKFBIN,
 
 	/* Used to power down instatiated but unused PLLs */
-	input	PWRDWN,
-	input	RST,
+	input PWRDWN,
+	input RST,
 
 	/* Dynamic reconfiguration ports */
 	/* register address to write to or read from */
-	input 	[6:0] DADDR,
+	input [6:0] DADDR,
 	/* reference clk */
-	input 	DCLK,
+	input DCLK,
 	/* enable dynamic reconfiguration (read only) */
-	input 	DEN,
+	input DEN,
 	/* enable writing */
-	input 	DWE,
+	input DWE,
 	/* what to write */
-	input 	[15:0] DI,
-
+	input [15:0] DI,
 	/* read values */
-	output	[15:0] DO,
+	output [15:0] DO,
 	/* ready flag for next operation */
-	output	DRDY);
+	output DRDY);
+
+	/* assign inverted outputs */
+	assign CLKOUT0B = ~CLKOUT0;
+	assign CLKOUT1B = ~CLKOUT1;
+	assign CLKOUT2B = ~CLKOUT2;
+	assign CLKOUT3B = ~CLKOUT3;
+	assign CLKFBOUTB = ~CLKFBOUT;
 
 	/* gets assigned to the chosen CLKIN */
 	reg clkin;
 	wire [31:0] clkin_period_length_1000;
 
 	/* internal values */
-	reg [31:0] CLKOUT_DIVIDE_INT[0:5];
-	reg [31:0] CLKOUT_DUTY_CYCLE_INT_1000[0:5];
-	reg [31:0] CLKOUT_PHASE_INT[0:5];
-	reg [31:0] CLKFBOUT_MULT_INT;
+	reg [31:0] CLKOUT_DIVIDE_INT_1000[0:6];
+	reg [31:0] CLKOUT_DUTY_CYCLE_INT_1000[0:6];
+	reg [31:0] CLKOUT_PHASE_INT[0:6];
+	reg [31:0] CLKFBOUT_MULT_F_INT_1000;
 	reg [31:0] CLKFBOUT_PHASE_INT;
 	reg [31:0] DIVCLK_DIVIDE_INT;
-	wire CLKOUT_INT[0:5];
+	wire CLKOUT_INT[0:6];
 
 	assign CLKOUT0 = CLKOUT_INT[0];
 	assign CLKOUT1 = CLKOUT_INT[1];
@@ -108,10 +125,11 @@ module pll #(
 	assign CLKOUT3 = CLKOUT_INT[3];
 	assign CLKOUT4 = CLKOUT_INT[4];
 	assign CLKOUT5 = CLKOUT_INT[5];
+	assign CLKOUT6 = CLKOUT_INT[6];
 
 	/* Used to determine the period length of the divided CLK */
 	period_count #(
-		.RESOLUTION(0.1))
+		.RESOLUTION(0.01))
 	period_count (
 		.RST(RST),
 		.PWRDWN(PWRDWN),
@@ -128,23 +146,23 @@ module pll #(
 		.period_length((clkin_period_length_1000 / 1000.0)),
 		.period_stable(period_stable));
 
-	wire out[0:5];
-	wire [31:0] out_period_length_1000[0:5];
-	wire lock[0:5];
+	wire out[0:6];
+	wire [31:0] out_period_length_1000[0:6];
+	wire lock[0:6];
 
 	/* frequency generators */
 	genvar i;
 
 	generate
-		for (i = 0; i <= 5; i = i + 1) begin : fg
+		for (i = 0; i <= 6; i = i + 1) begin : fg
 			freq_gen fg (
-				.M(CLKFBOUT_MULT_INT),
+				.M_1000(CLKFBOUT_MULT_F_INT_1000),
 				.D(DIVCLK_DIVIDE_INT),
-				.O(CLKOUT_DIVIDE_INT[i]),
+				.O_1000(CLKOUT_DIVIDE_INT_1000[i]),
 				.RST(RST),
 				.PWRDWN(PWRDWN),
 				.period_stable(period_stable),
-				.ref_period((clkin_period_length_1000 / 1000.0)),
+				.ref_period_1000((clkin_period_length_1000)),
 				.clk(clkin),
 				.out(out[i]),
 				.out_period_length_1000(out_period_length_1000[i]));
@@ -153,7 +171,7 @@ module pll #(
 
 	/* phase shift */
 	generate
-		for (i = 0; i <= 5; i = i + 1) begin : ps
+		for (i = 0; i <= 6; i = i + 1) begin : ps
 			phase_shift ps (
 				.RST(RST),
 				.PWRDWN(PWRDWN),
@@ -172,13 +190,13 @@ module pll #(
 
 	/* CLKOUTFB */
 	freq_gen fb_fg (
-		.M(CLKFBOUT_MULT_INT),
+		.M_1000(CLKFBOUT_MULT_F_INT_1000),
 		.D(DIVCLK_DIVIDE_INT),
-		.O(1.0),
+		.O_1000(1000.0),
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.period_stable(period_stable),
-		.ref_period((clkin_period_length_1000 / 1000.0)),
+		.ref_period_1000((clkin_period_length_1000)),
 		.clk(clkin),
 		.out(fb_out),
 		.out_period_length_1000(fb_out_period_length_1000));
@@ -194,10 +212,10 @@ module pll #(
 		.clk_shifted(CLKFBOUT));
 
 	/* dynamically set values */
-	wire [31:0] CLKOUT_DIVIDE_DYN[0:5];
-	wire [31:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:5];
-	wire [31:0] CLKOUT_PHASE_DYN[0:5];
-	wire [31:0] CLKFBOUT_MULT_DYN;
+	wire [31:0] CLKOUT_DIVIDE_DYN[0:6];
+	wire [31:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:6];
+	wire [31:0] CLKOUT_PHASE_DYN[0:6];
+	wire [31:0] CLKFBOUT_MULT_F_DYN_1000;
 	wire [31:0] CLKFBOUT_PHASE_DYN;
 	wire [31:0] DIVCLK_DIVIDE_DYN;
 
@@ -240,14 +258,18 @@ module pll #(
 		.CLKOUT5_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[5]),
 		.CLKOUT5_PHASE(CLKOUT_PHASE_DYN[5]),
 
-		.CLKFBOUT_MULT(CLKFBOUT_MULT_DYN),
+		.CLKOUT6_DIVIDE(CLKOUT_DIVIDE_DYN[6]),
+		.CLKOUT6_DUTY_CYCLE_1000(CLKOUT_DUTY_CYCLE_DYN_1000[6]),
+		.CLKOUT6_PHASE(CLKOUT_PHASE_DYN[6]),
+
+		.CLKFBOUT_MULT_F_1000(CLKFBOUT_MULT_F_DYN_1000),
 		.CLKFBOUT_PHASE(CLKFBOUT_PHASE_DYN),
 
 		.DIVCLK_DIVIDE(DIVCLK_DIVIDE_DYN));
 
 
 	/* lock detection using the lock information given by the phase shift modules */
-	assign LOCKED = lock[0] & lock[1] & lock[2] & lock[3] & lock[4] & lock[5] & fb_lock;
+	assign LOCKED = lock[0] & lock[1] & lock[2] & lock[3] & lock[4] & lock[5] & lock[6] & fb_lock;
 
 	/* set clkin to the correct CLKIN */
 	always @* begin
@@ -261,16 +283,16 @@ module pll #(
 	integer k;
 	/* set the internal values to the dynamically set */
 	always @* begin
-		for (k = 0; k <= 5; k = k + 1) begin
+		for (k = 0; k <= 6; k = k + 1) begin
 			if (CLKOUT_DIVIDE_DYN[k] != 0)
-				CLKOUT_DIVIDE_INT[k] = CLKOUT_DIVIDE_DYN[k];
+				CLKOUT_DIVIDE_INT_1000[k] = CLKOUT_DIVIDE_DYN[k] * 1000;
 			if (CLKOUT_DUTY_CYCLE_DYN_1000[k] != 0)
 				CLKOUT_DUTY_CYCLE_INT_1000[k] = CLKOUT_DUTY_CYCLE_DYN_1000[k];
 			if (CLKOUT_PHASE_DYN[k] != 0)
 				CLKOUT_PHASE_INT[k] = CLKOUT_PHASE_DYN[k];
 		end
-		if (CLKFBOUT_MULT_DYN != 0)
-			CLKFBOUT_MULT_INT = CLKFBOUT_PHASE_DYN;
+		if (CLKFBOUT_MULT_F_DYN_1000 != 0)
+			CLKFBOUT_MULT_F_INT_1000 = CLKFBOUT_MULT_F_DYN_1000;
 		if (CLKFBOUT_PHASE_DYN != 0)
 			CLKFBOUT_PHASE_INT = CLKFBOUT_PHASE_DYN;
 		if (DIVCLK_DIVIDE_DYN != 0)
@@ -280,12 +302,18 @@ module pll #(
 	reg invalid = 1'b0;
 	/* check if the given values are valid */
 	initial begin
-		CLKOUT_DIVIDE_INT[0] = CLKOUT0_DIVIDE;
-		CLKOUT_DIVIDE_INT[1] = CLKOUT1_DIVIDE;
-		CLKOUT_DIVIDE_INT[2] = CLKOUT2_DIVIDE;
-		CLKOUT_DIVIDE_INT[3] = CLKOUT3_DIVIDE;
-		CLKOUT_DIVIDE_INT[4] = CLKOUT4_DIVIDE;
-		CLKOUT_DIVIDE_INT[5] = CLKOUT5_DIVIDE;
+		CLKOUT_DIVIDE_INT_1000[0] = CLKOUT0_DIVIDE_F * 1000;
+		CLKOUT_DIVIDE_INT_1000[1] = CLKOUT1_DIVIDE * 1000;
+		CLKOUT_DIVIDE_INT_1000[2] = CLKOUT2_DIVIDE * 1000;
+		CLKOUT_DIVIDE_INT_1000[3] = CLKOUT3_DIVIDE * 1000;
+		if (CLKOUT4_CASCADE == "FALSE") begin
+			CLKOUT_DIVIDE_INT_1000[4] = CLKOUT4_DIVIDE * 1000;
+			CLKOUT_DIVIDE_INT_1000[6] = CLKOUT6_DIVIDE * 1000;
+		end else if (CLKOUT4_CASCADE == "TRUE") begin
+			CLKOUT_DIVIDE_INT_1000[4] = CLKOUT4_DIVIDE * CLKOUT6_DIVIDE * 1000;
+			CLKOUT_DIVIDE_INT_1000[6] = 1000;
+		end
+		CLKOUT_DIVIDE_INT_1000[5] = CLKOUT5_DIVIDE * 1000;
 
 		CLKOUT_DUTY_CYCLE_INT_1000[0] = CLKOUT0_DUTY_CYCLE * 1000;
 		CLKOUT_DUTY_CYCLE_INT_1000[1] = CLKOUT1_DUTY_CYCLE * 1000;
@@ -293,6 +321,7 @@ module pll #(
 		CLKOUT_DUTY_CYCLE_INT_1000[3] = CLKOUT3_DUTY_CYCLE * 1000;
 		CLKOUT_DUTY_CYCLE_INT_1000[4] = CLKOUT4_DUTY_CYCLE * 1000;
 		CLKOUT_DUTY_CYCLE_INT_1000[5] = CLKOUT5_DUTY_CYCLE * 1000;
+		CLKOUT_DUTY_CYCLE_INT_1000[6] = CLKOUT6_DUTY_CYCLE * 1000;
 
 		CLKOUT_PHASE_INT[0] = CLKOUT0_PHASE;
 		CLKOUT_PHASE_INT[1] = CLKOUT1_PHASE;
@@ -300,8 +329,9 @@ module pll #(
 		CLKOUT_PHASE_INT[3] = CLKOUT3_PHASE;
 		CLKOUT_PHASE_INT[4] = CLKOUT4_PHASE;
 		CLKOUT_PHASE_INT[5] = CLKOUT5_PHASE;
+		CLKOUT_PHASE_INT[6] = CLKOUT6_PHASE;
 
-		CLKFBOUT_MULT_INT = CLKFBOUT_MULT;
+		CLKFBOUT_MULT_F_INT_1000 = CLKFBOUT_MULT_F * 1000;
 		CLKFBOUT_PHASE_INT = CLKFBOUT_PHASE;
 		DIVCLK_DIVIDE_INT = DIVCLK_DIVIDE;
 
@@ -309,8 +339,8 @@ module pll #(
 		if (!(BANDWIDTH == "OPTIMIZED" || BANDWIDTH == "HIGH" || BANDWIDTH == "LOW")) begin
 			$display("BANDWIDTH doesn't match any of its allowed inputs.");
 			invalid = 1'b1;
-		end else if (CLKFBOUT_MULT < 2 || CLKFBOUT > 64) begin
-			$display("CLKFBOUT_MULT is not in the allowed range (2-64).");
+		end else if (CLKFBOUT_MULT_F < 2 || CLKFBOUT > 64) begin
+			$display("CLKFBOUT_MULT_F is not in the allowed range (2-64).");
 			invalid = 1'b1;
 		end else if (CLKFBOUT_PHASE < -360.00 || CLKFBOUT_PHASE > 360.000) begin
 			$display("CLKFBOUT_PHASE is not in the allowed range (-360-360).");
@@ -321,12 +351,13 @@ module pll #(
 		end else if (CLKIN2_PERIOD < 0.000 || CLKIN2_PERIOD > 52.631) begin
 			$display("CLKIN2_PERIOD is not in the allowed range (0 - 52.631).");
 			invalid = 1'b1;
-		end else if (CLKOUT0_DIVIDE < 1 || CLKOUT0_DIVIDE > 128 ||
+		end else if (CLKOUT0_DIVIDE_F < 1 || CLKOUT0_DIVIDE_F > 128 ||
 					 CLKOUT1_DIVIDE < 1 || CLKOUT1_DIVIDE > 128 ||
 					 CLKOUT2_DIVIDE < 1 || CLKOUT2_DIVIDE > 128 ||
 					 CLKOUT3_DIVIDE < 1 || CLKOUT3_DIVIDE > 128 ||
 					 CLKOUT4_DIVIDE < 1 || CLKOUT4_DIVIDE > 128 ||
-					 CLKOUT5_DIVIDE < 1 || CLKOUT5_DIVIDE > 128) begin
+					 CLKOUT5_DIVIDE < 1 || CLKOUT5_DIVIDE > 128 ||
+					 CLKOUT6_DIVIDE < 1 || CLKOUT6_DIVIDE > 128) begin
 			$display("One of the CLKOUTn_DIVIDE parameters is not in the allowed range (1-128).");
 			invalid = 1'b1;
 		end else if (CLKOUT0_DUTY_CYCLE < 0.001 || CLKOUT0_DUTY_CYCLE > 0.999 ||
@@ -334,7 +365,8 @@ module pll #(
 					 CLKOUT2_DUTY_CYCLE < 0.001 || CLKOUT2_DUTY_CYCLE > 0.999 ||
 					 CLKOUT3_DUTY_CYCLE < 0.001 || CLKOUT3_DUTY_CYCLE > 0.999 ||
 					 CLKOUT4_DUTY_CYCLE < 0.001 || CLKOUT4_DUTY_CYCLE > 0.999 ||
-					 CLKOUT5_DUTY_CYCLE < 0.001 || CLKOUT5_DUTY_CYCLE > 0.999) begin
+					 CLKOUT5_DUTY_CYCLE < 0.001 || CLKOUT5_DUTY_CYCLE > 0.999 ||
+					 CLKOUT6_DUTY_CYCLE < 0.001 || CLKOUT6_DUTY_CYCLE > 0.99) begin
 			$display("One of the CLKOUTn_DUTY_CYCLE parameters is not in the allowed range (0.001-0.999).");
 			invalid = 1'b1;
 		end else if (CLKOUT0_PHASE < -360.000 || CLKOUT0_PHASE > 360.000 ||
@@ -342,7 +374,8 @@ module pll #(
 					 CLKOUT2_PHASE < -360.000 || CLKOUT2_PHASE > 360.000 ||
 					 CLKOUT3_PHASE < -360.000 || CLKOUT3_PHASE > 360.000 ||
 					 CLKOUT4_PHASE < -360.000 || CLKOUT4_PHASE > 360.000 ||
-					 CLKOUT5_PHASE < -360.000 || CLKOUT5_PHASE > 360.000) begin
+					 CLKOUT5_PHASE < -360.000 || CLKOUT5_PHASE > 360.000 ||
+					 CLKOUT6_PHASE < -360.000 || CLKOUT6_PHASE > 360.000) begin
 			$display("One of the CLKOUTn_PHASE parameters is not in the allowed range (-360.00-360.00).");
 			invalid = 1'b1;
 		end else if (DIVCLK_DIVIDE < 1 || DIVCLK_DIVIDE > 56) begin
@@ -360,15 +393,15 @@ module pll #(
 		end else if (!(COMPENSATION == "ZHOLD" || COMPENSATION == "BUF_IN" || COMPENSATION == "EXTERNAL" || COMPENSATION == "INTERNAL")) begin
 			$display("COMPENSATION doesn'T match any of its allowed inputs");
 			invalid = 1'b1;
-		end else if (((CLKFBOUT_MULT * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0) begin
-			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT, CLKIN1_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
-			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLKDIVIDE).");
-			$display("Currently the value is %0f.", ((CLKFBOUT_MULT * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)));
+		end else if (((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0) begin
+			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT_F, CLKIN1_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
+			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT_F * 1000) / (CLKIN1_PERIOD * DIVCLKDIVIDE).");
+			$display("Currently the value is %0f.", ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)));
 			invalid = 1'b1;
-		end else if (CLKIN2_PERIOD != 0.000 && (((CLKFBOUT_MULT * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0)) begin
-			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT, CLKIN2_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
-			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT * 1000) / (CLKIN2_PERIOD * DIVCLKDIVIDE).");
-			$display("Currently the value is %0f.", ((CLKFBOUT_MULT * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)));
+		end else if (CLKIN2_PERIOD != 0.000 && (((CLKFBOUT_MULT_F * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0)) begin
+			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT_F, CLKIN2_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
+			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT_F * 1000) / (CLKIN2_PERIOD * DIVCLKDIVIDE).");
+			$display("Currently the value is %0f.", ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)));
 			invalid = 1'b1;
 		end
 		/* delete this to simulate even if there are invalid values */

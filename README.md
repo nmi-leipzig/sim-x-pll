@@ -1,12 +1,12 @@
-# Xilinx 7 Series PLL Simulation
+# Xilinx 7 Series PLL and MMCM Simulation
 
-This project aims to simulate the behavior of the PLLE2_BASE as well as the PLLE2_ADV PLL found on the Xilinx 7 Series FPGAs. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff. This way you can just drop the files listed below into your project, instantiate the PLL like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
+This project aims to simulate the behavior of the PLLE2_BASE as well as the PLLE2_ADV PLL and the MMCME2_BASE MMCM found on the Xilinx 7 Series FPGAs. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff for the PLLs and 461ff for the MMCM. This way you can just drop the files listed below into your project, instantiate the PLL/MMCM like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
 
 ## Quickstart
 
 
 To use this module, you need to have the following files in your project:
-- ```plle2_base.v``` or ```plle2_adv.v```, depending on [which one you want](#pll-choosing)
+- ```plle2_base.v```, ```plle2_adv.v``` or ```mmcme2_base.v``` depending on [which one you want](#pll-choosing)
 - ```period_count.v```
 - ```period_check.v```
 - ```freq_gen.v```
@@ -18,7 +18,7 @@ To use this module, you need to have the following files in your project:
 
 
 To build and simulate your project, you can use [icarus verilog and vvp](http://iverilog.icarus.com/) and view the results in [GTKWave](http://gtkwave.sourceforge.net/):
-- ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>``` or ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>```, depending on which one you want
+- ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>```, ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>``` or ```iverilog mmcme2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>```, depending on which one you want
 - ```vvp <your project name>```
 - ```gtkwave dump.vcd```
 
@@ -108,6 +108,10 @@ To learn more about the instantiation of the module, you should read [Xilinx UG9
 - applying CLKFBOUT_PHASE to set a phase shift to every output
 - setting CLKINSEL and selecting one of two input clocks (PLLE2_ADV)
 - basic dynamic reconfiguration functionality (PLLE2_ADV)
+- CLKOUT6 (MMCME2_BASE)
+- CLKOUT0_DIVIDE_F for fractional divides (MMCME2_BASE),
+- CLKOUT4_CASCADE for using the divider of CLKOUT6 to divide the CLKOUT4 output again (MMCME2_BASE)
+- CLKFBOUT_MULT_F for fractional multipies (MMCME2_BASE)
 
 ### Not Working
 - there is no feedback loop by design
@@ -124,7 +128,7 @@ You can test this project automatically using avocado or make. The testbenches t
 
 - install avocado: [Documentation](https://avocado-framework.readthedocs.io/en/latest/#how-to-install)
 - change into the ```tb/``` folder
-- run ```$ avocado run test_freq_gen.py test_high_counter.py test_period_check.py test_period_count.py test_phase_shift.py test_plle2_adv.py test_plle2_base.py```
+- run ```$ avocado run test_freq_gen.py test_high_counter.py test_period_check.py test_period_count.py test_phase_shift.py test_plle2_adv.py test_plle2_base.py test_mmcme2_base.py```
 
 ### Make
 
@@ -143,22 +147,28 @@ This project is licensed under the [ISC license](https://github.com/ti-leipzig/s
 
 ## FAQ
 
-### Which limits does the PLL have?
+### What limits does the PLL/MMCM have?
 Use this table for parameters:
 
-| parameter          | allowed values             |
-| ------------------ | -------------------------- |
-| BANDWIDTH          | "OPTIMIZED", "HIGH", "LOW" |
-| CLKFBOUT_MULT      | 2 - 64                     |
-| CLKFBOUT_PHASE     | -360.000 - 360.000         |
-| CLKIN1_PERIOD      | 0 - 52.631                 |
-| CLKOUTn_DIVIDE     | 1 - 128                    |
-| CLKOUTn_DUTY_CYCLE | -360.000 - 360.000         |
-| DIVCLK_DIVIDE      | 1 - 56                     |
-| REF_JITTER1        | 0.000 - 0.999              |
-| STARTUP_WAIT       | "FALSE", "TRUE"            |
+| parameter          | allowed values                            |
+| ------------------ | ----------------------------------------- |
+| BANDWIDTH          | "OPTIMIZED", "HIGH", "LOW"                |
+| CLKFBOUT_MULT      | 2 - 64                                    |
+| CLKFBOUT_MULT_F	 | 2.000 - 64.000                            |
+| CLKFBOUT_PHASE     | -360.000 - 360.000                        |
+| CLKINn_PERIOD      | 0 - 52.631                                |
+| CLKOUTn_DIVIDE     | 1 - 128                                   |
+| CLKOUT0_DIVIDE_F   | 1.000 - 128.000                           |
+| CLKOUTn_DUTY_CYCLE | -360.000 - 360.000                        |
+| CLKOUT4_CASCADE    | "FALSE", "TRUE"                           |
+| DIVCLK_DIVIDE      | 1 - 56                                    |
+| REF_JITTERn        | 0.000 - 0.999                             |
+| STARTUP_WAIT       | "FALSE", "TRUE"                           |
+| COMPENSATION       | "ZHOLD", "BUF_IN", "EXTERNAL", "INTERNAL" |
 
 Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
 
-<h3 id="pll-choosing">Which PLL should I choose?</h3>
-The main differences between the two versions are the support for two input clocks and dynamic reconfiguration in PLLE2_ADV. For a more in-depth overview of the differences see [UGS472 page 70](https://www.xilinx.com/support/documentation/user_guides/ug472_7Series_Clocking.pdf).
+<h3 id="pll-choosing">Which PLL/MMCM should I choose?</h3>
+The main differences between the two PLL versions are the support for two input clocks and dynamic reconfiguration in PLLE2_ADV. For a more in-depth overview of the differences see [UGS472 page 70](https://www.xilinx.com/support/documentation/user_guides/ug472_7Series_Clocking.pdf).
+
+The MMCM offers an additional output (CLKOUT6), fractional divides for CLKOUT0 and CLKFBOUT (which functions as a fractional multiplier) and the possibility to use the divider of CLKOUT6 to divide CLKOUT4 again, allowing for divisors as high as 16384 (128 * 128).
