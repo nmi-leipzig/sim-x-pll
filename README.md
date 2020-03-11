@@ -168,7 +168,8 @@ Use this table for parameters:
 
 Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
 
-<h3 id="pll-choosing">Which PLL/MMCM should I choose?</h3>
+<h3 id="pll-choosing"></h3>
+### Which PLL/MMCM should I choose?
 The main differences between the two PLL versions are the support for two input clocks and dynamic reconfiguration in PLLE2_ADV. For a more in-depth overview of the differences see [UGS472 page 70](https://www.xilinx.com/support/documentation/user_guides/ug472_7Series_Clocking.pdf).
 
 
