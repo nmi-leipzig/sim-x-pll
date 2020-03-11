@@ -247,13 +247,31 @@ module MMCME2_BASE_tb();
 		end
 
 		for (i = 0; i <= 6; i = i + 1) begin : dcc
-			duty_cycle_check dcc (
-				.desired_duty_cycle_1000(CLKOUT_DUTY_CYCLE_1000[i]),
-				.clk_period_1000(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE_1000[i]) / `CLKFBOUT_MULT_F)),
-				.clk(CLKOUT[i]),
-				.reset(reset),
-				.LOCKED(LOCKED),
-				.fail(dcc_fail[i]));
+			if (i == 4 && `CLKOUT4_CASCADE == "TRUE") begin
+				duty_cycle_check dcc (
+					.desired_duty_cycle_1000(CLKOUT_DUTY_CYCLE_1000[i]),
+					.clk_period_1000(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * ((CLKOUT_DIVIDE_1000[4] * CLKOUT_DIVIDE_1000[6]) / 1000.0)) / `CLKFBOUT_MULT_F)),
+					.clk(CLKOUT[i]),
+					.reset(reset),
+					.LOCKED(LOCKED),
+					.fail(dcc_fail[i]));
+			end else if (i == 6 && `CLKOUT4_CASCADE == "TRUE") begin
+				duty_cycle_check dcc (
+					.desired_duty_cycle_1000(CLKOUT_DUTY_CYCLE_1000[i]),
+					.clk_period_1000(1000 * `CLKIN1_PERIOD * (`DIVCLK_DIVIDE / `CLKFBOUT_MULT_F)),
+					.clk(CLKOUT[i]),
+					.reset(reset),
+					.LOCKED(LOCKED),
+					.fail(dcc_fail[i]));
+			end else begin
+				duty_cycle_check dcc (
+					.desired_duty_cycle_1000(CLKOUT_DUTY_CYCLE_1000[i]),
+					.clk_period_1000(`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * CLKOUT_DIVIDE_1000[i]) / `CLKFBOUT_MULT_F)),
+					.clk(CLKOUT[i]),
+					.reset(reset),
+					.LOCKED(LOCKED),
+					.fail(dcc_fail[i]));
+			end
 		end
 
 		for (i = 0; i <= 6; i = i + 1) begin : psc
@@ -347,7 +365,7 @@ module MMCME2_BASE_tb();
 		for (k = 0; k <= 6; k = k + 1) begin
 			if (k == 4 && `CLKOUT4_CASCADE == "TRUE") begin
 				// Check for CLKOUT4 correctly, if CLKOUT4_CASCADE is set
-				if ((period_1000[k] / 1000.0) == (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * ((CLKOUT_DIVIDE_1000[k] * CLKOUT_DIVIDE_1000[k+2]) / 1000.0))/ `CLKFBOUT_MULT_F))) begin
+				if ((period_1000[k] / 1000.0) == (`CLKIN1_PERIOD * ((`DIVCLK_DIVIDE * ((CLKOUT_DIVIDE_1000[k] * CLKOUT_DIVIDE_1000[k+2]) / (1000.0 * 1000.0)))/ `CLKFBOUT_MULT_F))) begin
 					$display("PASSED: CLKOUT%0d frequency with CLKOUT4_CASCADE", k);
 					pass_count = pass_count + 1;
 				end else begin

@@ -190,3 +190,27 @@ class Mmcme2BaseTest(Test, test_base.Mixin):
         self.generic_mmcme2_base_test(clkfbout_mult_f=5.5,
                                       clkfbout_phase=10,
                                       clkin1_period=5.5)
+
+    def test_mmcme2_base_clkout6(self):
+        """
+        :avocado: tags:quick,verilog
+        """
+
+        self.generic_mmcme2_base_test(clkout6_divide=8,
+                                      clkout6_duty_cycle=0.125)
+
+    def test_mmcme2_base_clkout6_phase(self):
+        """
+        :avocado: tags:quick,verilog
+        """
+
+        self.generic_mmcme2_base_test(clkout6_phase=-11.111)
+
+    def test_mmcme2_base_clkout4_cascade(self):
+        """
+        :avocado: tags:quick,verilog
+        """
+
+        self.generic_mmcme2_base_test(clkout4_cascade=r'\"TRUE\"',
+                                      clkout4_divide=5,
+                                      clkout6_divide=10)
