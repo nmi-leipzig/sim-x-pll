@@ -2,7 +2,7 @@
  * phase_shift.v: Shifts the input clock by the given degree and can change
  	it's duty cycle.
  * author: Till Mahlburg
- * year: 2019
+ * year: 2019-2020
  * organization: Universität Leipzig
  * license: ISC
  *
@@ -23,8 +23,6 @@ module phase_shift (
 
 	output reg lock,
 	output reg clk_shifted);
-
-	reg start = 1'b0;
 
 	/* The formulas used here are composed of the following:
 	 * - clk_period_1000 / 1000.0 calculates the actual period length, which
