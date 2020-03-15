@@ -206,3 +206,15 @@ class Plle2AdvTest(Test, test_base.Mixin):
                                     clkout2_duty_cycle=0.85,
                                     clkout3_divide=2,
                                     clkout3_duty_cycle=0.666)
+
+    def test_plle2_adv_phase(self):
+        """
+        :avocado: tags:quick, verilog
+        """
+        self.generic_plle2_adv_test(clkfbout_phase=45,
+                                    clkout0_phase=22.5,
+                                    clkout1_phase=11.25,
+                                    clkout2_phase=90,
+                                    clkout3_phase=180,
+                                    clkout4_phase=270,
+                                    clkout5_phase=-45)
