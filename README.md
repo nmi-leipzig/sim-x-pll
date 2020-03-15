@@ -117,7 +117,7 @@ To learn more about the instantiation of the module, you should read [Xilinx UG9
 - there is no feedback loop by design
 - BANDWIDTH, REF_JITTER1, REF_JITTER2, COMPENSATION and STARTUP_WAIT settings won't work with the current design approach
 - connecting CLKFBIN to any other clock than CLKFBOUT won't work with the current design approach
-- dynamic reconfiguration only has an effect in the ClkReg1 and ClkReg2 registers (PLLE2_ADV)
+- dynamic reconfiguration only has an effect in the ClkReg1 and ClkReg2 registers as well as the DivReg register (PLLE2_ADV)
 - RESERVED bits in the dynamic reconfiguration are ignored (PLLE2_ADV)
 
 ## Test
