@@ -178,13 +178,13 @@ module PLLE2_ADV_tb();
 	wire psc_fail[0:5];
 	wire psc_fail_fb;
 
-	reg [31:0] CLKOUT_DIVIDE[0:5];
-	reg [31:0] CLKOUT_DUTY_CYCLE_1000[0:5];
-	reg [31:0] CLKOUT_PHASE_1000[0:5];
+	integer CLKOUT_DIVIDE[0:5];
+	integer CLKOUT_DUTY_CYCLE_1000[0:5];
+	integer CLKOUT_PHASE_1000[0:5];
 
-	reg [31:0] CLKFBOUT_MULT;
-	reg [31:0] CLKFBOUT_PHASE;
-	reg [31:0] DIVCLK_DIVIDE;
+	integer CLKFBOUT_MULT;
+	integer CLKFBOUT_PHASE;
+	integer DIVCLK_DIVIDE;
 
 	/* instantiate PLLE2_ADV with default values for all the attributes */
 	PLLE2_ADV #(
