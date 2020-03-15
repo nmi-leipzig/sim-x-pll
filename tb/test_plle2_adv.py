@@ -194,3 +194,14 @@ class Plle2AdvTest(Test, test_base.Mixin):
         self.generic_plle2_adv_test(
             clkfbout_mult=10, clkin1_period=6.000, clkin2_period=4.000,
             divclk_divide=2)
+
+    def test_plle2_adv_clkout1_clkout2_clkout3(self):
+        """
+        :avocado: tags:quick, verilog
+        """
+        self.generic_plle2_adv_test(clkout1_divide=5,
+                                    clkout1_duty_cycle=0.1,
+                                    clkout2_divide=10,
+                                    clkout2_duty_cycle=0.85,
+                                    clkout3_divide=2,
+                                    clkout3_duty_cycle=0.666)
