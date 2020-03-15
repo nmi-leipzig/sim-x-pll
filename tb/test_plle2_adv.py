@@ -22,7 +22,7 @@ class Plle2AdvTest(Test, test_base.Mixin):
         os.chdir(self.workdir)
 
     def generic_plle2_adv_test(self,
-                               wait_interval=1000,
+                               wait_interval=400,
                                bandwidth=r'\"OPTIMIZED\"',
 
                                clkfbout_mult=5,
