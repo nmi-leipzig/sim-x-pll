@@ -21,8 +21,12 @@ class FreqGenTest(Test, test_base.Mixin):
         # change to workdir so simulation process find the source files
         os.chdir(self.workdir)
 
-    def generic_freq_gen_test(self, wait_interval=1000, m_1000=1000, d=1, o_1000=1000):
-        """test period count"""
+    def generic_freq_gen_test(self,
+                              wait_interval=1000,
+                              m_1000=1000,
+                              d=1,
+                              o_1000=1000):
+       """test freq gen"""
 
         test_files = ["freq_gen_tb.v"]
         src_files = ["freq_gen.v", "high_counter.v"]
@@ -32,7 +36,8 @@ class FreqGenTest(Test, test_base.Mixin):
         verilog_files = test_files + src_files
 
         sim_res = self.simulate(verilog_files,
-                                "-DWAIT_INTERVAL={} -DM_1000={} -DD={} -DO_1000={}".
+                                "-DWAIT_INTERVAL={} -DM_1000={} -DD={} \
+                                -DO_1000={}".
                                 format(wait_interval, m_1000, d, o_1000))
         sim_output = sim_res.stdout_text
 
