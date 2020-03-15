@@ -183,14 +183,12 @@ class Plle2AdvTest(Test, test_base.Mixin):
         """
         :avocado: tags:quick,verilog
         """
-
         self.generic_plle2_adv_test()
 
     def test_plle2_adv_clkfbout_clkin_divclk(self):
         """
-        :avocado: tags: quick, verilog
+        :avocado: tags: quick,verilog
         """
-
         self.generic_plle2_adv_test(clkfbout_mult=10,
                                     clkin1_period=6.000,
                                     clkin2_period=4.000,
@@ -198,7 +196,7 @@ class Plle2AdvTest(Test, test_base.Mixin):
 
     def test_plle2_adv_clkout1_clkout2_clkout3(self):
         """
-        :avocado: tags:quick, verilog
+        :avocado: tags:quick,verilog
         """
         self.generic_plle2_adv_test(clkout1_divide=5,
                                     clkout1_duty_cycle=0.1,
@@ -209,7 +207,7 @@ class Plle2AdvTest(Test, test_base.Mixin):
 
     def test_plle2_adv_phase(self):
         """
-        :avocado: tags:quick, verilog
+        :avocado: tags:quick,verilog
         """
         self.generic_plle2_adv_test(clkfbout_phase=45,
                                     clkout0_phase=22.5,
@@ -218,3 +216,39 @@ class Plle2AdvTest(Test, test_base.Mixin):
                                     clkout3_phase=180,
                                     clkout4_phase=270,
                                     clkout5_phase=-45)
+
+    def test_plle2_adv_clkout1_dyn_reconf(self):
+        """
+        :avocado: tags:quick,verilog,dyn
+        """
+        self.generic_plle2_adv_test(daddr1=r'7\'h0A',
+                                    daddr2=r'7\'h0B',
+                                    di1=r'16\'b000_0_001111_000101',
+                                    di2=r'16\'b000000_00_1_0_000000')
+
+    def test_plle2_adv_clkout2_phase_dyn_reconf(self):
+        """
+        :avocado: tags:quick,verilog,dyn
+        """
+        self.generic_plle2_adv_test(daddr1=r'7\'h0C',
+                                    daddr2=r'7\'h0D',
+                                    di1=r'16\'b100_0_000011_000011',
+                                    di2=r'16\'b000000_00_0_1_000101')
+
+    def test_plle2_adv_clkfbout_dyn_reconf(self):
+        """
+        :avocado: tags:quick,verilog,dyn
+        """
+        self.generic_plle2_adv_test(daddr1=r'7\'h14',
+                                    daddr2=r'7\'h15',
+                                    di1=r'16\'b000_0_001001_000001',
+                                    di2=r'16\'b0_000_0_0_00_0_0_000000')
+
+    def test_plle2_adv_clkfbout_phase_dyn_reconf(self):
+        """
+        :avocado: tags:quick,verilog,dyn
+        """
+        self.generic_plle2_adv_test(daddr1=r'7\'h14',
+                                    daddr2=r'7\'h15',
+                                    di1=r'16\'b010_0_001001_000001',
+                                    di2=r'16\'b0_000_0_0_00_0_1_000111')
