@@ -186,6 +186,8 @@ module PLLE2_ADV_tb();
 	integer CLKFBOUT_PHASE;
 	integer DIVCLK_DIVIDE;
 
+	integer CLKIN_PERIOD_1000;
+
 	/* instantiate PLLE2_ADV with default values for all the attributes */
 	PLLE2_ADV #(
  		.BANDWIDTH(`BANDWIDTH),
@@ -262,7 +264,7 @@ module PLLE2_ADV_tb();
 		for (i = 0; i <= 5; i = i + 1) begin : dcc
 			duty_cycle_check dcc (
 				.desired_duty_cycle_1000(CLKOUT_DUTY_CYCLE_1000[i]),
-				.clk_period_1000((`CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / CLKFBOUT_MULT)) * 1000),
+				.clk_period_1000(((CLKIN_PERIOD_1000 / 1000.0) * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / CLKFBOUT_MULT)) * 1000),
 				.clk(CLKOUT[i]),
 				.reset(reset),
 				.LOCKED(LOCKED),
@@ -272,7 +274,7 @@ module PLLE2_ADV_tb();
 		for (i = 0; i <= 5; i = i + 1) begin : psc
 			phase_shift_check psc (
 				.desired_shift_1000(CLKOUT_PHASE_1000[i]),
-				.clk_period_1000(1000 * `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / CLKFBOUT_MULT)),
+				.clk_period_1000(1000 * (CLKIN_PERIOD_1000 / 1000.0) * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[i]) / CLKFBOUT_MULT)),
 				.clk_shifted(CLKOUT[i]),
 				.clk(CLKFBOUT),
 				.rst(RST),
@@ -288,7 +290,7 @@ module PLLE2_ADV_tb();
 
 	phase_shift_check pscfb (
 		.desired_shift_1000(CLKFBOUT_PHASE * 1000),
-		.clk_period_1000(`CLKIN1_PERIOD * (DIVCLK_DIVIDE / CLKFBOUT_MULT) * 1000),
+		.clk_period_1000((CLKIN_PERIOD_1000 / 1000.0) * (DIVCLK_DIVIDE / CLKFBOUT_MULT) * 1000),
 		.clk_shifted(CLKFBOUT),
 		.clk(CLKIN1),
 		.rst(RST),
@@ -308,6 +310,7 @@ module PLLE2_ADV_tb();
 		reset = 0;
 
 		CLKINSEL = 0;
+		CLKIN_PERIOD_1000 = `CLKIN2_PERIOD * 1000;
 		CLKIN1 = 0;
 		CLKIN2 = 0;
 		RST = 0;
@@ -379,7 +382,8 @@ module PLLE2_ADV_tb();
 
 		/* switch clock back to 1 */
 		CLKINSEL = 1;
-		reset = 1;
+		CLKIN_PERIOD_1000 = `CLKIN1_PERIOD * 1000;
+ 		reset = 1;
 		#(`WAIT_INTERVAL / 10);
 		reset = 0;
 		#`WAIT_INTERVAL;
