@@ -95,7 +95,7 @@ module dyn_reconf (
 		end
 	endgenerate
 
-	assign CLKFBOUT_MULT_ = ClkReg1_FB[11:6] + ClkReg2_FB[5:0];
+	assign CLKFBOUT_MULT_ = ClkReg1_FB[11:6] + ClkReg1_FB[5:0];
 	assign CLKFBOUT_PHASE_ = ((((vco_period_1000 / 1000.0) / 8) * ClkReg1_FB[15:13]) + ((vco_period_1000 / 1000.0) * ClkReg2_FB[5:0]));
 	assign DIVCLK_DIVIDE_ = DivReg[11:6] + DivReg[5:0];
 
