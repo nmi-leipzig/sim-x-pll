@@ -254,6 +254,7 @@ module PLLE2_ADV_tb();
 		for (i = 0; i <= 5; i = i + 1) begin : period_count
 			period_count period_count (
 				.RST(reset),
+				.PWRDWN(1'b0),
 				.clk(CLKOUT[i]),
 				.period_length_1000(period_1000[i]));
 		end
