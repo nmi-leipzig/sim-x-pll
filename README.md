@@ -128,7 +128,7 @@ You can test this project automatically using avocado or make. The testbenches t
 
 - install avocado: [Documentation](https://avocado-framework.readthedocs.io/en/latest/#how-to-install)
 - change into the ```tb/``` folder
-- run ```$ avocado run test_freq_gen.py test_high_counter.py test_period_check.py test_period_count.py test_phase_shift.py test_plle2_adv.py test_plle2_base.py test_mmcme2_base.py```
+- run ```$ avocado run test_freq_gen.py test_high_counter.py test_period_check.py test_period_count.py test_phase_shift.py test_plle2_adv.py test_plle2_base.py test_mmcme2_base.py test_dyn_reconf.py```
 
 ### Make
 
