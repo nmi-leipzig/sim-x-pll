@@ -185,3 +185,12 @@ class Plle2AdvTest(Test, test_base.Mixin):
         """
 
         self.generic_plle2_adv_test()
+
+    def test_plle2_adv_clkfbout_clkin_divclk(self):
+        """
+        :avocado: tags: quick, verilog
+        """
+
+        self.generic_plle2_adv_test(
+            clkfbout_mult=10, clkin1_period=6.000, clkin2_period=4.000,
+            divclk_divide=2)
