@@ -377,7 +377,6 @@ module PLLE2_ADV_tb();
 			pass_count = pass_count + 1;
 		end else begin
 			$display("FAILED: CLKIN2 selection");
-			$display("%0f, %0f", (period_1000_fb / 1000.0), (`CLKIN2_PERIOD * ((`DIVCLK_DIVIDE * 1.0) / `CLKFBOUT_MULT)));
 			fail_count = fail_count + 1;
 		end
 
