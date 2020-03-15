@@ -252,3 +252,12 @@ class Plle2AdvTest(Test, test_base.Mixin):
                                     daddr2=r'7\'h15',
                                     di1=r'16\'b010_0_001001_000001',
                                     di2=r'16\'b0_000_0_0_00_0_1_000111')
+
+    def test_plle2_adv_divreg(self):
+        """
+        :avocado: tags:quick,verilog,dyn
+        """
+        self.generic_plle2_adv_test(daddr1=r'7\'h16',
+                                    daddr2=r'7\'h4F',
+                                    di1=r'16\'b00_1_0_0000011_000010',
+                                    di2=0)
