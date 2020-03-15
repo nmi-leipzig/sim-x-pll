@@ -50,11 +50,8 @@ module phase_shift (
 	end
 
 	/* calculate when to put out low and return when the phase and duty cycle is correctly set */
-	always @(negedge clk or posedge RST or posedge PWRDWN) begin
-		if (PWRDWN) begin
-			clk_shifted <= 1'bx;
-			lock <= 1'bx;
-		end else if (RST) begin
+	always @(negedge clk or posedge RST) begin
+		if (RST) begin
 			clk_shifted <= 1'b0;
 			lock <= 1'b0;
 		end else if (lock !== 1'bx) begin
@@ -73,9 +70,10 @@ module phase_shift (
 		if (PWRDWN) begin
 			clk_shifted <= 1'bx;
 			lock <= 1'bx;
-		end
+			#0.001;
+		end else begin
 		#1;
+		end;
 	end
-
 
 endmodule
