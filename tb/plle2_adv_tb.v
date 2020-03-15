@@ -377,6 +377,7 @@ module PLLE2_ADV_tb();
 			pass_count = pass_count + 1;
 		end else begin
 			$display("FAILED: CLKIN2 selection");
+			$display("%0f, %0f", (period_1000_fb / 1000.0), (`CLKIN2_PERIOD * ((`DIVCLK_DIVIDE * 1.0) / `CLKFBOUT_MULT)));
 			fail_count = fail_count + 1;
 		end
 
@@ -390,7 +391,7 @@ module PLLE2_ADV_tb();
 
 		/*------- FREQUENCY ---------*/
 		for (k = 0; k <= 5; k = k + 1) begin
-			if ((period_1000[k] / 1000.0 == `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[k] * 1.0) / CLKFBOUT_MULT))) begin
+			if ((period_1000[k]) == (1000 * `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[k] * 1.0) / CLKFBOUT_MULT))) begin
 				$display("PASSED: CLKOUT%0d frequency", k);
 				pass_count = pass_count + 1;
 			end else begin
@@ -399,7 +400,7 @@ module PLLE2_ADV_tb();
 			end
 		end
 
-		if ((period_1000_fb / 1000.0) == (`CLKIN1_PERIOD * ((DIVCLK_DIVIDE * 1.0) / CLKFBOUT_MULT))) begin
+		if ((period_1000_fb) == (1000 * `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * 1.0) / CLKFBOUT_MULT))) begin
 			$display("PASSED: CLKFBOUT frequency");
 			pass_count = pass_count + 1;
 		end else begin
@@ -492,7 +493,7 @@ module PLLE2_ADV_tb();
 
 		/*------- FREQUENCY ---------*/
 		for (k = 0; k <= 5; k = k + 1) begin
-			if ((period_1000[k] / 1000.0 == `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[k] * 1.0) / CLKFBOUT_MULT))) begin
+			if ((period_1000[k]) == (1000 * `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * CLKOUT_DIVIDE[k] * 1.0) / CLKFBOUT_MULT))) begin
 				$display("PASSED: CLKOUT%0d frequency", k);
 				pass_count = pass_count + 1;
 			end else begin
@@ -501,7 +502,7 @@ module PLLE2_ADV_tb();
 			end
 		end
 
-		if ((period_1000_fb / 1000.0) == (`CLKIN1_PERIOD * ((DIVCLK_DIVIDE * 1.0) / CLKFBOUT_MULT))) begin
+		if ((period_1000_fb) == (1000 * `CLKIN1_PERIOD * ((DIVCLK_DIVIDE * 1.0) / CLKFBOUT_MULT))) begin
 			$display("PASSED: CLKFBOUT frequency");
 			pass_count = pass_count + 1;
 		end else begin
