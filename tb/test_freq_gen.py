@@ -26,7 +26,7 @@ class FreqGenTest(Test, test_base.Mixin):
                               m_1000=1000,
                               d=1,
                               o_1000=1000):
-       """test freq gen"""
+        """test freq gen"""
 
         test_files = ["freq_gen_tb.v"]
         src_files = ["freq_gen.v", "high_counter.v"]
