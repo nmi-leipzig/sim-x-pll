@@ -10,7 +10,7 @@
 `timescale 1 ns / 1 ps
 
 `ifndef WAIT_INTERVAL
-	`define WAIT_INTERVAL 100
+	`define WAIT_INTERVAL 1000
 `endif
 
 module phase_shift_tb ();
@@ -30,7 +30,7 @@ module phase_shift_tb ();
 	integer	pass_count;
 	integer	fail_count;
 	/* adjust according to the number of testcases */
-	localparam total = 15;
+	localparam total = 16;
 
 	phase_shift dut(
 		.RST(rst),
@@ -228,6 +228,15 @@ module phase_shift_tb ();
 			fail_count = fail_count + 1;
 		end
 
+		PWRDWN = 1'b1;
+		#((clk_period_1000 / 2000.0) + 1);
+		if (clk_shifted === 1'bx && lock === 1'bx) begin
+			$display("PASSED: PWRDWN");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: PWRDWN");
+			fail_count = fail_count + 1;
+		end
 
 		if ((pass_count + fail_count) == total) begin
 			$display("PASSED: number of test cases");

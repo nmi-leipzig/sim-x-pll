@@ -38,7 +38,7 @@ class PhaseShiftTest(Test, test_base.Mixin):
         # save vcd for analysis
         shutil.copy("phase_shift_tb.vcd", self.outputdir)
 
-        self.check_test_bench_output(sim_output, 16)
+        self.check_test_bench_output(sim_output, 17)
 
     def test_phase_shift_100(self):
         """
