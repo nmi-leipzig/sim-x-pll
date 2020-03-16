@@ -173,3 +173,6 @@ Also there is a limitation in the PLL regarding the possible frequency. They dep
 The main differences between the two PLL versions are the support for two input clocks and dynamic reconfiguration in PLLE2_ADV. For a more in-depth overview of the differences see [UGS472 page 70](https://www.xilinx.com/support/documentation/user_guides/ug472_7Series_Clocking.pdf).
 
 The MMCM offers an additional output (CLKOUT6), fractional divides for CLKOUT0 and CLKFBOUT (which functions as a fractional multiplier) and the possibility to use the divider of CLKOUT6 to divide CLKOUT4 again, allowing for divisors as high as 16384 (128 * 128).
+
+### Is this module synthesizable?
+No, it isn't. This project is purely for simulation purposes. It is not meant to be synthesizable and contains a lot of unsynthesizable code. The [examples](https://github.com/ti-leipzig/sim-x-pll/tree/master/pll_example) however are synthesizable.
