@@ -116,9 +116,9 @@ module pll #(
 	/* internal values */
 	reg [31:0] CLKOUT_DIVIDE_INT_1000[0:6];
 	reg [31:0] CLKOUT_DUTY_CYCLE_INT_1000[0:6];
-	reg [31:0] CLKOUT_PHASE_INT[0:6];
+	reg signed [31:0] CLKOUT_PHASE_INT[0:6];
 	reg [31:0] CLKFBOUT_MULT_F_INT_1000;
-	reg [31:0] CLKFBOUT_PHASE_INT;
+	reg signed [31:0] CLKFBOUT_PHASE_INT;
 	reg [31:0] DIVCLK_DIVIDE_INT;
 	wire CLKOUT_INT[0:6];
 
@@ -217,9 +217,9 @@ module pll #(
 	/* dynamically set values */
 	wire [31:0] CLKOUT_DIVIDE_DYN[0:6];
 	wire [31:0] CLKOUT_DUTY_CYCLE_DYN_1000[0:6];
-	wire [31:0] CLKOUT_PHASE_DYN[0:6];
+	wire signed [31:0] CLKOUT_PHASE_DYN[0:6];
 	wire [31:0] CLKFBOUT_MULT_F_DYN_1000;
-	wire [31:0] CLKFBOUT_PHASE_DYN;
+	wire signed [31:0] CLKFBOUT_PHASE_DYN;
 	wire [31:0] DIVCLK_DIVIDE_DYN;
 
 	/* reconfiguration */
