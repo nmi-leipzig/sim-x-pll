@@ -250,8 +250,8 @@ class Plle2AdvTest(Test, test_base.Mixin):
         """
         self.generic_plle2_adv_test(daddr1=r'7\'h14',
                                     daddr2=r'7\'h15',
-                                    di1=r'16\'b010_0_001001_000001',
-                                    di2=r'16\'b0_000_0_0_00_0_1_000111')
+                                    di1=r'16\'b010_0_000010_000010',
+                                    di2=r'16\'b0_000_0_0_00_0_0_000111')
 
     def test_plle2_adv_divreg(self):
         """
