@@ -165,6 +165,7 @@ Use this table for parameters:
 | REF_JITTERn        | 0.000 - 0.999                             |
 | STARTUP_WAIT       | "FALSE", "TRUE"                           |
 | COMPENSATION       | "ZHOLD", "BUF_IN", "EXTERNAL", "INTERNAL" |
+| CLKOUT4_CASCADE    | "TRUE", "FALSE"                           |
 
 Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
 
