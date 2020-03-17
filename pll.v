@@ -303,7 +303,7 @@ module pll #(
 	end
 
 	reg invalid = 1'b0;
-	/* check if the given values are valid */
+	/* assign initial values */
 	initial begin
 		CLKOUT_DIVIDE_INT_1000[0] = CLKOUT0_DIVIDE_F * 1000;
 		CLKOUT_DIVIDE_INT_1000[1] = CLKOUT1_DIVIDE * 1000;
@@ -337,16 +337,14 @@ module pll #(
 		CLKFBOUT_MULT_F_INT_1000 = CLKFBOUT_MULT_F * 1000;
 		CLKFBOUT_PHASE_INT = CLKFBOUT_PHASE;
 		DIVCLK_DIVIDE_INT = DIVCLK_DIVIDE;
+	end
 
-
+	integer l;
+	/* check values for validity */
+	always @(*) begin
+		/* the same for each version of the pll/mmcm */
 		if (!(BANDWIDTH == "OPTIMIZED" || BANDWIDTH == "HIGH" || BANDWIDTH == "LOW")) begin
 			$display("BANDWIDTH doesn't match any of its allowed inputs.");
-			invalid = 1'b1;
-		end else if (CLKFBOUT_MULT_F < 2 || CLKFBOUT > 64) begin
-			$display("CLKFBOUT_MULT_F is not in the allowed range (2-64).");
-			invalid = 1'b1;
-		end else if (CLKFBOUT_PHASE < -360.00 || CLKFBOUT_PHASE > 360.000) begin
-			$display("CLKFBOUT_PHASE is not in the allowed range (-360-360).");
 			invalid = 1'b1;
 		end else if (CLKIN1_PERIOD < 0.000 || CLKIN1_PERIOD > 52.631) begin
 			$display("CLKIN1_PERIOD is not in the allowed range (0 - 52.631).");
@@ -354,34 +352,10 @@ module pll #(
 		end else if (CLKIN2_PERIOD < 0.000 || CLKIN2_PERIOD > 52.631) begin
 			$display("CLKIN2_PERIOD is not in the allowed range (0 - 52.631).");
 			invalid = 1'b1;
-		end else if (CLKOUT0_DIVIDE_F < 1 || CLKOUT0_DIVIDE_F > 128 ||
-					 CLKOUT1_DIVIDE < 1 || CLKOUT1_DIVIDE > 128 ||
-					 CLKOUT2_DIVIDE < 1 || CLKOUT2_DIVIDE > 128 ||
-					 CLKOUT3_DIVIDE < 1 || CLKOUT3_DIVIDE > 128 ||
-					 CLKOUT4_DIVIDE < 1 || CLKOUT4_DIVIDE > 128 ||
-					 CLKOUT5_DIVIDE < 1 || CLKOUT5_DIVIDE > 128 ||
-					 CLKOUT6_DIVIDE < 1 || CLKOUT6_DIVIDE > 128) begin
-			$display("One of the CLKOUTn_DIVIDE parameters is not in the allowed range (1-128).");
+		end else if (CLKFBOUT_PHASE_INT < -360.00 || CLKFBOUT_PHASE_INT > 360.000) begin
+			$display("CLKFBOUT_PHASE is not in the allowed range (-360-360).");
 			invalid = 1'b1;
-		end else if (CLKOUT0_DUTY_CYCLE < 0.001 || CLKOUT0_DUTY_CYCLE > 0.999 ||
-					 CLKOUT1_DUTY_CYCLE < 0.001 || CLKOUT1_DUTY_CYCLE > 0.999 ||
-					 CLKOUT2_DUTY_CYCLE < 0.001 || CLKOUT2_DUTY_CYCLE > 0.999 ||
-					 CLKOUT3_DUTY_CYCLE < 0.001 || CLKOUT3_DUTY_CYCLE > 0.999 ||
-					 CLKOUT4_DUTY_CYCLE < 0.001 || CLKOUT4_DUTY_CYCLE > 0.999 ||
-					 CLKOUT5_DUTY_CYCLE < 0.001 || CLKOUT5_DUTY_CYCLE > 0.999 ||
-					 CLKOUT6_DUTY_CYCLE < 0.001 || CLKOUT6_DUTY_CYCLE > 0.99) begin
-			$display("One of the CLKOUTn_DUTY_CYCLE parameters is not in the allowed range (0.001-0.999).");
-			invalid = 1'b1;
-		end else if (CLKOUT0_PHASE < -360.000 || CLKOUT0_PHASE > 360.000 ||
-					 CLKOUT1_PHASE < -360.000 || CLKOUT1_PHASE > 360.000 ||
-					 CLKOUT2_PHASE < -360.000 || CLKOUT2_PHASE > 360.000 ||
-					 CLKOUT3_PHASE < -360.000 || CLKOUT3_PHASE > 360.000 ||
-					 CLKOUT4_PHASE < -360.000 || CLKOUT4_PHASE > 360.000 ||
-					 CLKOUT5_PHASE < -360.000 || CLKOUT5_PHASE > 360.000 ||
-					 CLKOUT6_PHASE < -360.000 || CLKOUT6_PHASE > 360.000) begin
-			$display("One of the CLKOUTn_PHASE parameters is not in the allowed range (-360.00-360.00).");
-			invalid = 1'b1;
-		end else if (DIVCLK_DIVIDE < 1 || DIVCLK_DIVIDE > 56) begin
+		end else if (DIVCLK_DIVIDE_INT < 1 || DIVCLK_DIVIDE_INT > 56) begin
 			$display("DIVCLK_DIVIDE is not in the allowed range (1-56).");
 			invalid = 1'b1;
 		end else if (REF_JITTER1 < 0.000 || REF_JITTER1 > 0.999) begin
@@ -394,9 +368,50 @@ module pll #(
 			$display("STARTUP_WAIT doesn't match any of its allowed inputs");
 			invalid = 1'b1;
 		end else if (!(COMPENSATION == "ZHOLD" || COMPENSATION == "BUF_IN" || COMPENSATION == "EXTERNAL" || COMPENSATION == "INTERNAL")) begin
-			$display("COMPENSATION doesn'T match any of its allowed inputs");
+			$display("COMPENSATION doesn't match any of its allowed inputs");
 			invalid = 1'b1;
-		end else if (((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0) begin
+		end else if (!(CLKOUT4_CASCADE == "TRUE" || CLKOUT4_CASCADE == "FALSE")) begin
+			$display("CLKOUT4_CASCADE doesn't match any of its allowed inputs");
+			invalid = 1'b1;
+		end
+
+		for (l = 0; l <= 6; l = l + 1) begin
+			if (l != 0) begin
+				if ((CLKOUT_DIVIDE_INT_1000[l] / 1000.0) < 1 || (CLKOUT_DIVIDE_INT_1000[l] / 1000.0) > 128 || ((((CLKOUT_DIVIDE_INT_1000[l] / 1000.0) - $floor((CLKOUT_DIVIDE_INT_1000[l] / 1000.0)) > 0.001)))) begin
+					$display("CLKOUT%0d_DIVIDE is not in the allowed range (1-128) or it is a floating point number", l);
+					invalid = 1'b1;
+				end
+			end
+			if (CLKOUT_DUTY_CYCLE_INT_1000[l] < 1 || CLKOUT_DUTY_CYCLE_INT_1000[l] > 999) begin
+				$display("CLKOUT%0d_DUTY_CYCLE is not in the allowed range(0.001-0.999)", l);
+				invalid = 1'b1;
+			end else if (CLKOUT_PHASE_INT[l] < -360.000 || CLKOUT_PHASE_INT[l] > 360.000) begin
+				$display("CLKOUT%0d_PHASE is not in the allowed range(-360.000-360.000)", l);
+				invalid = 1'b1;
+			end
+		end
+
+		/* different on pll and mmcm */
+		if (MODULE_TYPE == "PLLE2_BASE" || MODULE_TYPE == "PLLE2_ADV") begin
+			if (CLKFBOUT_MULT_F_INT_1000 < 2000 || CLKFBOUT_MULT_F_INT_1000 > 64000 || ((CLKFBOUT_MULT_F_INT_1000 / 1000.0) - $floor((CLKFBOUT_MULT_F_INT_1000 / 1000.0)) > 0.001)) begin
+				$display("CLKFBOUT_MULT is not in the allowed range (2-64) or a floating point number.");
+				invalid = 1'b1;
+			end else if ((CLKOUT_DIVIDE_INT_1000[0] / 1000.0) < 1 || (CLKOUT_DIVIDE_INT_1000[0] / 1000.0) > 128 || (((CLKOUT_DIVIDE_INT_1000[0] / 1000.0) - $floor((CLKOUT_DIVIDE_INT_1000[0] / 1000.0)) > 0.001))) begin
+				$display("CLKOUT0_DIVIDE is not in the allowed range (1-128) or it is a floating point number");
+				invalid = 1'b1;
+			end
+		end else if (MODULE_TYPE == "MMCME2_BASE") begin
+			if (CLKFBOUT_MULT_F_INT_1000 < 2000 || CLKFBOUT_MULT_F_INT_1000 > 64000) begin
+				$display("CLKFBOUT_MULT_F is not in the allowed range (2.000-64.000)");
+				invalid = 1'b1;
+			end else if (CLKOUT_DIVIDE_INT_1000[0] < 1000 || CLKOUT_DIVIDE_INT_1000[0] > 128000) begin
+				$display("CLKOUT0_DIVIDE_F is not in the allowed range(2.000-64.000)");
+				invalid = 1'b1;
+			end
+		end
+
+		/* possible frequencies */
+		if (((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0) begin
 			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT_F, CLKIN1_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
 			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT_F * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE).");
 			$display("Currently the value is %0f.", ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)));
@@ -407,7 +422,8 @@ module pll #(
 			$display("Currently the value is %0f.", ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)));
 			invalid = 1'b1;
 		end
-		/* delete this to simulate even if there are invalid values */
+
+		/* NOTE: delete this to simulate even if there are invalid values */
 		if (invalid) begin
 			$display("Exiting simulation...");
 			$finish;
