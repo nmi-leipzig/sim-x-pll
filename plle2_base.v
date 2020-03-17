@@ -101,7 +101,9 @@ module PLLE2_BASE #(
 		.REF_JITTER1(REF_JITTER1),
 		.REF_JITTER2(0.010),
 		.STARTUP_WAIT(STARTUP_WAIT),
-		.COMPENSATION("ZHOLD"))
+		.COMPENSATION("ZHOLD"),
+
+		.MODULE_TYPE("PLLE2_BASE"))
 	plle2_base (
 		.CLKOUT0(CLKOUT0),
 		.CLKOUT1(CLKOUT1),
@@ -121,7 +123,6 @@ module PLLE2_BASE #(
 		.RST(RST),
 		.CLKFBIN(CLKFBIN),
 
-		//TODO
 		.DADDR(7'h00),
 		.DCLK(1'b0),
 		.DEN(1'b0),
@@ -131,5 +132,4 @@ module PLLE2_BASE #(
 		.DO(DO),
 		.DRDY(DRDY)
 	);
-
 endmodule

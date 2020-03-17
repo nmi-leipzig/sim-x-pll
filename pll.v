@@ -54,7 +54,10 @@ module pll #(
 	parameter REF_JITTER1			= 0.010,
 	parameter REF_JITTER2			= 0.010,
 	parameter STARTUP_WAIT			= "FALSE",
-	parameter COMPENSATION			= "ZHOLD")(
+	parameter COMPENSATION			= "ZHOLD",
+
+	/* just for internal use */
+	parameter MODULE_TYPE			= "PLLE2_BASE")(
 	output CLKOUT0,
 	output CLKOUT0B,
 	output CLKOUT1,
