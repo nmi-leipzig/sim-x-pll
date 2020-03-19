@@ -41,7 +41,7 @@ class DynReconfTest(Test, test_base.Mixin):
         # save vcd for analysis
         shutil.copy("dyn_reconf_tb.vcd", self.outputdir)
 
-        self.check_test_bench_output(sim_output, 12)
+        self.check_test_bench_output(sim_output, 24)
 
     def test_dyn_reconf_1000_10(self):
         """
