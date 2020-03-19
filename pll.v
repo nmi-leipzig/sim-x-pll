@@ -56,6 +56,12 @@ module pll #(
 	parameter STARTUP_WAIT			= "FALSE",
 	parameter COMPENSATION			= "ZHOLD",
 
+	/* this is additional, optional information for determining the
+	 * correct hardware limits. By default it uses the most restrictive
+	 * model */
+	parameter FPGA_TYPE				= "ARTIX",
+	parameter SPEED_GRADE			= "-1",
+
 	/* just for internal use */
 	parameter MODULE_TYPE			= "PLLE2_BASE")(
 	output CLKOUT0,
@@ -302,8 +308,9 @@ module pll #(
 			DIVCLK_DIVIDE_INT = DIVCLK_DIVIDE_DYN;
 	end
 
-	reg invalid = 1'b0;
 	/* assign initial values */
+	integer vco_min;
+	integer vco_max;
 	initial begin
 		CLKOUT_DIVIDE_INT_1000[0] = CLKOUT0_DIVIDE_F * 1000;
 		CLKOUT_DIVIDE_INT_1000[1] = CLKOUT1_DIVIDE * 1000;
@@ -337,9 +344,106 @@ module pll #(
 		CLKFBOUT_MULT_F_INT_1000 = CLKFBOUT_MULT_F * 1000;
 		CLKFBOUT_PHASE_INT = CLKFBOUT_PHASE;
 		DIVCLK_DIVIDE_INT = DIVCLK_DIVIDE;
+
+		/* set up limits correctly */
+		case (FPGA_TYPE)
+			"ARTIX":
+				case (SPEED_GRADE)
+					"-3": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 2133;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1600;
+						end
+					"-2": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 1866;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1440;
+						end
+					"-1", "-1LI", "-2LE": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 1600;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1200;
+						end
+					default: begin
+							$display("The speed grade given is not valid. Please choose one of the following: -3, -2, -2LE, -1, -1LI");
+							$display("Exiting simulation...");
+							$finish;
+						end
+				endcase
+			"KINTEX":
+				case (SPEED_GRADE)
+					"-3": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 2133;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1600;
+						end
+					"-2", "-2LI": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 1866;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1440;
+						end
+					"-1", "-1M", "-1LM", "-1Q", "-2LE": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 1600;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1200;
+						end
+					default: begin
+							$display("The speed grade given is not valid. Please choose one of the following: -3, -2, -2LI, -2LE, -1, -1M, -1LM, -1Q");
+							$display("Exiting simulation...");
+							$finish;
+						end
+				endcase
+			"VIRTEX":
+				case (SPEED_GRADE)
+					"-3": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 2133;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1600;
+						end
+					"-2", "-2L", "-2LG": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 1833;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1440;
+						end
+					"-1", "-1M": if (MODULE_TYPE == "PLLE2_ADV" || MODULE_TYPE == "PLLE2_BASE") begin
+							vco_min = 800;
+							vco_max = 1600;
+						end else if (MODULE_TYPE == "MMCME2_BASE") begin
+							vco_min = 600;
+							vco_max = 1200;
+						end
+					default: begin
+							$display("The speed grade given is not valid. Please choose one of the following: -3, -2, -2L, -2LG, -1, -1M");
+							$display("Exiting simulation...");
+							$finish;
+						end
+				endcase
+			default: begin
+					$display("The FPGA type given is not recognized. Please choose one of the following: ARTIX, VIRTEX, KINTEX");
+					$display("Exiting simulation...");
+					$finish;
+				end
+		endcase
 	end
 
 	integer l;
+	reg invalid = 1'b0;
 	/* check values for validity */
 	always @(*) begin
 		/* the same for each version of the pll/mmcm */
@@ -410,18 +514,18 @@ module pll #(
 			end
 		end
 
-		/* possible frequencies */
-		if (((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0) begin
-			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT_F, CLKIN1_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
+		if (CLKINSEL == 1 && ((CLKFBOUT_MULT_F_INT_1000 / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)) < vco_min || (CLKFBOUT_MULT_F_INT_1000 / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE_INT)) > vco_max)) begin
+			$display("The calculated VCO frequency is not in the allowed range (%0d-%0d). Change either CLKFBOUT_MULT_F, CLKIN1_PERIOD or DIVCLK_DIVIDE to an appropiate value.", vco_min, vco_max);
 			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT_F * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE).");
-			$display("Currently the value is %0f.", ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE)));
+			$display("Currently the value is %0f.", (CLKFBOUT_MULT_F_INT_1000 / (CLKIN1_PERIOD * 1.0 * DIVCLK_DIVIDE_INT)));
 			invalid = 1'b1;
-		end else if (CLKIN2_PERIOD != 0.000 && (((CLKFBOUT_MULT_F * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) < 800.0 || ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) > 1600.0)) begin
-			$display("The calculated VCO frequency is not in the allowed range (800.000-1600.000). Change either CLKFBOUT_MULT_F, CLKIN2_PERIOD or DIVCLK_DIVIDE to an appropiate value.");
+		end else if (CLKINSEL == 0 && ((CLKFBOUT_MULT_F_INT_1000 / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)) < vco_min || (CLKFBOUT_MULT_F_INT_1000 / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE_INT)) > vco_max)) begin
+			$display("The calculated VCO frequency is not in the allowed range (%0d-%0d). Change either CLKFBOUT_MULT_F, CLKIN2_PERIOD or DIVCLK_DIVIDE to an appropiate value.", vco_min, vco_max);
 			$display("To calculate the VCO frequency use this formula: (CLKFBOUT_MULT_F * 1000) / (CLKIN2_PERIOD * DIVCLK_DIVIDE).");
-			$display("Currently the value is %0f.", ((CLKFBOUT_MULT_F * 1000.0) / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE)));
+			$display("Currently the value is %0f.", (CLKFBOUT_MULT_F_INT_1000 / (CLKIN2_PERIOD * 1.0 * DIVCLK_DIVIDE_INT)));
 			invalid = 1'b1;
 		end
+
 
 		/* NOTE: delete this to simulate even if there are invalid values */
 		if (invalid) begin
