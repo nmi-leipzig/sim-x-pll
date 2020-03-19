@@ -67,7 +67,7 @@ module dyn_reconf_tb ();
 	integer	fail_count;
 
 	/* adjust according to the number of test cases */
-	localparam total = 23;
+	localparam total = 28;
 
 	dyn_reconf dut(
 		.RST(RST),
@@ -374,27 +374,27 @@ module dyn_reconf_tb ();
 		#(`CLK_PERIOD * 2);
 
 		if (CLKOUT5_DIVIDE == 9) begin
-			$display("PASSED: ClkReg1 DIVIDE calculation");
+			$display("PASSED: CLKOUT5 ClkReg1 DIVIDE calculation");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: ClkReg1 DIVIDE calculation");
+			$display("FAILED: CLKOUT5 ClkReg1 DIVIDE calculation");
 			fail_count = fail_count + 1;
 		end
 
 		duty_cycle = (6.0 * 1000) / (6.0 + 3.0);
 		if (CLKOUT5_DUTY_CYCLE == duty_cycle) begin
-			$display("PASSED: ClkReg1 DUTY_CYCLE calculation");
+			$display("PASSED: CLKOUT5 ClkReg1 DUTY_CYCLE calculation");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: ClkReg1 DUTY_CYCLE calculation");
+			$display("FAILED: CLKOUT5 ClkReg1 DUTY_CYCLE calculation");
 			fail_count = fail_count + 1;
 		end
 
 		if (CLKOUT5_PHASE == (((vco_period_1000 / 1000) / 8) * 3)) begin
-			$display("PASSED: ClkReg1 PHASE calculation");
+			$display("PASSED: CLKOUT5 ClkReg1 PHASE calculation");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: ClkReg1 PHASE calculation");
+			$display("FAILED: CLKOUT5 ClkReg1 PHASE calculation");
 			fail_count = fail_count + 1;
 		end
 		DEN = 1'b0;
@@ -402,6 +402,82 @@ module dyn_reconf_tb ();
 		DEN = 1'b1;
 		DWE = 1'b1;
 		DADDR = 7'h07;
+		/* RESERVED = 00
+		 * PHASE_MUX_F_CLKOUT0 = 000
+		 * FRAC_WF_F_CLKOUT0 = 0
+		 * MX = 2b'00
+		 * EDGE = 0
+		 * NO COUNT = 1
+		 * DELAY TIME = 3 */
+		DI = 16'b00_000_0_00_1_0_00011;
+
+		#(`CLK_PERIOD * 2);
+		DEN = 1'b0;
+		DWE = 1'b0;
+		#(`CLK_PERIOD * 2);
+
+		if (CLKOUT5_DIVIDE == 1) begin
+			$display("PASSED: CLKOUT5 ClkReg2 DIVIDE calculation");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKOUT5 ClkReg2 DIVIDE calculation");
+			fail_count = fail_count + 1;
+		end
+
+		if ((CLKOUT5_DUTY_CYCLE / 1000.0) == 0.5) begin
+			$display("PASSED: CLKOUT5 ClkReg2 DUTY_CYCLE calculation");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKOUT5 ClkReg2 DUTY_CYCLE calculation");
+			fail_count = fail_count + 1;
+		end
+
+		if (CLKOUT5_PHASE == (((vco_period_1000 / 1000.0) / 8) * 3) + ((vco_period_1000 / 1000.0) * 3)) begin
+			$display("PASSED: CLKOUT5 ClkReg2 PHASE calculation");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKOUT5 ClkReg2 PHASE calculation");
+			fail_count = fail_count + 1;
+		end
+
+		/* CLKFBOUT */
+		DADDR = 7'h14;
+		DEN = 1'b1;
+		DWE = 1'b1;
+		/* PHASE MUX = 3
+		 * RESERVED = 0
+		 * HIGH TIME = 6
+		 * LOW TIME = 3 */
+		DI = 16'b011_0_000110_000011;
+		#(`CLK_PERIOD * 2);
+
+		DEN = 1'b0;
+		DWE = 1'b0;
+		#(`CLK_PERIOD * 2);
+
+		DEN = 1'b1;
+		#(`CLK_PERIOD * 2);
+
+		if (CLKFBOUT_MULT_F_1000 == 9000) begin
+			$display("PASSED: CLKFBOUT ClkReg1 DIVIDE calculation");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKFBOUT ClkReg1 DIVIDE calculation");
+			fail_count = fail_count + 1;
+		end
+
+		if (CLKFBOUT_PHASE == (((vco_period_1000 / 1000) / 8) * 3)) begin
+			$display("PASSED: CLKFBOUT ClkReg1 PHASE calculation");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: CLKFBOUT ClkReg1 PHASE calculation");
+			fail_count = fail_count + 1;
+		end
+		DEN = 1'b0;
+		#(`CLK_PERIOD * 2);
+		DEN = 1'b1;
+		DWE = 1'b1;
+		DADDR = 7'h15;
 		/* RESERVED = 0
 		 * FRAC = 000
 		 * FRAC_EN = 0
@@ -417,30 +493,48 @@ module dyn_reconf_tb ();
 		DWE = 1'b0;
 		#(`CLK_PERIOD * 2);
 
-		if (CLKOUT5_DIVIDE == 1) begin
-			$display("PASSED: ClkReg2 DIVIDE calculation");
+		if (CLKFBOUT_MULT_F_1000 == 1000) begin
+			$display("PASSED: CLKFBOUT ClkReg2 DIVIDE calculation");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: ClkReg2 DIVIDE calculation");
+			$display("FAILED: CLKFBOUT ClkReg2 DIVIDE calculation");
 			fail_count = fail_count + 1;
 		end
 
-		if ((CLKOUT5_DUTY_CYCLE / 1000.0) == 0.5) begin
-			$display("PASSED: ClkReg2 DUTY_CYCLE calculation");
+		if (CLKFBOUT_PHASE == (((vco_period_1000 / 1000.0) / 8) * 3) + ((vco_period_1000 / 1000.0) * 3)) begin
+			$display("PASSED: CLKFBOUT ClkReg2 PHASE calculation");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: ClkReg2 DUTY_CYCLE calculation");
+			$display("FAILED: CLKFBOUT ClkReg2 PHASE calculation");
 			fail_count = fail_count + 1;
 		end
 
-		if (CLKOUT5_PHASE == (((vco_period_1000 / 1000.0) / 8) * 3) + ((vco_period_1000 / 1000.0) * 3)) begin
-			$display("PASSED: CLKOUT5 ClkReg2 PHASE calculation");
+		/* DIVCLK_DIVIDE */
+		DADDR = 7'h16;
+		DEN = 1'b1;
+		DWE = 1'b1;
+		/* RESERVED = 0
+		 * EDGE = 0
+		 * NO COUNT = 0
+		 * HIGH TIME = 3
+		 * LOW TIME = 3 */
+		DI = 16'b00_0_0_000011_000011;
+		#(`CLK_PERIOD * 2);
+
+		DEN = 1'b0;
+		DWE = 1'b0;
+		#(`CLK_PERIOD * 2);
+
+		DEN = 1'b1;
+		#(`CLK_PERIOD * 2);
+
+		if (DIVCLK_DIVIDE == 6) begin
+			$display("PASSED: ClkReg1 DIVIDE calculation");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: CLKOUT5 ClkReg2 PHASE calculation");
+			$display("FAILED: ClkReg1 DIVIDE calculation");
 			fail_count = fail_count + 1;
 		end
-
 
 
 		if ((pass_count + fail_count) == total) begin
