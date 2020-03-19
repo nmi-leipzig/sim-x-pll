@@ -15,7 +15,7 @@ module phase_shift (
 	input PWRDWN,
 	input clk,
 	/* shift in degrees */
-	input signed [31:0] shift,
+	input signed [31:0] shift_1000,
 	/* period length of the clock */
 	input [31:0] clk_period_1000,
 	/* duty cycle in percent */
@@ -41,10 +41,10 @@ module phase_shift (
 	/* calculate when to put out high */
 	always @(posedge clk or posedge RST or posedge PWRDWN) begin
 		if (!RST && !PWRDWN) begin
-			if (shift < 0) begin
-				clk_shifted <= #((clk_period_1000 / 1000.0) + (shift * ((clk_period_1000 / 1000.0) / 360.0))) 1;
+			if (shift_1000 < 0) begin
+				clk_shifted <= #((clk_period_1000 / 1000.0) + ((shift_1000 / 1000.0) * ((clk_period_1000 / 1000.0) / 360.0))) 1;
 			end else begin
-				clk_shifted <= #(shift * ((clk_period_1000 / 1000.0) / 360.0)) 1;
+				clk_shifted <= #((shift_1000/ 1000.0)  * ((clk_period_1000 / 1000.0) / 360.0)) 1;
 			end
 		end
 	end
@@ -55,12 +55,12 @@ module phase_shift (
 			clk_shifted <= 1'b0;
 			lock <= 1'b0;
 		end else if (lock !== 1'bx) begin
-			if (shift < 0) begin
-				clk_shifted <= #((clk_period_1000 / 1000.0) + (shift * ((clk_period_1000 / 1000.0) / 360.0)) + ((duty_cycle + 50.0) * ((clk_period_1000 / 1000.0) / 100.0))) 0;
-				lock <= #((clk_period_1000 / 1000.0) + (shift * ((clk_period_1000 / 1000.0) / 360.0)) + ((duty_cycle + 50.0) * ((clk_period_1000 / 1000.0) / 100.0))) 1'b1;
+			if (shift_1000 < 0) begin
+				clk_shifted <= #((clk_period_1000 / 1000.0) + ((shift_1000/ 1000.0)  * ((clk_period_1000 / 1000.0) / 360.0)) + ((duty_cycle + 50.0) * ((clk_period_1000 / 1000.0) / 100.0))) 0;
+				lock <= #((clk_period_1000 / 1000.0) + ((shift_1000/ 1000.0)  * ((clk_period_1000 / 1000.0) / 360.0)) + ((duty_cycle + 50.0) * ((clk_period_1000 / 1000.0) / 100.0))) 1'b1;
 			end else begin
-				clk_shifted <= #(shift * ((clk_period_1000 / 1000.0) / 360.0) + ((duty_cycle + 50.0) * ((clk_period_1000 / 1000.0) / 100.0))) 0;
-				lock <= #(shift * ((clk_period_1000 / 1000.0) / 360.0) + ((duty_cycle + 50.0) * ((clk_period_1000 / 1000.0) / 100.0))) 1'b1;
+				clk_shifted <= #((shift_1000/ 1000.0)  * ((clk_period_1000 / 1000.0) / 360.0) + ((duty_cycle + 50.0) * ((clk_period_1000 / 1000.0) / 100.0))) 0;
+				lock <= #((shift_1000/ 1000.0)  * ((clk_period_1000 / 1000.0) / 360.0) + ((duty_cycle + 50.0) * ((clk_period_1000 / 1000.0) / 100.0))) 1'b1;
 			end
 		end
 	end

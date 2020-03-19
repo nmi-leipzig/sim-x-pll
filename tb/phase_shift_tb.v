@@ -17,7 +17,7 @@ module phase_shift_tb ();
 	reg	rst;
 	reg PWRDWN;
 	reg clk;
-	reg signed [31:0] shift;
+	reg signed [31:0] shift_1000;
 	reg	[31:0] clk_period_1000;
 	reg [6:0] duty_cycle;
 
@@ -36,7 +36,7 @@ module phase_shift_tb ();
 		.RST(rst),
 		.PWRDWN(PWRDWN),
 		.clk(clk),
-		.shift(shift),
+		.shift_1000(shift_1000),
 		.clk_period_1000(clk_period_1000),
 		.duty_cycle(duty_cycle),
 		.lock(lock),
@@ -51,7 +51,7 @@ module phase_shift_tb ();
 		clk = 0;
 		clk_period_1000 = 20000;
 
-		shift = 10;
+		shift_1000 = 10 * 1000;
 		duty_cycle = 50;
 
 		pass_count = 0;
@@ -89,7 +89,7 @@ module phase_shift_tb ();
 			fail_count = fail_count + 1;
 		end
 
-		shift = 182;
+		shift_1000 = 182 * 1000;
 		clk_period_1000 = 5000;
 		#`WAIT_INTERVAL;
 		shift_fail = 0;
@@ -102,7 +102,7 @@ module phase_shift_tb ();
 			fail_count = fail_count + 1;
 		end
 
-		shift = 181;
+		shift_1000 = 181 * 1000;
 		#`WAIT_INTERVAL;
 		shift_fail = 0;
 		#`WAIT_INTERVAL;
@@ -114,7 +114,7 @@ module phase_shift_tb ();
 			fail_count = fail_count + 1;
 		end
 
-		shift = 180;
+		shift_1000 = 180 * 1000;
 		#`WAIT_INTERVAL;
 		shift_fail = 0;
 		#`WAIT_INTERVAL;
@@ -126,7 +126,7 @@ module phase_shift_tb ();
 			fail_count = fail_count + 1;
 		end
 
-		shift = 360;
+		shift_1000 = 360 * 1000;
 		#`WAIT_INTERVAL;
 		shift_fail = 0;
 		#`WAIT_INTERVAL;
@@ -138,7 +138,7 @@ module phase_shift_tb ();
 			fail_count = fail_count + 1;
 		end
 
-		shift = -10;
+		shift_1000 = -10 * 1000;
 		#`WAIT_INTERVAL;
 		shift_fail = 0;
 		#`WAIT_INTERVAL;
@@ -150,7 +150,7 @@ module phase_shift_tb ();
 			fail_count = fail_count + 1;
 		end
 
-		shift = 0;
+		shift_1000 = 0;
 		duty_cycle_fail = 0;
 		duty_cycle = 1;
 		#`WAIT_INTERVAL;
@@ -257,13 +257,13 @@ module phase_shift_tb ();
 		if (rst) begin
 			shift_fail <= 0;
 		end else begin
-			if (shift >= 0) begin
-				#((shift * ((clk_period_1000 / 1000.0) / 360.0)) - 0.1);
+			if (shift_1000 >= 0) begin
+				#(((shift_1000 / 1000.0) * ((clk_period_1000 / 1000.0) / 360.0)) - 0.1);
 				if (clk_shifted != 0) begin
 					shift_fail <= 1;
 				end
 			end else begin
-				#(((clk_period_1000 / 1000.0) + (shift * ((clk_period_1000 / 1000.0) / 360.0))) - 0.1);
+				#(((clk_period_1000 / 1000.0) + ((shift_1000 / 1000.0) * ((clk_period_1000 / 1000.0) / 360.0))) - 0.1);
 				if (clk_shifted != 0) begin
 					shift_fail <= 1;
 				end

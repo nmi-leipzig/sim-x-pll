@@ -122,9 +122,9 @@ module pll #(
 	/* internal values */
 	reg [31:0] CLKOUT_DIVIDE_INT_1000[0:6];
 	reg [31:0] CLKOUT_DUTY_CYCLE_INT_1000[0:6];
-	reg signed [31:0] CLKOUT_PHASE_INT[0:6];
+	reg signed [31:0] CLKOUT_PHASE_INT_1000[0:6];
 	reg [31:0] CLKFBOUT_MULT_F_INT_1000;
-	reg signed [31:0] CLKFBOUT_PHASE_INT;
+	reg signed [31:0] CLKFBOUT_PHASE_INT_1000;
 	reg [31:0] DIVCLK_DIVIDE_INT;
 	wire CLKOUT_INT[0:6];
 
@@ -185,7 +185,7 @@ module pll #(
 				.RST(RST),
 				.PWRDWN(PWRDWN),
 				.clk(out[i]),
-				.shift(CLKOUT_PHASE_INT[i] + CLKFBOUT_PHASE_INT),
+				.shift_1000(CLKOUT_PHASE_INT_1000[i] + CLKFBOUT_PHASE_INT_1000),
 				.duty_cycle(CLKOUT_DUTY_CYCLE_INT_1000[i] / 10),
 				.clk_period_1000(out_period_length_1000[i]),
 				.lock(lock[i]),
@@ -214,7 +214,7 @@ module pll #(
 		.RST(RST),
 		.PWRDWN(PWRDWN),
 		.clk(fb_out),
-		.shift(CLKFBOUT_PHASE_INT),
+		.shift_1000(CLKFBOUT_PHASE_INT_1000),
 		.clk_period_1000(fb_out_period_length_1000),
 		.duty_cycle(50),
 		.lock(fb_lock),
@@ -298,12 +298,12 @@ module pll #(
 			if (CLKOUT_DUTY_CYCLE_DYN_1000[k] != 0)
 				CLKOUT_DUTY_CYCLE_INT_1000[k] = CLKOUT_DUTY_CYCLE_DYN_1000[k];
 			if (CLKOUT_PHASE_DYN[k] != 0)
-				CLKOUT_PHASE_INT[k] = CLKOUT_PHASE_DYN[k];
+				CLKOUT_PHASE_INT_1000[k] = CLKOUT_PHASE_DYN[k] * 1000;
 		end
 		if (CLKFBOUT_MULT_F_DYN_1000 != 0)
 			CLKFBOUT_MULT_F_INT_1000 = CLKFBOUT_MULT_F_DYN_1000;
 		if (CLKFBOUT_PHASE_DYN != 0)
-			CLKFBOUT_PHASE_INT = CLKFBOUT_PHASE_DYN;
+			CLKFBOUT_PHASE_INT_1000 = CLKFBOUT_PHASE_DYN * 1000;
 		if (DIVCLK_DIVIDE_DYN != 0)
 			DIVCLK_DIVIDE_INT = DIVCLK_DIVIDE_DYN;
 	end
@@ -333,16 +333,16 @@ module pll #(
 		CLKOUT_DUTY_CYCLE_INT_1000[5] = CLKOUT5_DUTY_CYCLE * 1000;
 		CLKOUT_DUTY_CYCLE_INT_1000[6] = CLKOUT6_DUTY_CYCLE * 1000;
 
-		CLKOUT_PHASE_INT[0] = CLKOUT0_PHASE;
-		CLKOUT_PHASE_INT[1] = CLKOUT1_PHASE;
-		CLKOUT_PHASE_INT[2] = CLKOUT2_PHASE;
-		CLKOUT_PHASE_INT[3] = CLKOUT3_PHASE;
-		CLKOUT_PHASE_INT[4] = CLKOUT4_PHASE;
-		CLKOUT_PHASE_INT[5] = CLKOUT5_PHASE;
-		CLKOUT_PHASE_INT[6] = CLKOUT6_PHASE;
+		CLKOUT_PHASE_INT_1000[0] = CLKOUT0_PHASE * 1000;
+		CLKOUT_PHASE_INT_1000[1] = CLKOUT1_PHASE * 1000;
+		CLKOUT_PHASE_INT_1000[2] = CLKOUT2_PHASE * 1000;
+		CLKOUT_PHASE_INT_1000[3] = CLKOUT3_PHASE * 1000;
+		CLKOUT_PHASE_INT_1000[4] = CLKOUT4_PHASE * 1000;
+		CLKOUT_PHASE_INT_1000[5] = CLKOUT5_PHASE * 1000;
+		CLKOUT_PHASE_INT_1000[6] = CLKOUT6_PHASE * 1000;
 
 		CLKFBOUT_MULT_F_INT_1000 = CLKFBOUT_MULT_F * 1000;
-		CLKFBOUT_PHASE_INT = CLKFBOUT_PHASE;
+		CLKFBOUT_PHASE_INT_1000 = CLKFBOUT_PHASE * 1000;
 		DIVCLK_DIVIDE_INT = DIVCLK_DIVIDE;
 
 		/* set up limits correctly */
@@ -456,7 +456,7 @@ module pll #(
 		end else if (CLKIN2_PERIOD < 0.000 || CLKIN2_PERIOD > 52.631) begin
 			$display("CLKIN2_PERIOD is not in the allowed range (0 - 52.631).");
 			invalid = 1'b1;
-		end else if (CLKFBOUT_PHASE_INT < -360.00 || CLKFBOUT_PHASE_INT > 360.000) begin
+		end else if (CLKFBOUT_PHASE_INT_1000 < -360000 || CLKFBOUT_PHASE_INT_1000 > 360000) begin
 			$display("CLKFBOUT_PHASE is not in the allowed range (-360-360).");
 			invalid = 1'b1;
 		end else if (DIVCLK_DIVIDE_INT < 1 || DIVCLK_DIVIDE_INT > 56) begin
@@ -489,7 +489,7 @@ module pll #(
 			if (CLKOUT_DUTY_CYCLE_INT_1000[l] < 1 || CLKOUT_DUTY_CYCLE_INT_1000[l] > 999) begin
 				$display("CLKOUT%0d_DUTY_CYCLE is not in the allowed range(0.001-0.999)", l);
 				invalid = 1'b1;
-			end else if (CLKOUT_PHASE_INT[l] < -360.000 || CLKOUT_PHASE_INT[l] > 360.000) begin
+			end else if (CLKOUT_PHASE_INT_1000[l] < -360000 || CLKOUT_PHASE_INT_1000[l] > 360000) begin
 				$display("CLKOUT%0d_PHASE is not in the allowed range(-360.000-360.000)", l);
 				invalid = 1'b1;
 			end
