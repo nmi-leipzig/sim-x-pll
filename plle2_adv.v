@@ -49,7 +49,12 @@ module PLLE2_ADV #(
 	parameter REF_JITTER1			= 0.010,
 	parameter REF_JITTER2			= 0.010,
 	parameter STARTUP_WAIT			= "FALSE",
-	parameter COMPENSATION			= "ZHOLD")(
+	parameter COMPENSATION			= "ZHOLD",
+
+	/* Setting the FPGA model and speed grade allows a more realistic
+	 * simulation. Default values are the most restrictive */
+	parameter FPGA_TYPE				= "ARTIX",
+	parameter SPEED_GRADE 			= "-1")(
 	output 	CLKOUT0,
 	output 	CLKOUT1,
 	output 	CLKOUT2,
@@ -123,7 +128,10 @@ module PLLE2_ADV #(
 		.STARTUP_WAIT(STARTUP_WAIT),
 		.COMPENSATION(COMPENSATION),
 
-		.MODULE_TYPE("PLLE2_ADV"))
+		.MODULE_TYPE("PLLE2_ADV"),
+
+		.FPGA_TYPE(FPGA_TYPE),
+		.SPEED_GRADE(SPEED_GRADE))
 	plle2_adv (
 		.CLKOUT0(CLKOUT0),
 		.CLKOUT1(CLKOUT1),

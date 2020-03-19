@@ -51,7 +51,12 @@ module MMCME2_BASE #(
 
 	/* both not implemented */
 	parameter REF_JITTER1			= 0.010,
-	parameter STARTUP_WAIT			= "FALSE")(
+	parameter STARTUP_WAIT			= "FALSE",
+
+	/* Setting the FPGA model and speed grade allows a more realistic
+	 * simulation. Default values are the most restrictive */
+	parameter FPGA_TYPE				= "ARTIX",
+	parameter SPEED_GRADE 			= "-1")(
 	output CLKOUT0,
 	output CLKOUT0B,
 	output CLKOUT1,
@@ -119,7 +124,10 @@ module MMCME2_BASE #(
 		.STARTUP_WAIT(STARTUP_WAIT),
 		.COMPENSATION("ZHOLD"),
 
-		.MODULE_TYPE("MMCME2_BASE"))
+		.MODULE_TYPE("MMCME2_BASE"),
+
+		.FPGA_TYPE(FPGA_TYPE),
+		.SPEED_GRADE(SPEED_GRADE))
 	mmcme2_base (
 		.CLKOUT0(CLKOUT0),
 		.CLKOUT0B(CLKOUT0B),
