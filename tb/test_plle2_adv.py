@@ -241,7 +241,7 @@ class Plle2AdvTest(Test, test_base.Mixin):
         """
         self.generic_plle2_adv_test(daddr1=r'7\'h14',
                                     daddr2=r'7\'h15',
-                                    di1=r'16\'b000_0_001001_000001',
+                                    di1=r'16\'b000_0_000011_000001',
                                     di2=r'16\'b0_000_0_0_00_0_0_000000')
 
     def test_plle2_adv_clkfbout_phase_dyn_reconf(self):
