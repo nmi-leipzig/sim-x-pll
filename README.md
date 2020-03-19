@@ -4,7 +4,6 @@ This project aims to simulate the behavior of the PLLE2_BASE as well as the PLLE
 
 ## Quickstart
 
-
 To use this module, you need to have the following files in your project:
 - ```plle2_base.v```, ```plle2_adv.v``` or ```mmcme2_base.v``` depending on [which one you want](#pll-choosing)
 - ```period_count.v```
@@ -58,7 +57,11 @@ An typical instatiation of the PLLE2_BASE module might look like this:
 		.CLKOUT5_PHASE(0.0),
 
 		// You can also set up a divider for your input clock. This can be useful, if you have a very fast clock, which exceeds the limits of the PLL.
-		.DIVCLK_DIVIDE(1))
+		.DIVCLK_DIVIDE(1),
+
+		// At this point this instatiation differs from the real hardware. This is to allow setting a FPGA model and it's speed grade. This enables a more realistic simulation. It is, however, entirely optional. By default it is set to the most restrictive values (ARTIX -1), so it should work on every version.
+		.FPGA_TYPE("ARTIX"),
+		.SPEED_GRADE("-1"))
  	pll (
  		// Bind the outputs of the PLL, for example like this.
 		.CLKOUT0(output[0]),
@@ -112,6 +115,7 @@ To learn more about the instantiation of the module, you should read [Xilinx UG9
 - CLKOUT0_DIVIDE_F for fractional divides (MMCME2_BASE),
 - CLKOUT4_CASCADE for using the divider of CLKOUT6 to divide the CLKOUT4 output again (MMCME2_BASE)
 - CLKFBOUT_MULT_F for fractional multipies (MMCME2_BASE)
+- stopping the simulation, if illegal values are hit
 
 ### Not Working
 - there is no feedback loop by design
@@ -167,7 +171,17 @@ Use this table for parameters:
 | COMPENSATION       | "ZHOLD", "BUF_IN", "EXTERNAL", "INTERNAL" |
 | CLKOUT4_CASCADE    | "TRUE", "FALSE"                           |
 
-Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE)```. The VCO frequency should lie between **800.000 and 1600.000**.
+Also there is a limitation in the PLL regarding the possible frequency. They depend on the capabilities of the VCO, which itself depends on the FPGA model, it's speedgrade and if it's used by a PLL or an MMCM. It's frequency can be calculated using this formula: ```VCO frequency = (CLKFBOUT_MULT * 1000) / (CLKIN1_PERIOD * DIVCLK_DIVIDE)```. Use this table for reference:
+
+| FPGA model        | -3       | -2       | -2L      | -2LE     | -2LI     | -2LG     | -1       | -1LI     | -1M      | -1LM     | -1Q      |
+| ----------------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+| **ARTIX** - PLL   | 800-2133 | 800-1866 | N/A      | 800-1600 | N/A      | N/A      | 800-1600 | 800-1600 | N/A      | N/A      | N/A      |
+| **ARTIX** - MMCM  | 600-1600 | 600-1440 | N/A      | 600-1200 | N/A      | N/A      | 600-1200 | 600-1200 | N/A      | N/A      | N/A      |
+| **KINTEX** - PLL  | 800-2133 | 800-1866 | N/A      | 800-1600 | 800-1866 | N/A      | 800-1600 | N/A      | 800-1600 | 800-1600 | 800-1600 |
+| **KINTEX** - MMCM | 600-1600 | 600-1440 | N/A      | 600-1200 | 600-1440 | N/A      | 600-1200 | N/A      | 600-1200 | 600-1200 | 600-1200 |
+| **VIRTEX** - PLL  | 800-2133 | 800-1866 | 800-1866 | N/A      | N/A      | 800-1866 | 800-1600 | N/A      | 800-1600 | N/A      | N/A      |
+| **VIRTEX** - MMCM | 600-1600 | 600-1440 | 600-1440 | N/A      | N/A      | 600-1440 | 600-1200 | N/A      | 600-1200 | N/A      | N/A      |
+
 
 <h3 id="pll-choosing">Which PLL/MMCM should I choose?</h3>
 
