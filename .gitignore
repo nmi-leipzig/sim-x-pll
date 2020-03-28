@@ -1,3 +1,10 @@
 *.vcd
 *_tb
 tb/__pycache__/
+
+pll_adv_example/pll_adv_example.cache/
+pll_adv_example/pll_adv_example.hw/
+pll_adv_example/pll_adv_example.ip_user_files/
+pll_adv_example/pll_adv_example.runs/
+pll_adv_example/pll_adv_example.sim/
+
