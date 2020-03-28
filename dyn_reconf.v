@@ -9,7 +9,9 @@
 
 /* TODO: 	- check RESERVED bits for change (not allowed in the actual PLL)
  *			- FiltReg (Device dependent)
- *			- PowerReg
+ *			- PowerReg: How does it work? According to documentation, it
+ *			  should be completely set to high for DRP, but how is it set to
+ *			  without DRP?
  *			- LockReg (Device dependent)
  * 			- DivReg: What purpose does edge have here?
  *			- MMCME: FRAC(ClkReg2)
