@@ -112,7 +112,8 @@ To learn more about the instantiation of the module, you should read [Xilinx UG9
 - setting CLKINSEL and selecting one of two input clocks (PLLE2_ADV)
 - basic dynamic reconfiguration functionality (PLLE2_ADV)
 - CLKOUT6 (MMCME2_BASE)
-- CLKOUT0_DIVIDE_F for fractional divides (MMCME2_BASE),
+- CLKOUT0_DIVIDE_F for fractional divides (MMCME2_BASE)
+- CLKOUT0-3B for inverted outputs
 - CLKOUT4_CASCADE for using the divider of CLKOUT6 to divide the CLKOUT4 output again (MMCME2_BASE)
 - CLKFBOUT_MULT_F for fractional multipies (MMCME2_BASE)
 - stopping the simulation, if illegal values are hit
