@@ -87,6 +87,7 @@ An typical instatiation of the PLLE2_BASE module might look like this:
 ## Example project
 
 An example project using the PLLE2_BASE found under ```pll_example/pll_example.srcs/sources_1/new/```. It is a simple program to show the usage of the module. It can be simulated from the ```tb/``` or the ```pll_example``` directory using
+
 - ```make pll_led_test```
 
 This runs iverilog and vvp to simulate the module.
@@ -95,6 +96,15 @@ To inspect the results you can use GTKWave like this:
 - ```gtkwave pll_led_tb.vcd```
 
 The default values chosen are meant to be seen with the naked eye on real hardware. If you run the simulation using ```make``` the values are adjusted to be easy to see in GTKWave.
+
+There is also an example project using the PLLE2_ADV found under ```pll_adv_example/pll_example.srcs/sources_1/new``` It is similar to the other example, but uses the PLLE2_ADV module and it's dynamic reconfiguration capabilities. It can be simulated from the ```tb/``` or the ```pll_adv_example``` directory using
+
+- ```make pll_adv_example_test```
+
+This runs iverilog and vvp to simulate the module. To inspect the results you can use GTKWave:
+
+- ```gtkwave pll_adv_example_tb.vcd```
+
 
 To learn more about the instantiation of the module, you should read [Xilinx UG953](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) page 509ff.
 
