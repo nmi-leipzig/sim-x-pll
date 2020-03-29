@@ -13,8 +13,7 @@
 module pll_adv_example (
 	input clk,
 	input RST,
-
-	output [6:0] led);
+	output [7:0] led);
 
     reg [6:0] DADDR;
     reg [15:0] DI;
@@ -66,7 +65,7 @@ module pll_adv_example (
 		.CLKIN1(clk),
 		.CLKIN2(clk),
 		.CLKINSEL(1'b1),
-		
+
 		.DADDR(DADDR),
 		.DI(DI),
 		.DO(DO),
@@ -79,7 +78,7 @@ module pll_adv_example (
 		.RST(RST),
 
 		.CLKFBIN(CLKFB));
-	
+
 	integer step = 0;
 	/* CLKOUT1 will be dynamically reconfigured */
 	always @(posedge clk) begin
