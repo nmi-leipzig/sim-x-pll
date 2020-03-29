@@ -8,3 +8,7 @@ pll_adv_example/pll_adv_example.ip_user_files/
 pll_adv_example/pll_adv_example.runs/
 pll_adv_example/pll_adv_example.sim/
 
+
+vivado.jou
+vivado.log
+vivado_pid19952.str
