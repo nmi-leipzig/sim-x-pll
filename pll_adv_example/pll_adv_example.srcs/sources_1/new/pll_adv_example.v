@@ -69,7 +69,7 @@ module pll_adv_example (
 		.DADDR(DADDR),
 		.DI(DI),
 		.DO(DO),
-		.DWE(DEW),
+		.DWE(DWE),
 		.DEN(DEN),
 		.DRDY(DRDY),
 		.DCLK(led[0]),
