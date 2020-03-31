@@ -31,7 +31,7 @@ module pll_adv_example (
 		.CLKIN2_PERIOD(10.0),
 
 		.CLKOUT0_DIVIDE(128),
-		.CLKOUT1_DIVIDE(64),
+		.CLKOUT1_DIVIDE(2),
 		.CLKOUT2_DIVIDE(32),
 		.CLKOUT3_DIVIDE(16),
 		.CLKOUT4_DIVIDE(128),
@@ -72,7 +72,7 @@ module pll_adv_example (
 		.DWE(DEW),
 		.DEN(DEN),
 		.DRDY(DRDY),
-		.DCLK(clk),
+		.DCLK(led[0]),
 
 		.PWRDWN(0),
 		.RST(RST),
@@ -98,7 +98,7 @@ module pll_adv_example (
 			DWE <= 1;
 			step <= 1;
 		/* Next, we will disable DEN and DWE, as soon as DRDY and LOCK are achieved again */
-		end else if (led[7] && DRDY && step == 1) begin
+		end else if (led[7] && step == 1) begin
 			DEN <= 0;
 			DWE <= 0;
 			step <= 2;
@@ -114,7 +114,13 @@ module pll_adv_example (
 			 * NO COUNT = 0
 			 * DELAY TIME = 3 */
 			/* This will add an additional phase delay as high as 3 VCO clock cycles */
-			DI = 16'b000000_00_0_0_000011;
+			DI <= 16'b000000_00_0_0_000011;
+			step <= 3;
+		end else if (led[7] && step == 3) begin
+			/* Disable Read/Write again */
+			DEN <= 0;
+			DWE <= 0;
+			step <= 4;
 		end
 	end
 endmodule
