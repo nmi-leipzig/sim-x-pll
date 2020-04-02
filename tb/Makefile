@@ -7,6 +7,10 @@ build: period_check_build freq_gen_build freq_gen_build period_count_build high_
 test_pll: plle2_base_build plle2_adv_build mmcme2_base_test
 
 
+chained_pll_test: ../plle2_base.v ../dyn_reconf.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v ../pll.v chained_pll_tb.v
+	- $(VC) ../plle2_base.v ../dyn_reconf.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v ../pll.v chained_pll_tb.v -o chained_pll_tb
+	- vvp chained_pll_tb
+
 pll_led_build: ../pll_example/pll_example.srcs/sources_1/new/pll_led_tb.v ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v ../pll.v ../dyn_reconf.v
 	- $(VC) ../pll_example/pll_example.srcs/sources_1/new/pll_led_tb.v -DFF_NUM=2 ../pll_example/pll_example.srcs/sources_1/new/pll_led.v ../pll_example/pll_example.srcs/sources_1/new/divider_synth.v ../plle2_base.v ../freq_gen.v ../period_check.v ../period_count.v ../phase_shift.v ../pll.v ../dyn_reconf.v -o pll_led_tb
 pll_led_test: pll_led_build
