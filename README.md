@@ -127,11 +127,12 @@ To learn more about the instantiation of the module, you should read [Xilinx UG9
 - CLKOUT4_CASCADE for using the divider of CLKOUT6 to divide the CLKOUT4 output again (MMCME2_BASE)
 - CLKFBOUT_MULT_F for fractional multipies (MMCME2_BASE)
 - stopping the simulation, if illegal values are hit
+- chaining PLLs should work as expected, although the CLKFBIN input is ignored
 
 ### Not Working
 - there is no feedback loop by design
 - BANDWIDTH, REF_JITTER1, REF_JITTER2, COMPENSATION and STARTUP_WAIT settings won't work with the current design approach
-- connecting CLKFBIN to any other clock than CLKFBOUT won't work with the current design approach
+- connecting CLKFBIN to any other clock than CLKFBOUT won't change the behaviour of the module
 - dynamic reconfiguration only has an effect in the ClkReg1 and ClkReg2 registers as well as the DivReg register (PLLE2_ADV)
 - RESERVED bits in the dynamic reconfiguration are ignored (PLLE2_ADV)
 
