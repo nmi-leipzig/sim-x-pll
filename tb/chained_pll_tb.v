@@ -25,6 +25,7 @@
 	`define DIVCLK_DIVIDE 1
 `endif
 
+/* number of PLLs which are chained after one another */
 `ifndef PLL_NUM
 	`define PLL_NUM 3
 `endif
