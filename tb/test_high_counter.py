@@ -31,8 +31,8 @@ class HighCounterTest(Test, test_base.Mixin):
 
         verilog_files = test_files + src_files
 
-        sim_res = self.simulate(
-            verilog_files, "-DWAIT_INTERVAL={}".format(wait_interval))
+        sim_res = self.simulate(verilog_files,
+                                "-DWAIT_INTERVAL={}".format(wait_interval))
         sim_output = sim_res.stdout_text
 
         # save vcd for analysis
