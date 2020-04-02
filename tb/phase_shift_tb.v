@@ -30,7 +30,7 @@ module phase_shift_tb ();
 	integer	pass_count;
 	integer	fail_count;
 	/* adjust according to the number of testcases */
-	localparam total = 16;
+	localparam total = 17;
 
 	phase_shift dut(
 		.RST(rst),
@@ -150,6 +150,22 @@ module phase_shift_tb ();
 			fail_count = fail_count + 1;
 		end
 
+		clk_period_1000 = 1000;
+		shift_1000 = 0;
+		duty_cycle = 50;
+		#`WAIT_INTERVAL;
+		shift_fail = 0;
+		#`WAIT_INTERVAL;
+		if (!shift_fail && lock) begin
+			$display("PASSED: shift = 0°, clk period = 1");
+			pass_count = pass_count + 1;
+		end else begin
+			$display("FAILED: shift = 0°, clk period = 1");
+			fail_count = fail_count + 1;
+		end
+
+		clk_period_1000 = 5000;
+		#40;
 		shift_1000 = 0;
 		duty_cycle_fail = 0;
 		duty_cycle = 1;
