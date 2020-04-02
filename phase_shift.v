@@ -44,7 +44,7 @@ module phase_shift (
 			if (shift_1000 < 0) begin
 				clk_shifted <= #((clk_period_1000 / 1000.0) + ((shift_1000 / 1000.0) * ((clk_period_1000 / 1000.0) / 360.0))) 1;
 			end else begin
-				clk_shifted <= #((shift_1000/ 1000.0)  * ((clk_period_1000 / 1000.0) / 360.0)) 1;
+				clk_shifted <= #((shift_1000 / 1000.0) * ((clk_period_1000 / 1000.0) / 360.0)) 1;
 			end
 		end
 	end
