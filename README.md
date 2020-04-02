@@ -153,7 +153,7 @@ You can test this project automatically using avocado or make. The testbenches t
 
 ## Architecture
 
-This diagram roughly outlines the basic architecture of the project for PLLE2_BASE.
+This diagram roughly outlines the basic architecture of the project outlining the ```pll.v``` module, which has the ```plle2_base.v```, ```plle2_adv.v``` and ```mmcme2_base.v``` modules as wrappers determining the needed functionality.
 
 ![architecture diagram](https://raw.githubusercontent.com/ti-leipzig/sim-x-pll/master/arch.svg?sanitize=true)
 
