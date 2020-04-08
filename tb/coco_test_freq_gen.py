@@ -59,16 +59,16 @@ def freq_gen_rising_edge_test(dut):
         raise TestFailure("FAILED: rising edge detection")
 
 
-@cocotb.test()
+@cocotb.coroutine
 def freq_gen_base_test(dut,
                        m_1000=1000,
                        d=1,
-                       o_1000=1000):
+                       o_1000=1000,
+                       ref_period=20):
     dut.M_1000 <= m_1000
     dut.D <= d
     dut.O_1000 <= o_1000
-    ref_period = 20
-    dut.ref_period_1000 <= ref_period * 1000
+    dut.ref_period_1000 <= int(ref_period * 1000)
     cocotb.fork(Clock(dut.clk, ref_period, units='ns').start())
 
     dut.RST <= 0
@@ -105,14 +105,17 @@ def freq_gen_base_test(dut,
                                                      o_1000,
                                                      ref_period * 1000)
 
-    if (not math.isclose(measured_period, expected_period)):
+    if (not math.isclose(measured_period,
+                         expected_period,
+                         rel_tol=1e-3)):
         print("measured: {} expected: {}".
               format(measured_period, expected_period))
         raise TestFailure("FAILED: correct output frequency using "
                           + test_configuration)
 
     if (not math.isclose(measured_period * 1000,
-                         dut.out_period_length_1000.value)):
+                         dut.out_period_length_1000.value,
+                         rel_tol=1e-3)):
         print("measured: {} calculated: {}".
               format(measured_period * 1000, dut.out_period_length_1000.value))
         raise TestFailure(
@@ -122,7 +125,9 @@ def freq_gen_base_test(dut,
     raise TestSuccess("All tests successful")
 
 
-#tf = TestFactory(test_function=freq_gen_base_test)
-#tf.add_option('m_1000', [1000, 2000, 3000, 8000, 8800])
-#tf.add_option('d', [1, 3, 5])
-#tf.add_option('o_1000', [1000, 4000, 3300, 6150, 2100])
+tf = TestFactory(test_function=freq_gen_base_test)
+tf.add_option('m_1000', [1000, 8800])
+tf.add_option('d', [1, 5])
+tf.add_option('o_1000', [1000, 6150])
+tf.add_option('ref_period', [20, 5.6])
+tf.generate_tests()
