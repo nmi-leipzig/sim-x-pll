@@ -5,6 +5,8 @@ from cocotb.result import TestFailure, TestSuccess
 import math
 
 
+def freq_gen_model(m, d, o, ref_period_length):
+    return ref_period_length * ((d * o) / m)
 @cocotb.test()
 def test_freq_gen(dut,
                   wait_interval=1000,
