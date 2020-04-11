@@ -172,6 +172,19 @@ def dyn_reconf_base_test(dut, clk_period=10):
     if (dut.CLKFBOUT_PHASE.value != ((vco_period / 8) * 3) + (vco_period * 3)):
         raise TestFailure("FAILED: CLKFBOUT ClkReg2 PHASE calculation")
 
+    # DIVCLK_DIVIDE
+    # RESERVED: 0
+    # EDGE: 0
+    # NO COUNT: 0
+    # HIGH TIME: 3
+    # LOW TIME: 3
+    yield write_value(dut, 0x16, 0b0000000011000011, clk_period)
+
+    if (dut.DIVCLK_DIVIDE.value != 6):
+        raise TestFailure("FAILED: DivReg DIVIDE calculation")
+
+    raise TestSuccess("All tests passed")
+
 
 @cocotb.coroutine
 def write_value(dut, DADDR, DI, clk_period):
