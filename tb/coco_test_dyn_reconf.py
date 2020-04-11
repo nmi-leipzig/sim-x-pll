@@ -115,8 +115,6 @@ def dyn_reconf_base_test(dut, clk_period=10):
     if (dut.CLKOUT1_PHASE.value != ((vco_period / 8) * 3) + (vco_period * 3)):
         raise TestFailure("FAILED: CLKOUT1 ClkReg2 PHASE calculation")
 
-    raise TestSuccess("ALL TESTS PASSED")
-
     # CLKOUT5
     # PHASE MUX: 3
     # RESERVED: 0
@@ -138,13 +136,13 @@ def dyn_reconf_base_test(dut, clk_period=10):
     # EDGE: 0
     # NO COUNT: 1
     # DELAY TIME: 3
-    yield write_value(dut, 0x07, 0b000000000100001, clk_period)
+    yield write_value(dut, 0x07, 0b0000000001000011, clk_period)
 
     if (dut.CLKOUT5_DIVIDE.value != 1):
         raise TestFailure("FAILED: CLKOUT5 ClkReg2 DIVIDE calculation")
     if (dut.CLKOUT5_DUTY_CYCLE_1000.value != 500):
         raise TestFailure("FAILED: CLKOUT5 ClkReg2 DUTY_CYCLE calculation")
-    if (dut.CLKOUT5_PHASE.value != ((vco_period) / 8) * 3) + (vco_period * 3):
+    if (dut.CLKOUT5_PHASE.value != ((vco_period / 8) * 3) + (vco_period * 3)):
         raise TestFailure("FAILED: CLKOUT5 ClkReg2 PHASE calculation")
 
     # CLKFBOUT
