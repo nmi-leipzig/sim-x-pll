@@ -84,8 +84,7 @@ def dyn_reconf_base_test(dut, clk_period=10):
         raise TestFailure("FAILED: CLKOUT0 ClkReg2 DIVIDE calculation")
     if (dut.CLKOUT0_DUTY_CYCLE_1000.value != 500):
         raise TestFailure("FAILED: CLKOUT0 ClkReg2 DUTY_CYCLE calculation")
-    if (dut.CLKOUT0_PHASE.value
-            != ((vco_period / 8) * 3) + (vco_period * 3)):
+    if (dut.CLKOUT0_PHASE.value != ((vco_period / 8) * 3) + (vco_period * 3)):
         raise TestFailure("FAILED: CLKOUT0 ClkReg2 PHASE calculation")
 
     # CLKOUT1
@@ -113,8 +112,7 @@ def dyn_reconf_base_test(dut, clk_period=10):
         raise TestFailure("FAILED: CLKOUT1 ClkReg2 DIVIDE calculation")
     if (dut.CLKOUT1_DUTY_CYCLE_1000.value != 500):
         raise TestFailure("FAILED: CLKOUT1 ClkReg2 DUTY_CYCLE calculation")
-    if (dut.CLKOUT1_PHASE.value
-            != ((vco_period / 8) * 3) + (vco_period * 3)):
+    if (dut.CLKOUT1_PHASE.value != ((vco_period / 8) * 3) + (vco_period * 3)):
         raise TestFailure("FAILED: CLKOUT1 ClkReg2 PHASE calculation")
 
     raise TestSuccess("ALL TESTS PASSED")
@@ -146,9 +144,35 @@ def dyn_reconf_base_test(dut, clk_period=10):
         raise TestFailure("FAILED: CLKOUT5 ClkReg2 DIVIDE calculation")
     if (dut.CLKOUT5_DUTY_CYCLE_1000.value != 500):
         raise TestFailure("FAILED: CLKOUT5 ClkReg2 DUTY_CYCLE calculation")
-    if (dut.CLKOUT5_PHASE.value
-            != ((vco_period) / 8) * 3) + (vco_period * 3):
+    if (dut.CLKOUT5_PHASE.value != ((vco_period) / 8) * 3) + (vco_period * 3):
         raise TestFailure("FAILED: CLKOUT5 ClkReg2 PHASE calculation")
+
+    # CLKFBOUT
+    # PHASE MUX: 3
+    # RESERVED: 0
+    # HIGH TIME: 6
+    # LOW TIME: 3
+    yield write_value(dut, 0x14, 0b0110000110000011, clk_period)
+
+    if (dut.CLKFBOUT_MULT_F_1000 != 9000):
+        raise TestFailure("FAILED: CLKFBOUT ClkReg1 DIVIDE calculation")
+    if (dut.CLKFBOUT_PHASE != ((vco_period / 8) * 3)):
+        raise TestFailure("FAILED: CLKFBOUT ClkReg1 PHASE calculation")
+
+    # RESERVED: 0
+    # FRAC: 000
+    # FRAC_EN: 0
+    # FRAC_WF_R: 0
+    # MX: 00
+    # EDGE: 0
+    # NO COUNT: 1
+    # DELAY TIME: 3
+    yield write_value(dut, 0x15, 0b0000000001000011, clk_period)
+
+    if (dut.CLKFBOUT_MULT_F_1000.value != 1000):
+        raise TestFailure("FAILED: CLKFBOUT ClkReg2 DIVIDE calculation")
+    if (dut.CLKFBOUT_PHASE.value != ((vco_period / 8) * 3) + (vco_period * 3)):
+        raise TestFailure("FAILED: CLKFBOUT ClkReg2 PHASE calculation")
 
 
 @cocotb.coroutine
