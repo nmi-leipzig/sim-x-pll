@@ -64,8 +64,7 @@ def dyn_reconf_base_test(dut, clk_period=10):
 
     if (dut.CLKOUT0_DUTY_CYCLE_1000.value != duty_cycle):
         raise TestFailure("FAILED: CLKOUT0 ClkReg1 DUTY_CYCLE calculation")
-    if (dut.CLKOUT0_PHASE.value
-            != ((vco_period / 8) * 3)):
+    if (dut.CLKOUT0_PHASE.value != ((vco_period / 8) * 3)):
         raise TestFailure("FAILED: CLKOUT0 ClkReg1 PHASE calculation")
 
     dut.DEN <= 0
@@ -100,8 +99,7 @@ def dyn_reconf_base_test(dut, clk_period=10):
         raise TestFailure("FAILED: CLKOUT1 ClkReg1 DIVIDE calculation")
     if (dut.CLKOUT1_DUTY_CYCLE_1000.value != duty_cycle):
         raise TestFailure("FAILED: CLKOUT1 ClkReg1 DUTY_CYCLE calculation")
-    if (dut.CLKOUT1_PHASE
-            != ((vco_period / 8) * 3)):
+    if (dut.CLKOUT1_PHASE != ((vco_period / 8) * 3)):
         raise TestFailure("FAILED: CLKOUT1 ClkReg1 PHASE calculation")
 
     # RESERVED: 000000
@@ -116,11 +114,42 @@ def dyn_reconf_base_test(dut, clk_period=10):
     if (dut.CLKOUT1_DUTY_CYCLE_1000.value != 500):
         raise TestFailure("FAILED: CLKOUT1 ClkReg2 DUTY_CYCLE calculation")
     if (dut.CLKOUT1_PHASE.value
-            != ((vco_period / 8) * 3)
-            + (vco_period * 3)):
+            != ((vco_period / 8) * 3) + (vco_period * 3)):
         raise TestFailure("FAILED: CLKOUT1 ClkReg2 PHASE calculation")
 
     raise TestSuccess("ALL TESTS PASSED")
+
+    # CLKOUT5
+    # PHASE MUX: 3
+    # RESERVED: 0
+    # HIGH TIME: 6
+    # LOW TIME: 3
+    yield write_value(dut, 0x06, 0b0110000110000011, clk_period)
+
+    if (dut.CLKOUT5_DIVIDE.value != 9):
+        raise TestFailure("FAILED: CLKOUT5 ClkReg1 DIVIDE calculation")
+    if (dut.CLKOUT5_DUTY_CYCLE_1000.value != duty_cycle):
+        raise TestFailure("FAILED: CLKOUT5 ClkReg1 DUTY_CYCLE calculation")
+    if (dut.CLKOUT5_PHASE != ((vco_period / 8) * 3)):
+        raise TestFailure("FAILED: CLKOUT5 ClkReg1 PHASE calculation")
+
+    # RESERVED: 00
+    # PHASE_MUX_F_CLKOUT0: 000
+    # FRAC_WF_F_CLKOUT0: 0
+    # MX: 00
+    # EDGE: 0
+    # NO COUNT: 1
+    # DELAY TIME: 3
+    yield write_value(dut, 0x07, 0b000000000100001, clk_period)
+
+    if (dut.CLKOUT5_DIVIDE.value != 1):
+        raise TestFailure("FAILED: CLKOUT5 ClkReg2 DIVIDE calculation")
+    if (dut.CLKOUT5_DUTY_CYCLE_1000.value != 500):
+        raise TestFailure("FAILED: CLKOUT5 ClkReg2 DUTY_CYCLE calculation")
+    if (dut.CLKOUT5_PHASE.value
+            != ((vco_period) / 8) * 3) + (vco_period * 3):
+        raise TestFailure("FAILED: CLKOUT5 ClkReg2 PHASE calculation")
+
 
 @cocotb.coroutine
 def write_value(dut, DADDR, DI, clk_period):
