@@ -70,4 +70,11 @@ module freq_gen (
 		end
 	end
 
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("freq_gen.vcd");
+			$dumpvars(0, freq_gen);
+			#1;
+		end
+	`endif
 endmodule

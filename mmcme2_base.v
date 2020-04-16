@@ -162,4 +162,11 @@ module MMCME2_BASE #(
 		.DO(DO),
 		.DRDY(DRDY));
 
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("mmcme2_base.vcd");
+			$dumpvars(0, mmcme2_base);
+			#1;
+		end
+	`endif
 endmodule

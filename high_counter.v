@@ -20,5 +20,12 @@ module high_counter (
 			count <= count + 1;
 		end
 	end
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("high_counter.vcd");
+			$dumpvars(0, high_counter);
+			#1;
+		end
+	`endif
 endmodule
 

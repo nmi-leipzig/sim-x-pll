@@ -140,4 +140,11 @@ module PLLE2_BASE #(
 		.DO(DO),
 		.DRDY(DRDY)
 	);
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("plle2_base.vcd");
+			$dumpvars(0, plle2_base);
+			#1;
+		end
+	`endif
 endmodule

@@ -359,4 +359,11 @@ module dyn_reconf (
 	end
 
 
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("dyn_reconf.vcd");
+			$dumpvars(0, dyn_reconf);
+			#1;
+		end
+	`endif
 endmodule

@@ -39,4 +39,11 @@ module duty_cycle_check (
 			fail <= 0;
 		end
 	end
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("duty_cycle_check.vcd");
+			$dumpvars(0, duty_cycle_check);
+			#1;
+		end
+	`endif
 endmodule

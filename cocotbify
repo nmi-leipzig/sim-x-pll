@@ -1,0 +1,17 @@
+#!/bin/sh
+
+for file in "$@"; do
+	cat << END > cocotb_temp
+	\`ifdef COCOTB_SIM
+		initial begin
+			\$dumpfile("${file}cd");
+			\$dumpvars(0, ${file%??});
+			#1;
+		end
+	\`endif
+END
+
+	sed -i '/endmodule/e cat cocotb_temp' "$file"
+done
+
+rm cocotb_temp

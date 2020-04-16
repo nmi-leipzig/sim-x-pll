@@ -36,4 +36,11 @@ module period_check (
 		end
 	end
 
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("period_check.vcd");
+			$dumpvars(0, period_check);
+			#1;
+		end
+	`endif
 endmodule

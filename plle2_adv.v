@@ -161,4 +161,11 @@ module PLLE2_ADV #(
 		.DRDY(DRDY)
 	);
 
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("plle2_adv.vcd");
+			$dumpvars(0, plle2_adv);
+			#1;
+		end
+	`endif
 endmodule
