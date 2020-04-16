@@ -236,7 +236,7 @@ module dyn_reconf_tb ();
 		 * EDGE = 0
 		 * NO COUNT = 1
 		 * DELAY TIME = 3 */
-		DI = 16'b0_000_0_0_00_1_0_00011;
+		DI = 16'b0_000_0_0_00_0_1_000011;
 
 		#(`CLK_PERIOD * 2);
 		DEN = 1'b0;
@@ -529,10 +529,10 @@ module dyn_reconf_tb ();
 		#(`CLK_PERIOD * 2);
 
 		if (DIVCLK_DIVIDE == 6) begin
-			$display("PASSED: ClkReg1 DIVIDE calculation");
+			$display("PASSED: DivReg DIVIDE calculation");
 			pass_count = pass_count + 1;
 		end else begin
-			$display("FAILED: ClkReg1 DIVIDE calculation");
+			$display("FAILED: DivReg DIVIDE calculation");
 			fail_count = fail_count + 1;
 		end
 
