@@ -2,7 +2,6 @@ import cocotb
 from cocotb.triggers import Timer
 from cocotb.clock import Clock
 from cocotb.result import TestFailure, TestSuccess
-from cocotb.regression import TestFactory
 
 
 @cocotb.test()
