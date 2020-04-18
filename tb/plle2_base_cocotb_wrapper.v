@@ -1,0 +1,185 @@
+/*
+ * plle2_base_cocotb_wrapper.v: Wrapper for plle2_base.v allowing
+ *                              instantiation using macros
+ * author: Till Mahlburg
+ * year: 2020
+ * organization: Universität Leipzig
+ * license: ISC
+ *
+ */
+
+`timescale 1 ns / 1 ps
+`ifndef WAIT_INTERVAL
+	`define WAIT_INTERVAL 1000
+`endif
+
+/* define all attributes as macros, so different combinations can be tested
+ * more easily.
+ * By default these are the given default values of the part.
+ */
+
+/* not implemented */
+`ifndef BANDWIDTH
+	`define BANDWIDTH "OPTIMIZED"
+`endif
+`ifndef CLKFBOUT_MULT
+	`define CLKFBOUT_MULT 5
+`endif
+`ifndef CLKFBOUT_PHASE
+	`define CLKFBOUT_PHASE 0.000
+`endif
+/* This deviates from the default values, because it is required to be set */
+`ifndef CLKIN1_PERIOD
+	`define CLKIN1_PERIOD 5.000
+`endif
+
+`ifndef CLKOUT0_DIVIDE
+	`define CLKOUT0_DIVIDE 1
+`endif
+`ifndef CLKOUT1_DIVIDE
+	`define CLKOUT1_DIVIDE 1
+`endif
+`ifndef CLKOUT2_DIVIDE
+	`define CLKOUT2_DIVIDE 1
+`endif
+`ifndef CLKOUT2_DIVIDE
+	`define CLKOUT2_DIVIDE 1
+`endif
+`ifndef CLKOUT3_DIVIDE
+	`define CLKOUT3_DIVIDE 1
+`endif
+`ifndef CLKOUT4_DIVIDE
+	`define CLKOUT4_DIVIDE 1
+`endif
+`ifndef CLKOUT5_DIVIDE
+	`define CLKOUT5_DIVIDE 1
+`endif
+
+`ifndef CLKOUT0_DUTY_CYCLE
+	`define CLKOUT0_DUTY_CYCLE 0.500
+`endif
+`ifndef CLKOUT1_DUTY_CYCLE
+	`define CLKOUT1_DUTY_CYCLE 0.500
+`endif
+`ifndef CLKOUT2_DUTY_CYCLE
+	`define CLKOUT2_DUTY_CYCLE 0.500
+`endif
+`ifndef CLKOUT3_DUTY_CYCLE
+	`define CLKOUT3_DUTY_CYCLE 0.500
+`endif
+`ifndef CLKOUT4_DUTY_CYCLE
+	`define CLKOUT4_DUTY_CYCLE 0.500
+`endif
+`ifndef CLKOUT5_DUTY_CYCLE
+	`define CLKOUT5_DUTY_CYCLE 0.500
+`endif
+
+`ifndef CLKOUT0_PHASE
+	`define CLKOUT0_PHASE 0.000
+`endif
+`ifndef CLKOUT1_PHASE
+	`define CLKOUT1_PHASE 0.000
+`endif
+`ifndef CLKOUT2_PHASE
+	`define CLKOUT2_PHASE 0.000
+`endif
+`ifndef CLKOUT3_PHASE
+	`define CLKOUT3_PHASE 0.000
+`endif
+`ifndef CLKOUT4_PHASE
+	`define CLKOUT4_PHASE 0.000
+`endif
+`ifndef CLKOUT5_PHASE
+	`define CLKOUT5_PHASE 0.000
+`endif
+
+`ifndef DIVCLK_DIVIDE
+	`define DIVCLK_DIVIDE 1
+`endif
+/* not implemented */
+`ifndef REF_JITTER1
+	`define REF_JITTER1 0.010
+`endif
+
+/* not implemented */
+`ifndef STARTUP_WAIT
+	`define STARTUP_WAIT "FALSE"
+`endif
+
+module PLLE2_BASE_cocotb_wrapper (
+	output 	CLKOUT0,
+	output 	CLKOUT1,
+	output 	CLKOUT2,
+	output 	CLKOUT3,
+	output 	CLKOUT4,
+	output 	CLKOUT5,
+	/* PLL feedback output. */
+	output 	CLKFBOUT,
+
+	output	LOCKED,
+
+	input 	CLKIN1,
+	/* PLL feedback input. Is ignored in this implementation, but should be connected to CLKFBOUT for internal feedback. */
+	input 	CLKFBIN,
+
+	/* Used to power down instatiated but unused PLLs */
+	input	PWRDWN,
+	input	RST);
+
+	/* instantiate PLLE2_BASE with default values for all the attributes */
+	PLLE2_BASE #(
+ 		.BANDWIDTH(`BANDWIDTH),
+ 		.CLKFBOUT_MULT(`CLKFBOUT_MULT),
+		.CLKFBOUT_PHASE(`CLKFBOUT_PHASE),
+		.CLKIN1_PERIOD(`CLKIN1_PERIOD),
+
+		.CLKOUT0_DIVIDE(`CLKOUT0_DIVIDE),
+		.CLKOUT1_DIVIDE(`CLKOUT1_DIVIDE),
+		.CLKOUT2_DIVIDE(`CLKOUT2_DIVIDE),
+		.CLKOUT3_DIVIDE(`CLKOUT3_DIVIDE),
+		.CLKOUT4_DIVIDE(`CLKOUT4_DIVIDE),
+		.CLKOUT5_DIVIDE(`CLKOUT5_DIVIDE),
+
+		.CLKOUT0_DUTY_CYCLE(`CLKOUT0_DUTY_CYCLE),
+		.CLKOUT1_DUTY_CYCLE(`CLKOUT1_DUTY_CYCLE),
+		.CLKOUT2_DUTY_CYCLE(`CLKOUT2_DUTY_CYCLE),
+		.CLKOUT3_DUTY_CYCLE(`CLKOUT3_DUTY_CYCLE),
+		.CLKOUT4_DUTY_CYCLE(`CLKOUT4_DUTY_CYCLE),
+		.CLKOUT5_DUTY_CYCLE(`CLKOUT5_DUTY_CYCLE),
+
+		.CLKOUT0_PHASE(`CLKOUT0_PHASE),
+		.CLKOUT1_PHASE(`CLKOUT1_PHASE),
+		.CLKOUT2_PHASE(`CLKOUT2_PHASE),
+		.CLKOUT3_PHASE(`CLKOUT3_PHASE),
+		.CLKOUT4_PHASE(`CLKOUT4_PHASE),
+		.CLKOUT5_PHASE(`CLKOUT5_PHASE),
+
+		.DIVCLK_DIVIDE(`DIVCLK_DIVIDE),
+		.REF_JITTER1(`REF_JITTER1),
+		.STARTUP_WAIT(`STARTUP_WAIT))
+	dut (
+		.CLKOUT0(CLKOUT0),
+		.CLKOUT1(CLKOUT1),
+		.CLKOUT2(CLKOUT2),
+		.CLKOUT3(CLKOUT3),
+		.CLKOUT4(CLKOUT4),
+		.CLKOUT5(CLKOUT5),
+
+		.CLKFBOUT(CLKFBOUT),
+		.LOCKED(LOCKED),
+
+		.CLKIN1(CLKIN1),
+
+		.PWRDWN(PWRDWN),
+		.RST(RST),
+		.CLKFBIN(CLKFBIN)
+	);
+
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("plle2_base.vcd");
+			$dumpvars(0, plle2_base);
+			#1;
+		end
+	`endif
+endmodule
