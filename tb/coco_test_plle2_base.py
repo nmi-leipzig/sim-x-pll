@@ -26,6 +26,14 @@ def plle2_base_test(dut, wait_interval = 1000, clkin1_period = 5):
                      dut.CLKOUT5_DIVIDE,
                      1]
 
+    CLKOUT_DUTY_CYCLE_1000 = [dut.CLKOUT0_DUTY_CYCLE_1000,
+                              dut.CLKOUT1_DUTY_CYCLE_1000,
+                              dut.CLKOUT2_DUTY_CYCLE_1000,
+                              dut.CLKOUT3_DUTY_CYCLE_1000,
+                              dut.CLKOUT4_DUTY_CYCLE_1000,
+                              dut.CLKOUT5_DUTY_CYCLE_1000,
+                              500]
+
     yield Timer(10, 'ns')
     dut.RST <= 1
     yield Timer(10, 'ns')
@@ -55,11 +63,16 @@ def plle2_base_test(dut, wait_interval = 1000, clkin1_period = 5):
                                        dut.DIVCLK_DIVIDE.value,
                                        dut.CLKFBOUT_MULT.value,
                                        CLKOUT_DIVIDE[i].value)
-        measured_period = yield Join(measure_thread[i])
+        expected_duty_cycle = CLKOUT_DUTY_CYCLE_1000[i].value.integer / 1000
+        measurement = yield Join(measure_thread[i])
+        measured_period = measurement[0]
+        measured_duty_cycle = measurement[1]
         if (expected_period != measured_period and i != 6):
             raise TestFailure('FAILED: CLKOUT{} period'.format(i))
         elif (expected_period != measured_period):
             raise TestFailure('FAILED: CLKFBOUT period')
+        if (expected_duty_cycle != measured_duty_cycle and i != 6):
+            raise TestFailure('FAILED: CLKOUT{} period'.format(i))
 
 
 def period_model(clk_period,
@@ -73,12 +86,15 @@ def period_model(clk_period,
 
 @cocotb.coroutine
 def period_count(signal, resolution=0.01):
-    period_count = -resolution
+    period_count_high = -resolution
+    period_count_low = 0
     yield RisingEdge(signal)
     while(signal.value):
-        period_count += resolution
+        period_count_high += resolution
         yield Timer(resolution, 'ns')
     while(not signal.value):
-        period_count += resolution
+        period_count_low += resolution
         yield Timer(resolution, 'ns')
-    return round(period_count, 3)
+    period_count = period_count_high + period_count_low
+    duty_cycle = period_count_high / period_count
+    return [round(period_count, 3), round(duty_cycle, 3)]
