@@ -121,7 +121,7 @@ def period_model(clk_period,
                  clkfbout_mult=1,
                  clkout_divide=1):
     period = clk_period * ((divclk_divide.integer * clkout_divide.integer)
-                            / clkfbout_mult.integer)
+                           / clkfbout_mult.integer)
     return period
 
 
