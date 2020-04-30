@@ -123,6 +123,7 @@ def plle2_base_test(dut, wait_interval=1000, clkin1_period=5):
             == 'x'):
         raise TestFailure('FAILED: PWRDWN')
 
+
 def period_model(clk_period,
                  divclk_divide=1,
                  clkfbout_mult=1,
@@ -156,16 +157,16 @@ def phase_shift_check(ref_signal, signal, clk_period, shift, run_length):
         yield RisingEdge(ref_signal)
         if (shift > 0):
             run_time += clk_period
-            yield Timer(round(shift * (clk_period / 360) - 0.5, 3), 'ns')
+            yield Timer(round(shift * (clk_period / 360) - 0.1, 3), 'ns')
             if (signal.value):
                 fail = 1
         else:
             run_time += 2 * clk_period
-            yield Timer(round(clk_period + shift * (clk_period / 360) - 0.5),
+            yield Timer(round(clk_period + shift * (clk_period / 360) - 0.1),
                         'ns')
             if (signal.value):
                 fail = 1
-        yield Timer(1, 'ns')
+        yield Timer(0.2, 'ns')
         if (not signal.value):
             fail = 1
     return fail
