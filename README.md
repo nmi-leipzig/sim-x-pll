@@ -1,6 +1,6 @@
 # Xilinx 7 Series PLL and MMCM Simulation
 
-This project aims to simulate the behavior of the PLLE2_BASE as well as the PLLE2_ADV PLL and the MMCME2_BASE MMCM found on the Xilinx 7 Series FPGAs. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff for the PLLs and 461ff for the MMCM. This way you can just drop the files listed below into your project, instantiate the PLL/MMCM like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do.
+This project aims to simulate the behavior of the PLLE2_BASE as well as the PLLE2_ADV PLL and the MMCME2_BASE MMCM found on the Xilinx 7 Series FPGAs. The MMCME2_ADV MMCM is not (yet) supported. This is done in Verilog, and can for example be simulated using the Icarus Verilog simulation and synthesis tool. It follows the instantiation interface described in the [documentation](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) on page 509ff for the PLLs and 461ff for the MMCM. This way you can just drop the files listed below into your project, instantiate the PLL/MMCM like you would for real hardware and simulate it. Read on to learn how to use the module and what it can and cannot do. If you just want to know, what works and what doesn't, just have a look at the [project status](#status)
 
 ## Quickstart
 
@@ -15,15 +15,14 @@ To use this module, you need to have the following files in your project:
 - ```pll.v```
 
 
-
 To build and simulate your project, you can use [icarus verilog and vvp](http://iverilog.icarus.com/) and view the results in [GTKWave](http://gtkwave.sourceforge.net/):
-- ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>```, ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>``` or ```iverilog mmcme2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>```, depending on which one you want
+- ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>```, ```iverilog plle2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>``` or ```iverilog mmcme2_base.v period_check.v period_count.v freq_gen.v divider.v phase_shift.v dyn_reconf.v pll.v <your project files> -o <your project name>```, depending on [which one you want](#pll-choosing)
 - ```vvp <your project name>```
 - ```gtkwave dump.vcd```
 
 If you specified the name of your output file using something like ```$dumpfile("<your_name.vcd>")```, you have to replace ```dump.vcd``` with your chosen name.
 
-The module works by supplying an input clock, which will be transformed to an, or rather 6, output clocks. This output clock depends on the input clock and multiple parameters. You can set the wanted output frequency, phase shift and duty cycle. The output frequency is calculated like this: ```output frequency = input frequency * (multiplier / (divider * output divider))```, while the output phase can be calculated (in relation to the input phase) by using this formula: ```output phase = feedback phase + output phase```. The parts of these formulas with "output" in their name are specific to one specific output, while the others are global. There are certain limits to the values. If you hit them, the module is going to stop simulation and inform you about it. Check out the FAQ section at the end to learn more about these limits. You can also find a table there, how the allowed VCO frequency depends on FPGA model, their speed grades the used module (MMCM or PLL).
+The module works by supplying an input clock, which will be transformed to an, or rather 6 (or 7 in the case of the MMCM), output clocks. In the simplest case, this output clock depends on the input clock and multiple parameters. You can set the wanted output frequency, phase shift and duty cycle. The output frequency is calculated like this: ```output frequency = input frequency * (multiplier / (divider * output divider))```, while the output phase can be calculated (in relation to the input phase) by using this formula: ```output phase = feedback phase + output phase```. The parts of these formulas with "output" in their name are specific to one specific output, while the others are global. There are certain limits to the values. If you hit them, the module is going to stop simulation and inform you about it. Check out the [FAQ](#FAQ) section at the end to learn more about these limits. You can also find a table there, how the allowed VCO frequency depends on FPGA model, their speed grades the used module (MMCM or PLL).
 
 An typical instatiation of the PLLE2_BASE module might look like this:
 
@@ -108,7 +107,7 @@ This runs iverilog and vvp to simulate the module. To inspect the results you ca
 
 To learn more about the instantiation of the module, you should read [Xilinx UG953](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) page 509ff.
 
-## Project Status
+<h2 id="status2>Project Status</h2>
 
 ### Working
 - instantiation interface compatible to the one described in UG953
@@ -161,7 +160,7 @@ This diagram roughly outlines the basic architecture of the project outlining th
 
 This project is licensed under the [ISC license](https://github.com/ti-leipzig/sim-x-pll/blob/master/LICENSE).
 
-## FAQ
+<h2 id="FAQ">FAQ</h2>
 
 ### What limits does the PLL/MMCM have?
 Use this table for parameters:
