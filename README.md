@@ -107,7 +107,7 @@ This runs iverilog and vvp to simulate the module. To inspect the results you ca
 
 To learn more about the instantiation of the module, you should read [Xilinx UG953](https://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug953-vivado-7series-libraries.pdf) page 509ff.
 
-<h2 id="status2>Project Status</h2>
+<h2 id="status">Project Status</h2>
 
 ### Working
 - instantiation interface compatible to the one described in UG953
