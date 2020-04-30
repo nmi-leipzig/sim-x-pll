@@ -101,7 +101,7 @@ def plle2_base_test(dut, wait_interval=1000, clkin1_period=5):
         elif (expected_period != measured_period):
             raise TestFailure('FAILED: CLKFBOUT period')
         if (expected_duty_cycle != measured_duty_cycle and i != 6):
-            raise TestFailure('FAILED: CLKOUT{} period'.format(i))
+            raise TestFailure('FAILED: CLKOUT{} duty cycle'.format(i))
 
     for i in range(0, (len(CLKOUT) - 1)):
         fail = yield Join(measure_thread[1][i])
