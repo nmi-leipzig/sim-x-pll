@@ -204,6 +204,9 @@ module plle2_base_cocotb_wrapper (
 	);
 
 	initial begin
+		$dumpfile("plle2_base_cocotb_wrapper.vcd");
+		$dumpvars(0, plle2_base_cocotb_wrapper);
+
 		CLKFBOUT_MULT = `CLKFBOUT_MULT;
 		CLKFBOUT_PHASE_1000 = `CLKFBOUT_PHASE * 1000;
 		CLKIN1_PERIOD_1000 = `CLKIN1_PERIOD * 1000;
@@ -231,8 +234,6 @@ module plle2_base_cocotb_wrapper (
 
 		DIVCLK_DIVIDE = `DIVCLK_DIVIDE;
 		REF_JITTER1_1000 = 1000 * `REF_JITTER1;
-		$dumpfile("plle2_base_cocotb_wrapper.vcd");
-		$dumpvars(0, plle2_base_cocotb_wrapper);
 		#1;
 	end
 endmodule
