@@ -23,7 +23,7 @@
 	`define BANDWIDTH "OPTIMIZED"
 `endif
 `ifndef CLKFBOUT_MULT_F
-	`define CLKFBOUT_MULT 5.000
+	`define CLKFBOUT_MULT_F 5.000
 `endif
 `ifndef CLKFBOUT_PHASE
 	`define CLKFBOUT_PHASE 0.000
@@ -119,26 +119,30 @@
 	`define STARTUP_WAIT "FALSE"
 `endif
 
-module plle2_base_cocotb_wrapper (
-	output 	CLKOUT0,
-	output 	CLKOUT1,
-	output 	CLKOUT2,
-	output 	CLKOUT3,
-	output 	CLKOUT4,
-	output 	CLKOUT5,
-	output  CLKOUT6,
+module mmcme2_base_cocotb_wrapper (
+	output CLKOUT0,
+	output CLKOUT1,
+	output CLKOUT2,
+	output CLKOUT3,
+	output CLKOUT4,
+	output CLKOUT5,
+	output CLKOUT6,
+	output CLKOUT0B,
+	output CLKOUT1B,
+	output CLKOUT2B,
+	output CLKOUT3B,
 	/* PLL feedback output. */
-	output 	CLKFBOUT,
+	output CLKFBOUT,
 
-	output	LOCKED,
+	output LOCKED,
 
-	input 	CLKIN1,
+	input CLKIN1,
 	/* PLL feedback input. Is ignored in this implementation, but should be connected to CLKFBOUT for internal feedback. */
-	input 	CLKFBIN,
+	input CLKFBIN,
 
 	/* Used to power down instatiated but unused PLLs */
-	input	PWRDWN,
-	input	RST,
+	input PWRDWN,
+	input RST,
 
 	output reg [31:0] CLKFBOUT_MULT_F_1000,
 	output reg [31:0] CLKFBOUT_PHASE_1000,
@@ -174,7 +178,7 @@ module plle2_base_cocotb_wrapper (
 	output reg [31:0] REF_JITTER1_1000);
 
 	/* instantiate PLLE2_BASE with default values for all the attributes */
-	PLLE2_BASE #(
+	MMCME2_BASE #(
  		.BANDWIDTH(`BANDWIDTH),
  		.CLKFBOUT_MULT_F(`CLKFBOUT_MULT_F),
 		.CLKFBOUT_PHASE(`CLKFBOUT_PHASE),
@@ -217,6 +221,11 @@ module plle2_base_cocotb_wrapper (
 		.CLKOUT4(CLKOUT4),
 		.CLKOUT5(CLKOUT5),
 		.CLKOUT6(CLKOUT6),
+
+		.CLKOUT0B(CLKOUT0B),
+		.CLKOUT1B(CLKOUT1B),
+		.CLKOUT2B(CLKOUT2B),
+		.CLKOUT3B(CLKOUT3B),
 
 		.CLKFBOUT(CLKFBOUT),
 		.LOCKED(LOCKED),
@@ -264,8 +273,8 @@ module plle2_base_cocotb_wrapper (
 		end else if (`CLKOUT4_CASCADE == "FALSE") begin
 			CLKOUT4_CASCADE = 0;
 		end
-		$dumpfile("plle2_base_cocotb_wrapper.vcd");
-		$dumpvars(0, plle2_base_cocotb_wrapper);
+		$dumpfile("mmcme2_base_cocotb_wrapper.vcd");
+		$dumpvars(0, mmcme2_base_cocotb_wrapper);
 		#1;
 	end
 endmodule
