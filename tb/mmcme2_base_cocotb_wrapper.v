@@ -228,6 +228,7 @@ module mmcme2_base_cocotb_wrapper (
 		.CLKOUT3B(CLKOUT3B),
 
 		.CLKFBOUT(CLKFBOUT),
+		.CLKFBOUTB(CLKFBOUTB),
 		.LOCKED(LOCKED),
 
 		.CLKIN1(CLKIN1),
@@ -238,6 +239,9 @@ module mmcme2_base_cocotb_wrapper (
 	);
 
 	initial begin
+		$dumpfile("mmcme2_base_cocotb_wrapper.vcd");
+		$dumpvars(0, mmcme2_base_cocotb_wrapper);
+
 		CLKFBOUT_MULT_F_1000 = `CLKFBOUT_MULT_F * 1000;
 		CLKFBOUT_PHASE_1000 = `CLKFBOUT_PHASE * 1000;
 		CLKIN1_PERIOD_1000 = `CLKIN1_PERIOD * 1000;
@@ -273,8 +277,6 @@ module mmcme2_base_cocotb_wrapper (
 		end else if (`CLKOUT4_CASCADE == "FALSE") begin
 			CLKOUT4_CASCADE = 0;
 		end
-		$dumpfile("mmcme2_base_cocotb_wrapper.vcd");
-		$dumpvars(0, mmcme2_base_cocotb_wrapper);
 		#1;
 	end
 endmodule
