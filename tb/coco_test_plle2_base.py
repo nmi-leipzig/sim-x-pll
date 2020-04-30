@@ -112,6 +112,16 @@ def plle2_base_test(dut, wait_interval=1000, clkin1_period=5):
 
     dut.PWRDWN <= 1
 
+    if (CLKOUT[0].value.binstr
+            == CLKOUT[1].value.binstr
+            == CLKOUT[2].value.binstr
+            == CLKOUT[3].value.binstr
+            == CLKOUT[4].value.binstr
+            == CLKOUT[5].value.binstr
+            == CLKOUT[6].value.binstr
+            == dut.LOCKED.value.binstr
+            == 'x'):
+        raise TestFailure('FAILED: PWRDWN')
 
 def period_model(clk_period,
                  divclk_divide=1,
