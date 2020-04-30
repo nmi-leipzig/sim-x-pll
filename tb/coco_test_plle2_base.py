@@ -64,7 +64,6 @@ def plle2_base_test(dut, wait_interval=1000, clkin1_period=5):
 
     measure_thread = [[], []]
     for i in range(0, (len(CLKOUT) - 1)):
-        print('start thread {}'.format(i))
         measure_thread[0].append(cocotb.fork(period_count(CLKOUT[i])))
         if (i != 6):
             measure_thread[1].append(
@@ -105,9 +104,7 @@ def plle2_base_test(dut, wait_interval=1000, clkin1_period=5):
             raise TestFailure('FAILED: CLKOUT{} period'.format(i))
 
     for i in range(0, (len(CLKOUT) - 1)):
-        print('Phase Shift')
         fail = yield Join(measure_thread[1][i])
-        print('Joined Thread Nr. {}'.format(i))
         if (fail and i != 6):
             raise TestFailure('FAILED: CLKOUT{} phase'.format(i))
         elif (fail):
