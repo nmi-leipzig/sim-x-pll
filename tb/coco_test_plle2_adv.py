@@ -139,6 +139,9 @@ def plle2_base_test(dut,
         elif (fail):
             raise TestFailure('FAILED CLKFBOUT phase')
 
+    # TODO: test dynamic reconfiguration.
+    #       The basic structure is implemented below
+    """
     dut.DADDR <= daddr1
     dut.DI <= di1
     dut.DEN <= 1
@@ -169,6 +172,7 @@ def plle2_base_test(dut,
     dut.DEN <= 0
     dut.DWE <= 0
     yield Timer(dclk_period * 2, 'ns')
+    """
 
     dut.PWRDWN <= 1
 
@@ -188,7 +192,7 @@ def period_model(clk_period,
                  divclk_divide=1,
                  clkfbout_mult=1,
                  clkout_divide=1):
-    period = clk_period * ((divclk_divide.integer * clkout_divide.integer)
+    period = clk_period * ((divclk_divide * clkout_divide)
                            / clkfbout_mult.integer)
     return period
 
