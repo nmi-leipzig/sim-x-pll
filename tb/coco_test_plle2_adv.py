@@ -86,7 +86,7 @@ def plle2_base_test(dut,
                                    dut.DIVCLK_DIVIDE.value,
                                    dut.CLKFBOUT_MULT.value,
                                    CLKOUT_DIVIDE[6])
-    if (measured_period != expected_period):
+    if (measured_period[0] != expected_period):
         raise TestFailure('FAILED: CLKIN2 selection')
 
     dut.CLKINSEL = 1
