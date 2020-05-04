@@ -12,6 +12,8 @@ def plle2_base_test(dut,
                     di1=0b0110000110000011,
                     di2=0b0000000000000011,
                     dclk_period=2):
+    # wait for module to forward macro inputs to module outputs
+    yield Timer(1, 'ns')
     clkin1_period = dut.CLKIN1_PERIOD_1000.value.integer / 1000
     clkin2_period = dut.CLKIN2_PERIOD_1000.value.integer / 1000
     cocotb.fork(Clock(dut.CLKIN1, clkin1_period, 'ns').start())
