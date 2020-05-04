@@ -89,7 +89,8 @@ def plle2_base_test(dut,
     if (measured_period[0] != expected_period):
         raise TestFailure('FAILED: CLKIN2 selection')
 
-    dut.CLKINSEL = 1
+    dut.CLKINSEL <= 1
+    yield Timer(clkin1_period * 2, 'ns')
 
     measure_thread = [[], []]
     for i in range(0, (len(CLKOUT) - 1)):
