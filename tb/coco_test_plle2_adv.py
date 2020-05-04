@@ -85,7 +85,7 @@ def plle2_base_test(dut,
     expected_period = period_model(clkin2_period,
                                    dut.DIVCLK_DIVIDE.value,
                                    dut.CLKFBOUT_MULT.value,
-                                   CLKOUT_DIVIDE[7].value)
+                                   CLKOUT_DIVIDE[6])
     if (measured_period != expected_period):
         raise TestFailure('FAILED: CLKIN2 selection')
 
