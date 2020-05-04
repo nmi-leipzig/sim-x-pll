@@ -1,6 +1,8 @@
 *.vcd
 *_tb
 tb/__pycache__/
+tb/build/
+tb/sim_build/
 
 pll_adv_example/pll_adv_example.cache/
 pll_adv_example/pll_adv_example.hw/
@@ -8,8 +10,9 @@ pll_adv_example/pll_adv_example.ip_user_files/
 pll_adv_example/pll_adv_example.runs/
 pll_adv_example/pll_adv_example.sim/
 
-
 vivado.jou
 vivado.log
 vivado_pid19952.str
 pll_adv_example/pll_adv_example.xpr
+
+tb/results.xml

@@ -43,4 +43,11 @@ module phase_shift_check (
 			end
 		end
 	end
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("phase_shift_check.vcd");
+			$dumpvars(0, phase_shift_check);
+			#1;
+		end
+	`endif
 endmodule

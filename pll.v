@@ -533,4 +533,11 @@ module pll #(
 			$finish;
 		end
 	end
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("pll.vcd");
+			$dumpvars(0, pll);
+			#1;
+		end
+	`endif
 endmodule

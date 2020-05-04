@@ -40,4 +40,11 @@ module period_count #(
 		end
 	end
 
+	`ifdef COCOTB_SIM
+		initial begin
+			$dumpfile("period_count.vcd");
+			$dumpvars(0, period_count);
+			#1;
+		end
+	`endif
 endmodule

@@ -114,5 +114,4 @@ class FreqGenTest(Test, test_base.Mixin):
         self.generic_freq_gen_test(wait_interval=1000,
                                    m_1000=8800,
                                    d=1,
-
                                    o_1000=2100)
