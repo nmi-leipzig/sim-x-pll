@@ -90,7 +90,7 @@ def plle2_base_test(dut,
         raise TestFailure('FAILED: CLKIN2 selection')
 
     dut.CLKINSEL <= 1
-    yield Timer(clkin1_period * 2, 'ns')
+    yield Timer(clkin1_period * 10, 'ns')
 
     measure_thread = [[], []]
     for i in range(0, (len(CLKOUT) - 1)):
