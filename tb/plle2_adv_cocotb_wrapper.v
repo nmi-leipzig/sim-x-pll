@@ -162,7 +162,7 @@ module plle2_adv_cocotb_wrapper (
 	input DWE,
 	input [15:0] DI,
 	output [15:0] DO,
-	output DRDY
+	output DRDY,
 
 	output reg [31:0] CLKFBOUT_MULT,
 	output reg [31:0] CLKFBOUT_PHASE_1000,
@@ -243,7 +243,7 @@ module plle2_adv_cocotb_wrapper (
 
 		.PWRDWN(PWRDWN),
 		.RST(RST),
-		.CLKFBIN(CLKFBIN)
+		.CLKFBIN(CLKFBIN),
 
 		.DADDR(DADDR),
 		.DCLK(DCLK),
@@ -256,8 +256,8 @@ module plle2_adv_cocotb_wrapper (
 	);
 
 	initial begin
-		$dumpfile("plle2_base_cocotb_wrapper.vcd");
-		$dumpvars(0, plle2_base_cocotb_wrapper);
+		$dumpfile("plle2_adv_cocotb_wrapper.vcd");
+		$dumpvars(0, plle2_adv_cocotb_wrapper);
 
 		CLKFBOUT_MULT = `CLKFBOUT_MULT;
 		CLKFBOUT_PHASE_1000 = `CLKFBOUT_PHASE * 1000;
